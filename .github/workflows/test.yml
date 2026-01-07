@@ -16,6 +16,7 @@ jobs:
     name: Unit Tests
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false  # Continue running other components even if one fails
       matrix:
         component: [go-functions, python-functions, frontend]
         include:
@@ -53,10 +54,23 @@ jobs:
           # cache-dependency-path: '${{ matrix.path }}/package-lock.json'
           
       - name: Run subproject tests using self-contained test runner
+        id: run-tests
+        continue-on-error: true  # Continue even if tests fail to collect all results
         run: |
           cd ${{ matrix.path }}
           chmod +x test.sh
           ./test.sh
+          
+      - name: Record test result
+        run: |
+          # Record the test result for later analysis
+          echo "TEST_RESULT_${{ matrix.component }}=${{ steps.run-tests.outcome }}" >> $GITHUB_ENV
+          if [ "${{ steps.run-tests.outcome }}" != "success" ]; then
+            echo "❌ ${{ matrix.component }} tests failed"
+            exit 1
+          else
+            echo "✅ ${{ matrix.component }} tests passed"
+          fi
           
       - name: Upload Go coverage to Codecov
         if: matrix.component == 'go-functions'
