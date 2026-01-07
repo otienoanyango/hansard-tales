@@ -18,6 +18,13 @@ jobs:
     strategy:
       matrix:
         component: [go-functions, python-functions, frontend]
+        include:
+          - component: go-functions
+            path: data-processing/go-functions
+          - component: python-functions  
+            path: data-processing/python-functions
+          - component: frontend
+            path: frontend/web
         
     steps:
       - name: Checkout code
@@ -40,31 +47,15 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          # Skip cache for now since package-lock.json may not exist yet
+          # cache: 'npm' 
+          # cache-dependency-path: '${{ matrix.path }}/package-lock.json'
           
-      - name: Install Go dependencies and run tests
-        if: matrix.component == 'go-functions'
+      - name: Run subproject tests using self-contained test runner
         run: |
-          cd data-processing/go-functions
-          go mod tidy
-          go test ./... -v -race -coverprofile=coverage.out -covermode=atomic
-          go tool cover -html=coverage.out -o coverage.html
-          
-      - name: Install Python dependencies and run tests
-        if: matrix.component == 'python-functions'
-        run: |
-          cd data-processing/python-functions
-          pip install -r requirements.txt
-          if [ -f requirements-dev.txt ]; then pip install -r requirements-dev.txt; fi
-          pip install pytest pytest-cov pytest-mock pytest-asyncio
-          pytest --cov=. --cov-report=xml --cov-report=html --cov-report=term-missing -v
-          
-      - name: Install Node.js dependencies and run tests
-        if: matrix.component == 'frontend'
-        run: |
-          cd frontend/web
-          npm ci
-          npm test -- --coverage --watchAll=false --coverageReporters=lcov --coverageReporters=text
+          cd ${{ matrix.path }}
+          chmod +x test.sh
+          ./test.sh
           
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
