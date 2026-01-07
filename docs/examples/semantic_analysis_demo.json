@@ -1,0 +1,695 @@
+{
+    "hansard_session": {
+        "date": "2025-12-04",
+        "session_type": "Afternoon Session Part 2",
+        "duration_minutes": 297,
+        "document_source": "Parliament of Kenya National Assembly",
+        "processing_metadata": {
+            "analyzed_by": "Hansard Tales Semantic Analysis System",
+            "analysis_timestamp": "2026-01-06T19:05:00Z",
+            "model_versions": {
+                "primary": "gemini-pro-1.5",
+                "attribution": "spacy-en-3.7.0",
+                "quality_scorer": "custom-parliamentary-v1.2"
+            },
+            "confidence_threshold": 0.75,
+            "total_statements_analyzed": 147
+        }
+    },
+    "session_topics": [
+        {
+            "topic_id": "T001",
+            "topic": "Public Finance Management (Amendment) Bill 2025",
+            "description": "Amendments to public financial management regulations including oversight mechanisms",
+            "duration_minutes": 85,
+            "participants_count": 23,
+            "controversy_level": "high",
+            "socio_political_impact": "high"
+        },
+        {
+            "topic_id": "T002",
+            "topic": "Affordable Housing Levy Implementation",
+            "description": "Discussion on the progress and challenges of affordable housing levy collection",
+            "duration_minutes": 67,
+            "participants_count": 18,
+            "controversy_level": "medium",
+            "socio_political_impact": "high"
+        },
+        {
+            "topic_id": "T003",
+            "topic": "Constituency Development Fund Audit Report",
+            "description": "Review of CDF utilization and irregularities identified by Auditor-General",
+            "duration_minutes": 92,
+            "participants_count": 31,
+            "controversy_level": "very_high",
+            "socio_political_impact": "very_high"
+        },
+        {
+            "topic_id": "T004",
+            "topic": "Parliamentary Service Commission Appointments",
+            "description": "Approval process for new PSC members and related procedures",
+            "duration_minutes": 53,
+            "participants_count": 12,
+            "controversy_level": "low",
+            "socio_political_impact": "medium"
+        }
+    ],
+    "participants": [
+        {
+            "mp_id": "MP001",
+            "name": "Hon. John Mbadi",
+            "constituency": "Suba South",
+            "party": "ODM",
+            "role": "Chairman - Budget and Appropriations Committee",
+            "session_statistics": {
+                "total_contributions": 12,
+                "speaking_time_minutes": 23.5,
+                "quality_score": 8.7,
+                "substantive_contributions": 11,
+                "heckling_instances": 1,
+                "questions_raised": 4,
+                "motions_supported": 2
+            },
+            "stance_summary": {
+                "public_finance_bill": "strongly_against",
+                "housing_levy": "cautiously_supportive",
+                "cdf_audit": "strongly_supportive",
+                "psc_appointments": "neutral"
+            },
+            "quality_ranking": 1,
+            "overall_performance_score": 85.3
+        },
+        {
+            "mp_id": "MP002",
+            "name": "Hon. Kimani Ichungwah",
+            "constituency": "Kikuyu",
+            "party": "UDA",
+            "role": "Majority Leader",
+            "session_statistics": {
+                "total_contributions": 18,
+                "speaking_time_minutes": 34.2,
+                "quality_score": 7.9,
+                "substantive_contributions": 14,
+                "heckling_instances": 4,
+                "questions_raised": 2,
+                "motions_supported": 6
+            },
+            "stance_summary": {
+                "public_finance_bill": "strongly_supportive",
+                "housing_levy": "strongly_supportive",
+                "cdf_audit": "defensive",
+                "psc_appointments": "supportive"
+            },
+            "quality_ranking": 3,
+            "overall_performance_score": 78.1
+        },
+        {
+            "mp_id": "MP003",
+            "name": "Hon. Millie Odhiambo",
+            "constituency": "Suba North",
+            "party": "ODM",
+            "role": "Deputy Minority Whip",
+            "session_statistics": {
+                "total_contributions": 15,
+                "speaking_time_minutes": 18.7,
+                "quality_score": 8.2,
+                "substantive_contributions": 12,
+                "heckling_instances": 3,
+                "questions_raised": 7,
+                "motions_supported": 1
+            },
+            "stance_summary": {
+                "public_finance_bill": "strongly_against",
+                "housing_levy": "against",
+                "cdf_audit": "strongly_supportive",
+                "psc_appointments": "against"
+            },
+            "quality_ranking": 2,
+            "overall_performance_score": 82.4
+        },
+        {
+            "mp_id": "MP004",
+            "name": "Hon. Peter Kaluma",
+            "constituency": "Homa Bay Town",
+            "party": "ODM",
+            "role": "Member",
+            "session_statistics": {
+                "total_contributions": 8,
+                "speaking_time_minutes": 11.3,
+                "quality_score": 6.1,
+                "substantive_contributions": 5,
+                "heckling_instances": 3,
+                "questions_raised": 1,
+                "motions_supported": 0
+            },
+            "stance_summary": {
+                "public_finance_bill": "against",
+                "housing_levy": "neutral",
+                "cdf_audit": "evasive",
+                "psc_appointments": "neutral"
+            },
+            "quality_ranking": 8,
+            "overall_performance_score": 61.2
+        },
+        {
+            "mp_id": "MP005",
+            "name": "Hon. Gladys Wanga",
+            "constituency": "Homa Bay County Woman Rep",
+            "party": "ODM",
+            "role": "Governor (On Parliamentary Business)",
+            "session_statistics": {
+                "total_contributions": 6,
+                "speaking_time_minutes": 14.8,
+                "quality_score": 9.1,
+                "substantive_contributions": 6,
+                "heckling_instances": 0,
+                "questions_raised": 3,
+                "motions_supported": 2
+            },
+            "stance_summary": {
+                "public_finance_bill": "against",
+                "housing_levy": "supportive_with_concerns",
+                "cdf_audit": "strongly_supportive",
+                "psc_appointments": "neutral"
+            },
+            "quality_ranking": 1,
+            "overall_performance_score": 91.0
+        }
+    ],
+    "detailed_analysis": {
+        "top_contributions": [
+            {
+                "mp_id": "MP001",
+                "statement": "Mr. Speaker, the proposed amendments to Section 73 of the PFM Act fundamentally undermine the constitutional principle of parliamentary oversight. We cannot allow the Executive to self-regulate when it comes to public finance management.",
+                "topic_id": "T001",
+                "timestamp": "14:23:15",
+                "analysis": {
+                    "context": "Public Finance Management Bill amendments regarding executive oversight",
+                    "stance": "against",
+                    "stance_confidence": 0.95,
+                    "quality": "substantive",
+                    "quality_confidence": 0.92,
+                    "reasoning": "Constitutional argument with legal precedent, directly addresses bill provisions",
+                    "socio_political_implications": "Reinforces opposition stance on executive accountability, appeals to constitutional purists",
+                    "impact_score": 9.2
+                }
+            },
+            {
+                "mp_id": "MP005",
+                "statement": "Hon. Speaker, while I support affordable housing initiatives, the current levy structure disproportionately affects low-income earners. We need progressive taxation, not regressive levies that burden those we're trying to help.",
+                "topic_id": "T002",
+                "timestamp": "15:45:22",
+                "analysis": {
+                    "context": "Affordable Housing Levy implementation and impact on different income groups",
+                    "stance": "supportive_with_concerns",
+                    "stance_confidence": 0.88,
+                    "quality": "substantive",
+                    "quality_confidence": 0.94,
+                    "reasoning": "Economic analysis with equity concerns, proposes alternative solution",
+                    "socio_political_implications": "Positions as pro-poor advocate, challenges government policy design",
+                    "impact_score": 8.8
+                }
+            },
+            {
+                "mp_id": "MP002",
+                "statement": "Mr. Speaker, the Majority party will not accept baseless allegations against the CDF program. These funds have transformed millions of lives in our constituencies.",
+                "topic_id": "T003",
+                "timestamp": "16:12:40",
+                "analysis": {
+                    "context": "Defense of CDF program against audit findings",
+                    "stance": "defensive",
+                    "stance_confidence": 0.91,
+                    "quality": "deflective",
+                    "quality_confidence": 0.83,
+                    "reasoning": "Defensive response without addressing specific audit findings, generalizes benefits",
+                    "socio_political_implications": "Protects party/government image, deflects accountability concerns",
+                    "impact_score": 3.4
+                }
+            }
+        ],
+        "controversial_moments": [
+            {
+                "timestamp": "15:23:45",
+                "description": "Heated exchange over CDF audit findings",
+                "participants": [
+                    "MP001",
+                    "MP002",
+                    "MP004"
+                ],
+                "context": "Opposition MPs challenging specific corruption allegations",
+                "speaker_intervention": true,
+                "quotes": [
+                    {
+                        "mp_id": "MP004",
+                        "statement": "These are not allegations, these are findings by the Auditor-General!",
+                        "quality": "heckling",
+                        "impact": "medium"
+                    }
+                ]
+            },
+            {
+                "timestamp": "16:45:12",
+                "description": "Procedural disagreement on bill amendments",
+                "participants": [
+                    "MP003",
+                    "MP002"
+                ],
+                "context": "Dispute over amendment procedures",
+                "speaker_intervention": true,
+                "disruption_level": "high"
+            }
+        ],
+        "notable_absences": [
+            {
+                "mp_name": "Hon. Moses Kuria",
+                "constituency": "Gatundu South",
+                "expected_participation": "high",
+                "reason": "Notably absent from discussions on housing levy despite being key proponent"
+            }
+        ]
+    },
+    "quality_rankings": {
+        "overall_session_ranking": [
+            {
+                "rank": 1,
+                "mp_id": "MP005",
+                "name": "Hon. Gladys Wanga",
+                "overall_score": 91.0,
+                "strengths": [
+                    "Constitutional knowledge",
+                    "Policy analysis",
+                    "Constructive criticism"
+                ],
+                "areas_for_improvement": [
+                    "More frequent participation"
+                ]
+            },
+            {
+                "rank": 2,
+                "mp_id": "MP003",
+                "name": "Hon. Millie Odhiambo",
+                "overall_score": 82.4,
+                "strengths": [
+                    "Incisive questioning",
+                    "Clear positions",
+                    "Good preparation"
+                ],
+                "areas_for_improvement": [
+                    "Less heckling",
+                    "More solution-oriented"
+                ]
+            },
+            {
+                "rank": 3,
+                "mp_id": "MP001",
+                "name": "Hon. John Mbadi",
+                "overall_score": 85.3,
+                "strengths": [
+                    "Committee expertise",
+                    "Legal arguments",
+                    "Detailed preparation"
+                ],
+                "areas_for_improvement": [
+                    "Occasional grandstanding"
+                ]
+            },
+            {
+                "rank": 4,
+                "mp_id": "MP002",
+                "name": "Hon. Kimani Ichungwah",
+                "overall_score": 78.1,
+                "strengths": [
+                    "Leadership role",
+                    "Procedural knowledge",
+                    "Active participation"
+                ],
+                "areas_for_improvement": [
+                    "More substantive responses",
+                    "Less defensive stance"
+                ]
+            },
+            {
+                "rank": 5,
+                "mp_id": "MP004",
+                "name": "Hon. Peter Kaluma",
+                "overall_score": 61.2,
+                "strengths": [
+                    "Clear positions"
+                ],
+                "areas_for_improvement": [
+                    "More preparation",
+                    "Reduce heckling",
+                    "More constructive contributions"
+                ]
+            }
+        ],
+        "topic_specific_rankings": {
+            "public_finance_management": {
+                "most_informed": [
+                    "MP001",
+                    "MP005",
+                    "MP003"
+                ],
+                "best_arguments": [
+                    "MP005",
+                    "MP001"
+                ],
+                "most_partisan": [
+                    "MP002",
+                    "MP004"
+                ]
+            },
+            "housing_levy": {
+                "most_knowledgeable": [
+                    "MP005",
+                    "MP002"
+                ],
+                "best_policy_analysis": [
+                    "MP005"
+                ],
+                "most_evasive": [
+                    "MP004"
+                ]
+            },
+            "cdf_audit": {
+                "most_accountable": [
+                    "MP001",
+                    "MP003"
+                ],
+                "most_defensive": [
+                    "MP002",
+                    "MP004"
+                ],
+                "best_reform_ideas": [
+                    "MP005",
+                    "MP001"
+                ]
+            }
+        }
+    },
+    "socio_political_analysis": {
+        "party_dynamics": {
+            "UDA_caucus": {
+                "cohesion_score": 0.78,
+                "primary_strategy": "defensive",
+                "key_messages": [
+                    "Government programs are working",
+                    "Opposition criticism unfounded"
+                ],
+                "vulnerability_topics": [
+                    "CDF audit findings",
+                    "Housing levy burden"
+                ]
+            },
+            "ODM_caucus": {
+                "cohesion_score": 0.83,
+                "primary_strategy": "aggressive_oversight",
+                "key_messages": [
+                    "Demand accountability",
+                    "Protect constitutional oversight"
+                ],
+                "opportunity_topics": [
+                    "Financial mismanagement",
+                    "Policy design flaws"
+                ]
+            }
+        },
+        "coalition_implications": {
+            "government_vulnerabilities": [
+                "CDF audit findings create defensive posture",
+                "Housing levy criticism from multiple angles",
+                "Limited substantive defense of policies"
+            ],
+            "opposition_strengths": [
+                "Constitutional arguments well-articulated",
+                "Factual audit findings as ammunition",
+                "Policy alternatives proposed"
+            ],
+            "swing_factors": [
+                "Public reaction to housing levy burden",
+                "Audit report implementation",
+                "Economic impact of proposed changes"
+            ]
+        },
+        "public_interest_implications": {
+            "transparency": {
+                "score": 7.2,
+                "positive": "Detailed discussion of audit findings",
+                "negative": "Some defensive responses avoid specifics"
+            },
+            "accountability": {
+                "score": 8.1,
+                "positive": "Opposition pressing for specific answers",
+                "negative": "Government responses sometimes evasive"
+            },
+            "policy_quality": {
+                "score": 6.8,
+                "positive": "Multiple perspectives presented",
+                "negative": "Limited concrete solutions proposed"
+            }
+        }
+    },
+    "statement_analysis": [
+        {
+            "statement_id": "S001",
+            "mp_id": "MP001",
+            "speaker": "Hon. John Mbadi",
+            "timestamp": "14:23:15",
+            "topic_id": "T001",
+            "statement_text": "Mr. Speaker, the proposed amendments to Section 73 of the PFM Act fundamentally undermine the constitutional principle of parliamentary oversight. We cannot allow the Executive to self-regulate when it comes to public finance management.",
+            "analysis": {
+                "context": "Criticism of Public Finance Management Bill amendments reducing parliamentary oversight",
+                "stance": "against",
+                "stance_confidence": 0.95,
+                "quality_assessment": {
+                    "category": "substantive",
+                    "confidence": 0.92,
+                    "substance_score": 9.1,
+                    "legal_accuracy": 8.8,
+                    "preparation_level": "high"
+                },
+                "socio_political_implications": {
+                    "constitutional_significance": "high",
+                    "public_interest": "high",
+                    "party_alignment": "strong_opposition",
+                    "electoral_impact": "medium",
+                    "policy_influence_potential": "high"
+                },
+                "reasoning": "Constitutional argument with legal precedent, directly addresses bill provisions, demonstrates committee expertise"
+            }
+        },
+        {
+            "statement_id": "S002",
+            "mp_id": "MP002",
+            "speaker": "Hon. Kimani Ichungwah",
+            "timestamp": "14:25:33",
+            "topic_id": "T001",
+            "statement_text": "The honorable member is misrepresenting the bill. These amendments strengthen accountability, not weaken it.",
+            "analysis": {
+                "context": "Response defending PFM Bill amendments",
+                "stance": "supportive",
+                "stance_confidence": 0.87,
+                "quality_assessment": {
+                    "category": "defensive",
+                    "confidence": 0.81,
+                    "substance_score": 4.2,
+                    "legal_accuracy": 5.1,
+                    "preparation_level": "medium"
+                },
+                "socio_political_implications": {
+                    "constitutional_significance": "medium",
+                    "public_interest": "medium",
+                    "party_alignment": "strong_government",
+                    "electoral_impact": "low",
+                    "policy_influence_potential": "low"
+                },
+                "reasoning": "Generic defense without specific counter-arguments, lacks detailed explanation"
+            }
+        },
+        {
+            "statement_id": "S003",
+            "mp_id": "MP005",
+            "speaker": "Hon. Gladys Wanga",
+            "timestamp": "15:45:22",
+            "topic_id": "T002",
+            "statement_text": "Hon. Speaker, while I support affordable housing initiatives, the current levy structure disproportionately affects low-income earners. We need progressive taxation, not regressive levies that burden those we're trying to help.",
+            "analysis": {
+                "context": "Critique of housing levy structure with policy alternative",
+                "stance": "supportive_with_concerns",
+                "stance_confidence": 0.88,
+                "quality_assessment": {
+                    "category": "substantive",
+                    "confidence": 0.94,
+                    "substance_score": 9.4,
+                    "legal_accuracy": 8.6,
+                    "preparation_level": "very_high"
+                },
+                "socio_political_implications": {
+                    "constitutional_significance": "medium",
+                    "public_interest": "very_high",
+                    "party_alignment": "nuanced_opposition",
+                    "electoral_impact": "high",
+                    "policy_influence_potential": "very_high"
+                },
+                "reasoning": "Economic analysis with equity concerns, proposes alternative solution, demonstrates policy expertise"
+            }
+        },
+        {
+            "statement_id": "S004",
+            "mp_id": "MP004",
+            "speaker": "Hon. Peter Kaluma",
+            "timestamp": "16:12:15",
+            "topic_id": "T003",
+            "statement_text": "These are not allegations, these are findings by the Auditor-General!",
+            "analysis": {
+                "context": "Interruption during CDF audit discussion",
+                "stance": "supportive_of_audit",
+                "stance_confidence": 0.91,
+                "quality_assessment": {
+                    "category": "heckling",
+                    "confidence": 0.89,
+                    "substance_score": 3.1,
+                    "legal_accuracy": 7.2,
+                    "preparation_level": "low"
+                },
+                "socio_political_implications": {
+                    "constitutional_significance": "low",
+                    "public_interest": "medium",
+                    "party_alignment": "opposition",
+                    "electoral_impact": "low",
+                    "policy_influence_potential": "very_low"
+                },
+                "reasoning": "Factually correct but delivered as interruption, adds little substantive value to discussion"
+            }
+        }
+    ],
+    "corruption_related_analysis": {
+        "cdf_audit_findings": {
+            "total_amount_questioned": "KSH 2.4 billion",
+            "constituencies_affected": 23,
+            "mps_implicated": [
+                {
+                    "mp_id": "MP_IMPLIED_001",
+                    "name": "Hon. [Name Redacted - Unverified]",
+                    "amount": "KSH 45 million",
+                    "allegation": "Irregular procurement processes",
+                    "status": "audit_finding",
+                    "response_quality": "evasive"
+                }
+            ],
+            "systemic_issues": [
+                "Weak procurement oversight",
+                "Insufficient documentation",
+                "Conflicts of interest in project awards"
+            ]
+        },
+        "corruption_index_impacts": {
+            "positive_indicators": [
+                "MPs demanding audit implementation",
+                "Specific financial figures discussed",
+                "Constitutional oversight principles invoked"
+            ],
+            "negative_indicators": [
+                "Defensive responses without specifics",
+                "Attempts to discredit audit process",
+                "Deflection from specific allegations"
+            ]
+        }
+    },
+    "session_productivity_metrics": {
+        "total_session_time": "4:57:23",
+        "productive_discussion_time": "3:12:14",
+        "procedural_time": "42:31",
+        "interruptions_and_heckling": "1:02:38",
+        "productivity_score": 6.7,
+        "key_achievements": [
+            "Detailed audit findings presented",
+            "Multiple policy alternatives discussed",
+            "Constitutional issues properly debated"
+        ],
+        "missed_opportunities": [
+            "Limited concrete solutions proposed",
+            "Excessive partisan positioning",
+            "Some MPs avoided direct questions"
+        ]
+    },
+    "trending_quotes": {
+        "most_ridiculous": [
+            {
+                "mp_id": "MP004",
+                "quote": "Mr. Speaker, if we audit everything, when shall we develop?",
+                "context": "Response to CDF audit findings",
+                "absurdity_score": 8.2,
+                "cartoon_potential": "very_high"
+            },
+            {
+                "mp_id": "MP002",
+                "quote": "The opposition wants to turn Parliament into a court room",
+                "context": "Defending against accountability questions",
+                "absurdity_score": 7.1,
+                "cartoon_potential": "high"
+            }
+        ],
+        "most_insightful": [
+            {
+                "mp_id": "MP005",
+                "quote": "We cannot tax the poor to house the poor - that's not progressive policy",
+                "context": "Housing levy critique",
+                "insight_score": 9.1,
+                "policy_relevance": "very_high"
+            },
+            {
+                "mp_id": "MP001",
+                "quote": "Constitutional oversight is not optional - it's our duty to the people",
+                "context": "PFM Bill oversight discussion",
+                "insight_score": 8.7,
+                "constitutional_importance": "very_high"
+            }
+        ]
+    },
+    "infographic_opportunities": [
+        {
+            "corruption_amount": "KSH 2.4 billion",
+            "equivalences": {
+                "schools": "48 primary schools at 50M each",
+                "teachers": "Annual salaries for 4,800 teachers",
+                "hospital_beds": "2,400 hospital beds at 1M each",
+                "km_of_roads": "120 km of rural roads at 20M per km",
+                "university_scholarships": "9,600 full university scholarships at 250K each"
+            },
+            "visual_impact": "very_high"
+        },
+        {
+            "housing_levy_burden": "1.5% of gross salary",
+            "annual_impact_per_worker": "KSH 18,000 average",
+            "equivalences": {
+                "bags_of_maize": "60 bags of maize per year",
+                "liters_of_milk": "720 liters of milk per year",
+                "kg_of_sugar": "180 kg of sugar per year",
+                "school_fees": "Half year secondary school fees"
+            },
+            "visual_impact": "high"
+        }
+    ],
+    "analysis_metadata": {
+        "processing_statistics": {
+            "total_statements_processed": 147,
+            "high_confidence_analysis": 124,
+            "medium_confidence_analysis": 18,
+            "low_confidence_analysis": 5,
+            "manual_review_required": 5
+        },
+        "cost_breakdown": {
+            "api_calls_made": 18,
+            "cost_per_call_usd": 0.12,
+            "total_processing_cost_usd": 2.16,
+            "cost_per_statement_usd": 0.0147
+        },
+        "quality_assurance": {
+            "statements_manually_verified": 12,
+            "accuracy_spot_check": 0.91,
+            "attribution_accuracy": 0.96,
+            "context_understanding": 0.88
+        }
+    }
+}

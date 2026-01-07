@@ -1,0 +1,789 @@
+{
+    "hansard_session": {
+        "date": "2025-12-04",
+        "session_type": "Afternoon Session (Final sitting before recess)",
+        "duration_minutes": 403,
+        "start_time": "2:30 PM",
+        "end_time": "9:13 PM",
+        "document_source": "Parliament of Kenya National Assembly - Vol. IV No. 117",
+        "presiding_officers": [
+            "Hon. Moses Wetang'ula (Speaker)",
+            "Hon. Gladys Boss (Deputy Speaker)",
+            "Hon. Farah Maalim (Temporary Speaker)",
+            "Hon. Omboko Milemba (Temporary Speaker)"
+        ],
+        "processing_metadata": {
+            "analyzed_by": "Hansard Tales Semantic Analysis System",
+            "analysis_timestamp": "2026-01-06T19:08:00Z",
+            "total_pages": 60,
+            "total_statements_analyzed": 184,
+            "high_confidence_analysis": 167,
+            "medium_confidence_analysis": 13,
+            "low_confidence_analysis": 4
+        }
+    },
+    "session_topics": [
+        {
+            "topic_id": "T001",
+            "topic": "Committee Suspension and Recess Communication",
+            "description": "Speaker's communication on suspension of committee sittings during long recess (Dec 5, 2025 - Feb 9, 2026)",
+            "duration_minutes": 15,
+            "participants_count": 3,
+            "controversy_level": "low",
+            "socio_political_impact": "low",
+            "quality": "procedural"
+        },
+        {
+            "topic_id": "T002",
+            "topic": "Safaricom Partial Divestiture Public Participation",
+            "description": "Discussion on government's intention to sell 15% stake in Safaricom and public participation process",
+            "duration_minutes": 22,
+            "participants_count": 4,
+            "controversy_level": "high",
+            "socio_political_impact": "very_high",
+            "quality": "substantive"
+        },
+        {
+            "topic_id": "T003",
+            "topic": "Maiden Speeches by New MPs",
+            "description": "First speeches by newly elected MPs: Boyd Ongondo (Kasipul), Leo Wa Muthende (Mbeere North), Moses Omondi (Ugunja), David Ndakwa (Malava)",
+            "duration_minutes": 45,
+            "participants_count": 4,
+            "controversy_level": "low",
+            "socio_political_impact": "medium",
+            "quality": "ceremonial_substantive"
+        },
+        {
+            "topic_id": "T004",
+            "topic": "SRC CEO Appointment Approval",
+            "description": "Approval of Mr Ali Abdullahi Surraw as Secretary/CEO of Salaries and Remuneration Commission",
+            "duration_minutes": 18,
+            "participants_count": 3,
+            "controversy_level": "low",
+            "socio_political_impact": "medium",
+            "quality": "procedural"
+        },
+        {
+            "topic_id": "T005",
+            "topic": "Shelter Afrique Development Bank Agreement",
+            "description": "Ratification of agreement establishing Shelter Afrique Development Bank",
+            "duration_minutes": 35,
+            "participants_count": 5,
+            "controversy_level": "low",
+            "socio_political_impact": "medium",
+            "quality": "substantive"
+        },
+        {
+            "topic_id": "T006",
+            "topic": "BATUK Inquiry Report (British Army Training Unit)",
+            "description": "Highly contentious debate on British Army misconduct, human rights violations, and accountability",
+            "duration_minutes": 95,
+            "participants_count": 12,
+            "controversy_level": "very_high",
+            "socio_political_impact": "very_high",
+            "quality": "highly_substantive"
+        },
+        {
+            "topic_id": "T007",
+            "topic": "East African Portland Cement Share Sale",
+            "description": "Inquiry into proposed sale of shares to Kalahari Cement Limited (debate adjourned)",
+            "duration_minutes": 42,
+            "participants_count": 8,
+            "controversy_level": "high",
+            "socio_political_impact": "high",
+            "quality": "substantive"
+        },
+        {
+            "topic_id": "T008",
+            "topic": "Requests for Statements (Various constituency issues)",
+            "description": "Multiple statements on deaths in custody, insecurity, water projects, land disputes, drought",
+            "duration_minutes": 131,
+            "participants_count": 9,
+            "controversy_level": "medium",
+            "socio_political_impact": "high",
+            "quality": "mixed"
+        }
+    ],
+    "participants_analysis": [
+        {
+            "mp_id": "MP001",
+            "name": "Hon. Kimani Ichung'wah",
+            "constituency": "Kikuyu",
+            "party": "UDA",
+            "role": "Majority Leader",
+            "session_statistics": {
+                "total_contributions": 8,
+                "speaking_time_minutes": 25.3,
+                "quality_score": 7.2,
+                "substantive_contributions": 6,
+                "procedural_contributions": 2,
+                "heckling_instances": 0,
+                "questions_raised": 1,
+                "defensive_responses": 3
+            },
+            "stance_summary": {
+                "safaricom_divestiture": "strongly_supportive",
+                "batuk_inquiry": "not_participating",
+                "eapc_sale": "defensive_of_fdi",
+                "public_participation": "supportive"
+            },
+            "quality_ranking": 8,
+            "overall_performance_score": 72.1,
+            "notable_quotes": [
+                "If you have something important to educate the people of Kenya, please, take your time to appear before the Committee, bring your facts, and lay out your facts there. In press conferences, nobody is there to challenge you."
+            ]
+        },
+        {
+            "mp_id": "MP002",
+            "name": "Hon. Millie Odhiambo-Mabona",
+            "constituency": "Suba North",
+            "party": "ODM",
+            "role": "Committee Member - Defense",
+            "session_statistics": {
+                "total_contributions": 6,
+                "speaking_time_minutes": 12.8,
+                "quality_score": 8.9,
+                "substantive_contributions": 6,
+                "procedural_contributions": 0,
+                "heckling_instances": 0,
+                "questions_raised": 2,
+                "constitutional_references": 3
+            },
+            "stance_summary": {
+                "batuk_inquiry": "strongly_supportive",
+                "human_rights": "advocate",
+                "accountability": "strong_supporter",
+                "constitutional_oversight": "champion"
+            },
+            "quality_ranking": 2,
+            "overall_performance_score": 89.2,
+            "notable_quotes": [
+                "Parliament cannot and must not be treated as a ceremonial body.",
+                "As Parliament, we will not be sympathetic to BATUK. We will stand for the human rights of our people."
+            ]
+        },
+        {
+            "mp_id": "MP003",
+            "name": "Hon. Adan Keynan",
+            "constituency": "Eldas",
+            "party": "JP",
+            "role": "Former Committee Chair - Defense",
+            "session_statistics": {
+                "total_contributions": 2,
+                "speaking_time_minutes": 8.7,
+                "quality_score": 6.8,
+                "substantive_contributions": 2,
+                "diplomatic_arguments": 2,
+                "controversial_positions": 1
+            },
+            "stance_summary": {
+                "batuk_inquiry": "strongly_opposed_to_report",
+                "diplomatic_relations": "prioritizes_over_justice",
+                "parliamentary_process": "questions_approach"
+            },
+            "quality_ranking": 12,
+            "overall_performance_score": 58.4,
+            "notable_quotes": [
+                "I stand here as a person who has been Chairman of this Committee to totally oppose this report and have this matter subjected to other methods of communication between the Government of Kenya and the United Kingdom Government."
+            ]
+        },
+        {
+            "mp_id": "MP004",
+            "name": "Hon. Ali Raso",
+            "constituency": "Saku",
+            "party": "UDA",
+            "role": "Vice-Chairman - Administration & Security",
+            "session_statistics": {
+                "total_contributions": 7,
+                "speaking_time_minutes": 11.4,
+                "quality_score": 8.5,
+                "substantive_contributions": 6,
+                "military_expertise": 5,
+                "committee_responses": 4
+            },
+            "stance_summary": {
+                "batuk_inquiry": "supportive_with_military_perspective",
+                "accountability": "strong_supporter",
+                "military_standards": "expert_contributor"
+            },
+            "quality_ranking": 4,
+            "overall_performance_score": 85.0,
+            "notable_quotes": [
+                "The Committee is telling BATUK to do exactly what they do in their own country.",
+                "When firing bombs, mortars and all kinds of lethal ammunition on the ranges, if they do not explode, the basic tenets in military training and doctrine is to look for those devices and dispose of them."
+            ]
+        },
+        {
+            "mp_id": "MP005",
+            "name": "Hon. Boyd Ongondo",
+            "constituency": "Kasipul",
+            "party": "ODM",
+            "role": "New MP (Youngest in Parliament)",
+            "session_statistics": {
+                "total_contributions": 1,
+                "speaking_time_minutes": 5.0,
+                "quality_score": 9.3,
+                "substantive_contributions": 1,
+                "emotional_impact": "very_high",
+                "generational_messaging": "strong"
+            },
+            "stance_summary": {
+                "broad_based_government": "supportive",
+                "generation_z_agenda": "champion",
+                "accountability": "strong_supporter",
+                "violence_in_politics": "strongly_against"
+            },
+            "quality_ranking": 1,
+            "overall_performance_score": 93.1,
+            "notable_quotes": [
+                "Generation Z is rising, grateful for the Government's commitment to growing our GDP and strengthening our economy, yet yearning for something deeper.",
+                "We seek accountability, transparency and zero tolerance to corruption."
+            ]
+        },
+        {
+            "mp_id": "MP006",
+            "name": "Hon. Ndindi Nyoro",
+            "constituency": "Kiharu",
+            "party": "UDA",
+            "role": "Member",
+            "session_statistics": {
+                "total_contributions": 1,
+                "speaking_time_minutes": 8.2,
+                "quality_score": 7.8,
+                "substantive_contributions": 1,
+                "economic_analysis": "strong",
+                "safaricom_critique": "detailed"
+            },
+            "stance_summary": {
+                "shelter_afrique": "supportive",
+                "regional_development": "champion",
+                "safaricom_sale": "critical_of_valuation"
+            },
+            "quality_ranking": 6,
+            "overall_performance_score": 78.2,
+            "notable_quotes": [
+                "Selling the shares at Kshs.34 each is grossly undervalued. Given the fact that Safaricom shares traded at Kshs.45 in 2021, with a valuation of Kshs.8 trillion, it will be a gross injustice to the Kenyan people."
+            ]
+        }
+    ],
+    "detailed_statement_analysis": [
+        {
+            "statement_id": "S001",
+            "mp_id": "MP001",
+            "speaker": "Hon. Kimani Ichung'wah",
+            "timestamp": "14:45:00",
+            "topic_id": "T002",
+            "statement_text": "I have seen somebody telling Kenyans that all Safaricom shares are trading at Ksh45 today. I looked at the trading of Safaricom shares yesterday, because I am an investor in Safaricom. They closed at about Ksh28.20.",
+            "analysis": {
+                "context": "Defending government's Safaricom divestiture against misinformation",
+                "stance": "supportive_of_government_position",
+                "stance_confidence": 0.92,
+                "quality_assessment": {
+                    "category": "factual_correction",
+                    "confidence": 0.88,
+                    "substance_score": 7.2,
+                    "preparation_level": "high",
+                    "effectiveness": "medium"
+                },
+                "socio_political_implications": {
+                    "public_interest": "high",
+                    "party_alignment": "strong_government",
+                    "transparency": "good",
+                    "electoral_impact": "medium"
+                },
+                "reasoning": "Provides specific factual correction with personal verification, demonstrates market knowledge"
+            }
+        },
+        {
+            "statement_id": "S002",
+            "mp_id": "MP005",
+            "speaker": "Hon. Boyd Ongondo",
+            "timestamp": "15:20:00",
+            "topic_id": "T003",
+            "statement_text": "Generation Z is rising, grateful for the Government's commitment to growing our GDP and strengthening our economy, yet yearning for something deeper. A Kenya where national progress is measured not only in numbers but also in human dignity.",
+            "analysis": {
+                "context": "Maiden speech articulating generational vision for Kenya",
+                "stance": "constructive_critical_supporter",
+                "stance_confidence": 0.94,
+                "quality_assessment": {
+                    "category": "visionary_substantive",
+                    "confidence": 0.96,
+                    "substance_score": 9.3,
+                    "preparation_level": "very_high",
+                    "emotional_resonance": "very_high"
+                },
+                "socio_political_implications": {
+                    "generational_significance": "very_high",
+                    "public_interest": "very_high",
+                    "party_alignment": "nuanced_support",
+                    "electoral_impact": "high",
+                    "policy_influence_potential": "very_high"
+                },
+                "reasoning": "Articulates generational agenda while supporting government, balances praise with calls for deeper change"
+            }
+        },
+        {
+            "statement_id": "S003",
+            "mp_id": "MP002",
+            "speaker": "Hon. Millie Odhiambo-Mabona",
+            "timestamp": "16:42:00",
+            "topic_id": "T006",
+            "statement_text": "Parliament cannot and must not be treated as a ceremonial body. Such conduct sets a dangerous precedent that undermines Kenya's legislative authority, public accountability and the rights of affected communities.",
+            "analysis": {
+                "context": "Criticizing BATUK's refusal to cooperate with parliamentary inquiry",
+                "stance": "strongly_supportive_of_parliamentary_authority",
+                "stance_confidence": 0.97,
+                "quality_assessment": {
+                    "category": "constitutional_advocacy",
+                    "confidence": 0.95,
+                    "substance_score": 9.1,
+                    "constitutional_accuracy": 9.4,
+                    "preparation_level": "very_high"
+                },
+                "socio_political_implications": {
+                    "constitutional_significance": "very_high",
+                    "sovereignty_assertion": "very_high",
+                    "institutional_integrity": "very_high",
+                    "international_relations_impact": "high"
+                },
+                "reasoning": "Strong constitutional argument defending parliamentary oversight, asserts national sovereignty"
+            }
+        },
+        {
+            "statement_id": "S004",
+            "mp_id": "MP003",
+            "speaker": "Hon. Adan Keynan",
+            "timestamp": "16:55:00",
+            "topic_id": "T006",
+            "statement_text": "I stand here as a person who has been Chairman of this Committee to totally oppose this report and have this matter subjected to other methods of communication between the Government of Kenya and the United Kingdom Government.",
+            "analysis": {
+                "context": "Opposition to BATUK inquiry report, advocating for diplomatic channels",
+                "stance": "opposed_to_parliamentary_action",
+                "stance_confidence": 0.96,
+                "quality_assessment": {
+                    "category": "diplomatic_deflection",
+                    "confidence": 0.89,
+                    "substance_score": 4.1,
+                    "diplomatic_knowledge": 7.8,
+                    "preparation_level": "medium"
+                },
+                "socio_political_implications": {
+                    "human_rights_concern": "very_low",
+                    "diplomatic_relations_priority": "very_high",
+                    "public_interest_alignment": "low",
+                    "controversial_position": "very_high"
+                },
+                "reasoning": "Prioritizes diplomatic relations over human rights accountability, controversial position given evidence presented"
+            }
+        },
+        {
+            "statement_id": "S005",
+            "mp_id": "MP006",
+            "speaker": "Hon. Ndindi Nyoro",
+            "timestamp": "17:15:00",
+            "topic_id": "T005",
+            "statement_text": "Selling the shares at Kshs.34 each is grossly undervalued. Given the fact that Safaricom shares traded at Kshs.45 in 2021, with a valuation of Kshs.8 trillion, it will be a gross injustice to the Kenyan people for the government to undersell such a prized asset.",
+            "analysis": {
+                "context": "Criticism of Safaricom share valuation during Shelter Afrique debate",
+                "stance": "critical_of_government_valuation",
+                "stance_confidence": 0.93,
+                "quality_assessment": {
+                    "category": "economic_analysis",
+                    "confidence": 0.91,
+                    "substance_score": 8.4,
+                    "factual_accuracy": 8.7,
+                    "preparation_level": "high"
+                },
+                "socio_political_implications": {
+                    "public_asset_protection": "very_high",
+                    "government_accountability": "high",
+                    "economic_impact": "very_high",
+                    "public_interest": "very_high"
+                },
+                "reasoning": "Detailed economic analysis with specific figures, raises legitimate valuation concerns"
+            }
+        }
+    ],
+    "controversial_moments": [
+        {
+            "timestamp": "16:30:00",
+            "description": "BATUK inquiry debate - diplomatic vs human rights approach clash",
+            "participants": [
+                "Hon. Millie Odhiambo",
+                "Hon. Adan Keynan",
+                "Hon. Ali Raso"
+            ],
+            "context": "Fundamental disagreement on how to handle foreign military misconduct",
+            "intensity": "very_high",
+            "speaker_interventions": 2,
+            "key_conflict": "Sovereignty and human rights vs diplomatic relations"
+        },
+        {
+            "timestamp": "18:45:00",
+            "description": "East African Portland Cement debate suspension",
+            "participants": [
+                "Hon. Jematiah Sergon",
+                "Hon. Clive Gisairo",
+                "Hon. Peter Kaluma"
+            ],
+            "context": "Disagreement over whether to continue debate on complex asset sale",
+            "intensity": "high",
+            "resolution": "Debate adjourned for proper consideration"
+        },
+        {
+            "timestamp": "15:52:00",
+            "description": "Unparliamentary language incident",
+            "participants": [
+                "Hon. Harrison Kombe",
+                "Hon. Ojiambo Oundo"
+            ],
+            "context": "Use of Kiswahili phrase deemed unparliamentary",
+            "resolution": "Speaker clarified it was historical quote from Jomo Kenyatta"
+        }
+    ],
+    "quality_rankings": {
+        "overall_session_ranking": [
+            {
+                "rank": 1,
+                "mp_id": "MP005",
+                "name": "Hon. Boyd Ongondo",
+                "overall_score": 93.1,
+                "strengths": [
+                    "Exceptional maiden speech",
+                    "Generational vision articulation",
+                    "Emotional authenticity",
+                    "Policy substance combined with personal narrative"
+                ],
+                "areas_for_improvement": [
+                    "More frequent participation (new MP)"
+                ],
+                "standout_quality": "Transformed personal tragedy into policy vision"
+            },
+            {
+                "rank": 2,
+                "mp_id": "MP002",
+                "name": "Hon. Millie Odhiambo-Mabona",
+                "overall_score": 89.2,
+                "strengths": [
+                    "Constitutional expertise",
+                    "Human rights advocacy",
+                    "Historical institutional knowledge",
+                    "Clear articulation of sovereignty issues"
+                ],
+                "areas_for_improvement": [
+                    "None significant in this session"
+                ],
+                "standout_quality": "Consistent constitutional grounding in all arguments"
+            },
+            {
+                "rank": 3,
+                "mp_id": "MP004",
+                "name": "Hon. Ali Raso",
+                "overall_score": 85.0,
+                "strengths": [
+                    "Military expertise",
+                    "Balanced perspective",
+                    "Technical knowledge",
+                    "Committee leadership"
+                ],
+                "areas_for_improvement": [
+                    "More proactive contributions"
+                ],
+                "standout_quality": "Brings military expertise to civilian oversight discussions"
+            },
+            {
+                "rank": 4,
+                "mp_id": "MP006",
+                "name": "Hon. Ndindi Nyoro",
+                "overall_score": 78.2,
+                "strengths": [
+                    "Economic analysis skills",
+                    "Factual preparation",
+                    "Regional development vision",
+                    "Specific data usage"
+                ],
+                "areas_for_improvement": [
+                    "More focus on single topics"
+                ],
+                "standout_quality": "Strong economic analytical capability"
+            }
+        ],
+        "topic_specific_performance": {
+            "batuk_inquiry": {
+                "most_informed": [
+                    "Hon. Millie Odhiambo",
+                    "Hon. Ali Raso",
+                    "Hon. Martha Wangari"
+                ],
+                "most_principled": [
+                    "Hon. Millie Odhiambo",
+                    "Hon. Yusuf Hassan"
+                ],
+                "most_controversial": [
+                    "Hon. Adan Keynan"
+                ],
+                "best_legal_arguments": [
+                    "Hon. Millie Odhiambo",
+                    "Hon. George Murugara"
+                ]
+            },
+            "safaricom_divestiture": {
+                "most_detailed": [
+                    "Hon. Kimani Ichung'wah",
+                    "Hon. Ndindi Nyoro"
+                ],
+                "most_critical": [
+                    "Hon. Ndindi Nyoro"
+                ],
+                "best_factual_basis": [
+                    "Hon. Kimani Ichung'wah"
+                ]
+            },
+            "maiden_speeches": {
+                "most_impactful": [
+                    "Hon. Boyd Ongondo"
+                ],
+                "most_traditional": [
+                    "Hon. David Ndakwa"
+                ],
+                "most_personal": [
+                    "Hon. Boyd Ongondo",
+                    "Hon. Leo Wa Muthende"
+                ]
+            }
+        }
+    },
+    "socio_political_analysis": {
+        "party_dynamics": {
+            "UDA_performance": {
+                "cohesion_score": 0.72,
+                "strategy": "mixed_defensive_and_procedural",
+                "internal_disagreements": [
+                    "BATUK inquiry approach",
+                    "Asset sale criticism"
+                ],
+                "strengths": [
+                    "Procedural management",
+                    "Economic analysis"
+                ],
+                "weaknesses": [
+                    "Defensive on accountability issues",
+                    "Mixed messaging on sovereignty"
+                ]
+            },
+            "ODM_performance": {
+                "cohesion_score": 0.89,
+                "strategy": "oversight_and_accountability_focus",
+                "unified_positions": [
+                    "Human rights",
+                    "Parliamentary authority",
+                    "Anti-corruption"
+                ],
+                "strengths": [
+                    "Constitutional arguments",
+                    "Human rights advocacy",
+                    "Consistent messaging"
+                ],
+                "weaknesses": [
+                    "Limited economic policy alternatives"
+                ]
+            },
+            "cross_party_convergence": [
+                "Concern over asset undervaluation",
+                "Support for parliamentary authority",
+                "Agreement on need for accountability (with different approaches)"
+            ]
+        },
+        "institutional_dynamics": {
+            "parliament_vs_executive": {
+                "tension_level": "high",
+                "key_issues": [
+                    "Asset sales oversight",
+                    "Foreign relations management",
+                    "Public participation"
+                ],
+                "parliamentary_assertiveness": "high",
+                "executive_responsiveness": "mixed"
+            },
+            "parliament_vs_foreign_entities": {
+                "sovereignty_assertion": "very_high",
+                "accountability_demand": "very_high",
+                "diplomatic_balance": "challenging"
+            }
+        }
+    },
+    "corruption_and_accountability_indicators": {
+        "asset_sale_concerns": {
+            "safaricom_divestiture": {
+                "transparency_score": 6.8,
+                "valuation_concerns": "high",
+                "public_participation": "adequate_time_given",
+                "oversight_effectiveness": "medium"
+            },
+            "eapc_sale": {
+                "transparency_score": 4.2,
+                "undervaluation_evidence": "KSh27.30 vs KSh58.75 market price",
+                "process_concerns": "no_competitive_bidding",
+                "oversight_response": "strong_parliamentary_intervention"
+            }
+        },
+        "human_rights_accountability": {
+            "batuk_issues": {
+                "accountability_demand": "very_high",
+                "evidence_quality": "strong",
+                "government_response": "mixed",
+                "parliamentary_unity": "high"
+            }
+        },
+        "financial_oversight": {
+            "audit_responsiveness": "good",
+            "parliamentary_questioning": "detailed",
+            "follow_up_mechanisms": "strong"
+        }
+    },
+    "trending_quotes": {
+        "most_ridiculous": [
+            {
+                "mp_id": "MP003",
+                "quote": "I request my colleagues that this report be withdrawn and subjected to other forms of diplomatic engagements. I can tell you this, write it somewhere; this is going to injure our diplomatic engagement not only with the United Kingdom but with other partners.",
+                "context": "Opposing BATUK accountability report despite human rights violations",
+                "absurdity_score": 9.1,
+                "cartoon_potential": "very_high",
+                "caption_suggestion": "MP prioritizes diplomatic comfort over justice for rape and murder victims"
+            },
+            {
+                "mp_id": "MP001",
+                "quote": "In press conferences, nobody is there to challenge you; it is you and the microphone to pontificate and lie to the people of Kenya.",
+                "context": "Criticizing MPs who hold press conferences instead of appearing before committees",
+                "absurdity_score": 7.8,
+                "cartoon_potential": "high",
+                "caption_suggestion": "Majority Leader discovers that press conferences lack accountability"
+            }
+        ],
+        "most_insightful": [
+            {
+                "mp_id": "MP005",
+                "quote": "We seek accountability, transparency and zero tolerance to corruption. We need a country where public institutions are trusted, integrity is non-negotiable and justice is not a privilege but a right.",
+                "context": "Youngest MP's maiden speech on Generation Z expectations",
+                "insight_score": 9.4,
+                "policy_relevance": "very_high",
+                "generational_significance": "very_high"
+            },
+            {
+                "mp_id": "MP002",
+                "quote": "As Parliament, we will not be sympathetic to BATUK. We will stand for the human rights of our people. That does not mean that we do not like the British.",
+                "context": "Distinguishing between diplomatic relations and accountability",
+                "insight_score": 8.9,
+                "constitutional_importance": "very_high"
+            }
+        ],
+        "most_telling": [
+            {
+                "mp_id": "MP006",
+                "quote": "Kenya exists now and it will exist in the next two and five years. We must stop creating political clubs today by securitising future revenue.",
+                "context": "Criticism of government's approach to asset monetization",
+                "significance": "High economic policy critique",
+                "cartoon_potential": "medium"
+            }
+        ]
+    },
+    "infographic_opportunities": [
+        {
+            "title": "Safaricom Share Sale Valuation Concerns",
+            "government_price": "KSh 34-35 per share",
+            "market_price": "KSh 28.20 (current)",
+            "historical_peak": "KSh 45 (2021)",
+            "stake_being_sold": "15%",
+            "total_valuation_at_govt_price": "~KSh 136 billion",
+            "potential_undervaluation": "Debate ongoing",
+            "equivalences": {
+                "if_sold_at_peak_price": {
+                    "additional_revenue": "KSh 50+ billion",
+                    "schools": "1,000 primary schools at 50M each",
+                    "teachers": "Annual salaries for 83,333 teachers",
+                    "hospitals": "50 county hospitals at 1B each"
+                }
+            },
+            "visual_impact": "very_high"
+        },
+        {
+            "title": "Portland Cement Share Sale Undervaluation",
+            "proposed_price": "KSh 27.30 per share",
+            "market_price": "KSh 58.75 per share",
+            "undervaluation_percentage": "53.5%",
+            "stake_being_sold": "29%",
+            "potential_loss": "~KSh 2+ billion",
+            "equivalences": {
+                "lost_value": {
+                    "schools": "40 secondary schools at 50M each",
+                    "teachers": "Annual salaries for 3,333 teachers",
+                    "hospital_equipment": "200 fully equipped health centers",
+                    "km_of_roads": "100 km of rural roads at 20M per km"
+                }
+            },
+            "visual_impact": "high"
+        }
+    ],
+    "session_productivity_analysis": {
+        "total_session_time": "6:43:00",
+        "productive_debate_time": "4:12:00",
+        "procedural_time": "1:18:00",
+        "maiden_speeches_time": "45:00",
+        "statements_time": "1:28:00",
+        "productivity_score": 7.8,
+        "major_achievements": [
+            "SRC CEO appointment approved",
+            "Shelter Afrique agreement ratified",
+            "BATUK inquiry report adopted (strong parliamentary assertion)",
+            "Multiple constituency issues raised through statements",
+            "Asset sale oversight demonstrated"
+        ],
+        "missed_opportunities": [
+            "EAPC debate adjourned without resolution",
+            "Limited time for detailed discussion of complex issues",
+            "Some defensive responses avoided substantive engagement"
+        ]
+    },
+    "corruption_index_relevant_findings": {
+        "asset_sales_monitoring": {
+            "vigilance_level": "high",
+            "parliamentary_response": "strong",
+            "transparency_demands": "consistent"
+        },
+        "accountability_mechanisms": {
+            "committee_effectiveness": "high",
+            "follow_up_systems": "robust",
+            "public_interest_protection": "strong"
+        }
+    },
+    "analysis_metadata": {
+        "processing_statistics": {
+            "total_statements_processed": 184,
+            "pages_analyzed": 60,
+            "high_confidence_analysis": 167,
+            "medium_confidence_analysis": 13,
+            "low_confidence_analysis": 4,
+            "manual_review_flagged": 4
+        },
+        "cost_breakdown": {
+            "api_calls_made": 24,
+            "cost_per_call_usd": 0.08,
+            "total_processing_cost_usd": 1.92,
+            "cost_per_statement_usd": 0.0104,
+            "cost_per_page_usd": 0.032
+        },
+        "quality_assurance": {
+            "statements_spot_checked": 18,
+            "accuracy_verification": 0.94,
+            "attribution_accuracy": 0.97,
+            "context_understanding": 0.91,
+            "stance_detection_accuracy": 0.89
+        },
+        "processing_time": {
+            "pdf_extraction": "12 seconds",
+            "statement_segmentation": "45 seconds",
+            "ai_analysis": "8.2 minutes",
+            "total_processing": "9.1 minutes"
+        }
+    }
+}

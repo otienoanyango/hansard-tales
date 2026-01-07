@@ -943,26 +943,26 @@ docs/task-12.1-api-documentation
 
 ## 🧪 TESTING STRATEGY & REQUIREMENTS
 
-### Testing Pyramid Implementation
+### Testing Pyramid Implementation (Updated for Subproject Structure)
 
 #### **Unit Tests (Fastest, Most Coverage)**
 ```yaml
 Requirements:
   - All functions and components must have unit tests
-  - Minimum 85% code coverage for business logic
-  - Minimum 90% coverage for data processing functions  
-  - Minimum 75% coverage for UI components
+  - Minimum 85% code coverage for Go functions
+  - Minimum 90% coverage for Python functions (critical for AI accuracy)
+  - Minimum 75% coverage for Frontend components
   - All tests must pass before code can be merged
 
-Test Structure:
-  - `/tests/unit/go/` - Go function unit tests
-  - `/tests/unit/python/` - Python function unit tests  
-  - `/tests/unit/frontend/` - React component unit tests
-  - Mock external services (AI APIs, databases, storage)
-  - Fast execution (<5 minutes total)
+Test Structure (Self-Contained per Subproject):
+  - `data-processing/go-functions/` - Go unit tests with go test
+  - `data-processing/python-functions/tests/` - Python tests with pytest
+  - `frontend/web/components/` - React component tests with Jest
+  - Each subproject has own test.sh script and dependencies
+  - Fast execution per subproject (<2 minutes each)
 ```
 
-#### **Integration Tests (Medium Speed, Critical Paths)**
+#### **Integration Tests (Medium Speed, Critical Paths)**  
 ```yaml
 Requirements:
   - Test service-to-service communication
@@ -971,11 +971,10 @@ Requirements:
   - Test error handling and recovery
   - Must pass before deployment to staging
 
-Test Structure:
-  - `/tests/integration/api/` - API integration tests
-  - `/tests/integration/pipeline/` - Data pipeline tests
-  - `/tests/integration/database/` - Database integration tests
-  - Use staging environment with real services
+Test Structure (Centralized):
+  - Created via GitHub Actions workflows
+  - Use Docker services for database/redis testing
+  - Real GCP staging environment validation
   - Medium execution time (10-20 minutes)
 ```
 
@@ -988,10 +987,10 @@ Requirements:
   - Test accessibility and mobile experience
   - Must pass before production deployment
 
-Test Structure:
-  - `/tests/e2e/playwright/` - Browser automation tests
-  - `/tests/e2e/scenarios/` - User journey tests
-  - Test against production-like environment
+Test Structure (Playwright in Frontend):
+  - `frontend/web/e2e/` - Browser automation tests (to be created)
+  - User journey validation scenarios
+  - Performance and accessibility testing
   - Slow execution time (30-60 minutes)
 ```
 
