@@ -57,16 +57,32 @@ jobs:
           chmod +x test.sh
           ./test.sh
           
-      - name: Upload coverage reports to Codecov
+      - name: Upload Go coverage to Codecov
+        if: matrix.component == 'go-functions'
         uses: codecov/codecov-action@v3
         with:
-          file: |
-            ./data-processing/go-functions/coverage.out
-            ./data-processing/python-functions/coverage.xml
-            ./frontend/web/coverage/lcov.info
-          flags: ${{ matrix.component }}
-          name: ${{ matrix.component }}-coverage
-          fail_ci_if_error: true
+          file: ./data-processing/go-functions/coverage.out
+          flags: go-functions
+          name: go-functions-coverage
+          fail_ci_if_error: false
+          
+      - name: Upload Python coverage to Codecov
+        if: matrix.component == 'python-functions'
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./data-processing/python-functions/coverage.xml
+          flags: python-functions
+          name: python-functions-coverage
+          fail_ci_if_error: false
+          
+      - name: Upload Frontend coverage to Codecov
+        if: matrix.component == 'frontend'
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./frontend/web/coverage/lcov.info
+          flags: frontend
+          name: frontend-coverage
+          fail_ci_if_error: false
           
       - name: Store coverage artifacts
         uses: actions/upload-artifact@v4
