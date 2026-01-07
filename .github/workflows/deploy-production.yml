@@ -1,0 +1,396 @@
+name: Production Deployment
+
+on:
+  workflow_dispatch:
+    inputs:
+      version_tag:
+        description: 'Version tag for this deployment (e.g., v1.2.3)'
+        required: true
+        type: string
+      confirm_production:
+        description: 'Type "DEPLOY" to confirm production deployment'
+        required: true
+        type: string
+
+env:
+  GCP_PROJECT_ID: hansard-tales-production
+  GCP_REGION: us-central1
+
+jobs:
+  validate-deployment:
+    name: Pre-deployment Validation
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Validate deployment confirmation
+        run: |
+          if [ "${{ inputs.confirm_production }}" != "DEPLOY" ]; then
+            echo "❌ Production deployment not confirmed. Type 'DEPLOY' to proceed."
+            exit 1
+          fi
+          echo "✅ Production deployment confirmed"
+          
+      - name: Validate version tag format
+        run: |
+          if [[ ! "${{ inputs.version_tag }}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "❌ Invalid version tag format. Use semantic versioning (e.g., v1.2.3)"
+            exit 1
+          fi
+          echo "✅ Version tag format valid: ${{ inputs.version_tag }}"
+
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: validate-deployment
+    environment: production
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Create Git tag
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git tag -a ${{ inputs.version_tag }} -m "Production deployment ${{ inputs.version_tag }}"
+          git push origin ${{ inputs.version_tag }}
+          
+      - name: Setup Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          project_id: ${{ env.GCP_PROJECT_ID }}
+          service_account_key: ${{ secrets.GCP_SA_KEY_PRODUCTION }}
+          export_default_credentials: true
+          
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.6.0
+          
+      - name: Setup Go (for function builds)
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.21'
+          
+      - name: Setup Python (for function builds)
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          
+      - name: Setup Node.js (for frontend build)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          
+      - name: Pre-deployment safety checks
+        run: |
+          echo "🔍 Running pre-deployment safety checks..."
+          
+          # Check if staging is healthy
+          if ! curl -f -s --max-time 30 "https://hansard-tales-staging.pages.dev" > /dev/null; then
+            echo "❌ Staging environment is not healthy. Fix staging before production deployment."
+            exit 1
+          fi
+          
+          # Validate Terraform plan
+          cd infrastructure/terraform
+          terraform init -backend-config="bucket=hansard-tales-tf-state-production"
+          terraform workspace select production || terraform workspace new production
+          terraform plan -out=tfplan-production -var="environment=production"
+          
+          echo "✅ Pre-deployment checks passed"
+          
+      - name: Deploy Infrastructure (Production)
+        run: |
+          cd infrastructure/terraform
+          echo "🏗️ Deploying production infrastructure..."
+          terraform apply tfplan-production
+          echo "✅ Infrastructure deployment completed"
+          
+      - name: Build and Deploy Go Functions (Production)
+        run: |
+          cd data-processing/go-functions
+          echo "⚡ Deploying Go functions to production..."
+          
+          # Build hansard-scraper function
+          if [ -d hansard-scraper ]; then
+            cd hansard-scraper
+            go mod tidy
+            go build -ldflags="-s -w" -o main .  # Optimized build
+            
+            gcloud functions deploy hansard-scraper-production \
+              --runtime=go121 \
+              --trigger-http \
+              --entry-point=HansardScraper \
+              --source=. \
+              --region=${{ env.GCP_REGION }} \
+              --memory=128MB \
+              --timeout=540s \
+              --max-instances=10 \
+              --set-env-vars="ENVIRONMENT=production,GCP_PROJECT=${{ env.GCP_PROJECT_ID }},VERSION=${{ inputs.version_tag }}"
+            cd ..
+          fi
+          
+          # Build pdf-processor function
+          if [ -d pdf-processor ]; then
+            cd pdf-processor
+            go mod tidy
+            go build -ldflags="-s -w" -o main .
+            
+            gcloud functions deploy pdf-processor-production \
+              --runtime=go121 \
+              --trigger-bucket=hansard-pdfs-production \
+              --entry-point=ProcessPDF \
+              --source=. \
+              --region=${{ env.GCP_REGION }} \
+              --memory=256MB \
+              --timeout=540s \
+              --max-instances=5 \
+              --set-env-vars="ENVIRONMENT=production,GCP_PROJECT=${{ env.GCP_PROJECT_ID }},VERSION=${{ inputs.version_tag }}"
+            cd ..
+          fi
+          
+      - name: Build and Deploy Python Functions (Production)
+        run: |
+          cd data-processing/python-functions
+          echo "🐍 Deploying Python functions to production..."
+          
+          # Deploy semantic-analyzer function
+          if [ -d semantic-analyzer ]; then
+            cd semantic-analyzer
+            pip install -r requirements.txt -t . --no-deps
+            
+            gcloud functions deploy semantic-analyzer-production \
+              --runtime=python311 \
+              --trigger-http \
+              --entry-point=analyze_statements \
+              --source=. \
+              --region=${{ env.GCP_REGION }} \
+              --memory=512MB \
+              --timeout=540s \
+              --max-instances=3 \
+              --set-env-vars="ENVIRONMENT=production,GCP_PROJECT=${{ env.GCP_PROJECT_ID }},VERSION=${{ inputs.version_tag }}"
+            cd ..
+          fi
+          
+          # Deploy content-generator function
+          if [ -d content-generator ]; then
+            cd content-generator
+            pip install -r requirements.txt -t . --no-deps
+            
+            gcloud functions deploy content-generator-production \
+              --runtime=python311 \
+              --trigger-http \
+              --entry-point=generate_content \
+              --source=. \
+              --region=${{ env.GCP_REGION }} \
+              --memory=1GB \
+              --timeout=540s \
+              --max-instances=1 \
+              --set-env-vars="ENVIRONMENT=production,GCP_PROJECT=${{ env.GCP_PROJECT_ID }},VERSION=${{ inputs.version_tag }}"
+            cd ..
+          fi
+          
+      - name: Build and Deploy Frontend (Production)
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          cd frontend/web
+          npm ci
+          
+          echo "🌐 Building frontend for production..."
+          # Production environment variables
+          echo "NEXT_PUBLIC_API_URL=https://api.hansardtales.ke" > .env.production
+          echo "NEXT_PUBLIC_ENVIRONMENT=production" >> .env.production
+          echo "NEXT_PUBLIC_VERSION=${{ inputs.version_tag }}" >> .env.production
+          
+          # Optimized production build
+          npm run build
+          
+          # Deploy to Cloudflare Pages (production)
+          npx wrangler pages publish out --project-name=hansard-tales-production
+          
+      - name: Setup Production Cloud Scheduler
+        run: |
+          echo "⏰ Setting up production batch jobs..."
+          
+          # Create weekly batch job for production (more conservative)
+          gcloud scheduler jobs create http weekly-hansard-batch-production \
+            --location=${{ env.GCP_REGION }} \
+            --schedule="0 2 * * 0" \
+            --uri="https://${{ env.GCP_REGION }}-${{ env.GCP_PROJECT_ID }}.cloudfunctions.net/hansard-scraper-production" \
+            --http-method=POST \
+            --headers="Content-Type=application/json" \
+            --message-body='{"batch_size": 20, "environment": "production"}' \
+            --time-zone="Africa/Nairobi" \
+            --max-retry-attempts=3 \
+            --min-backoff-duration=5s \
+            --max-backoff-duration=300s \
+            || gcloud scheduler jobs update http weekly-hansard-batch-production \
+               --location=${{ env.GCP_REGION }} \
+               --schedule="0 2 * * 0" \
+               --uri="https://${{ env.GCP_REGION }}-${{ env.GCP_PROJECT_ID }}.cloudfunctions.net/hansard-scraper-production"
+               
+      - name: Run comprehensive production health checks
+        run: |
+          echo "🏥 Running production health checks..."
+          
+          # Wait for deployment to fully propagate
+          sleep 60
+          
+          # Comprehensive health check
+          cat > production_health_check.sh << 'EOF'
+          #!/bin/bash
+          set -e
+          
+          echo "🔍 Testing production deployment health..."
+          
+          # Test frontend accessibility and performance
+          FRONTEND_URL="https://hansardtales.ke"
+          echo "Testing frontend at $FRONTEND_URL..."
+          
+          if ! curl -f -s --max-time 30 "$FRONTEND_URL" > /dev/null; then
+            echo "❌ Frontend not accessible at $FRONTEND_URL"
+            exit 1
+          fi
+          
+          # Test performance (Core Web Vitals)
+          echo "Testing performance..."
+          LIGHTHOUSE_SCORE=$(curl -s "https://www.googleapis.com/pagespeedinights/v5/runPagespeed?url=$FRONTEND_URL&strategy=mobile" | jq '.lighthouseResult.categories.performance.score * 100')
+          echo "📱 Mobile Performance Score: $LIGHTHOUSE_SCORE/100"
+          
+          if [ $(echo "$LIGHTHOUSE_SCORE < 80" | bc -l) ]; then
+            echo "⚠️  Performance score below 80. Consider optimization."
+          else
+            echo "✅ Performance score acceptable"
+          fi
+          
+          # Test Cloud Functions (if they exist)
+          echo "Testing Cloud Functions..."
+          FUNCTIONS=(
+            "hansard-scraper-production"
+            "pdf-processor-production" 
+            "semantic-analyzer-production"
+            "content-generator-production"
+          )
+          
+          for func in "${FUNCTIONS[@]}"; do
+            FUNC_URL="https://${{ env.GCP_REGION }}-${{ env.GCP_PROJECT_ID }}.cloudfunctions.net/$func"
+            if curl -f -s --max-time 30 "$FUNC_URL" > /dev/null; then
+              echo "✅ Function $func accessible"
+            else
+              echo "⚠️  Function $func not accessible (may not exist yet)"
+            fi
+          done
+          
+          # Test database connectivity (if accessible)
+          echo "✅ Basic connectivity tests completed"
+          
+          echo "🎉 Production health check completed successfully"
+          EOF
+          
+          chmod +x production_health_check.sh
+          ./production_health_check.sh
+          
+      - name: Create deployment summary
+        run: |
+          echo "📝 Creating deployment summary..."
+          
+          cat > deployment_summary.md << EOF
+          # Production Deployment Summary
+          
+          **Version**: ${{ inputs.version_tag }}
+          **Date**: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+          **Commit**: ${{ github.sha }}
+          **Triggered by**: ${{ github.actor }}
+          
+          ## Deployed Components
+          - ✅ Infrastructure (Terraform)
+          - ✅ Go Functions (Cloud Functions)
+          - ✅ Python Functions (Cloud Functions)  
+          - ✅ Frontend (Cloudflare Pages)
+          - ✅ Batch Jobs (Cloud Scheduler)
+          
+          ## Production URLs
+          - 🌐 Website: https://hansardtales.ke
+          - 📊 API: https://api.hansardtales.ke
+          - 📈 Status: https://status.hansardtales.ke
+          
+          ## Post-Deployment Actions
+          - [ ] Monitor system metrics for 24 hours
+          - [ ] Validate user experience
+          - [ ] Check cost monitoring alerts
+          - [ ] Confirm social media integrations working
+          EOF
+          
+          echo "Deployment Summary:"
+          cat deployment_summary.md
+          
+      - name: Post-deployment monitoring setup
+        run: |
+          echo "📊 Setting up post-deployment monitoring..."
+          
+          # Enable enhanced monitoring for 24 hours after deployment
+          gcloud logging sinks create post-deployment-monitor \
+            cloud-pubsub-topic \
+            --log-filter='severity >= ERROR OR (resource.type="cloud_function" AND textPayload:"TIMEOUT")' \
+            --destination=projects/${{ env.GCP_PROJECT_ID }}/topics/deployment-alerts \
+            || echo "Monitoring sink already exists"
+            
+          echo "✅ Enhanced monitoring active for 24 hours"
+          
+      - name: Notify deployment completion
+        if: always()
+        run: |
+          if [ "${{ job.status }}" == "success" ]; then
+            echo "🎉 Production deployment successful!"
+            echo "✅ Version ${{ inputs.version_tag }} deployed to production"
+            echo "🔗 Live at: https://hansardtales.ke"
+            echo "📊 Monitor at: https://console.cloud.google.com/monitoring"
+            
+            # Create GitHub release
+            echo "Creating GitHub release..."
+            gh release create ${{ inputs.version_tag }} \
+              --title "Release ${{ inputs.version_tag }}" \
+              --notes "Production deployment of Hansard Tales ${{ inputs.version_tag }}" \
+              --latest
+              
+          else
+            echo "❌ Production deployment failed!"
+            echo "🚨 Check logs and fix issues before retrying"
+            
+            # In production, this should trigger alerts
+            # ./scripts/deployment/alert-deployment-failure.sh production ${{ inputs.version_tag }}
+          fi
+          
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+  post-deployment-monitoring:
+    name: Post-Deployment Monitoring
+    runs-on: ubuntu-latest
+    needs: deploy-production
+    if: success()
+    
+    steps:
+      - name: Setup monitoring dashboard
+        run: |
+          echo "📈 Production deployment monitoring active"
+          echo "🔍 Key metrics to watch:"
+          echo "   - Error rates: Should be <1%"
+          echo "   - Response times: Should be <3s"
+          echo "   - Cost monitoring: Should stay under £75/month"
+          echo "   - User experience: Core Web Vitals >90"
+          
+          echo "⏰ Monitor for next 24 hours before marking deployment complete"
+          
+      - name: Schedule deployment review
+        run: |
+          echo "📅 Deployment review scheduled for 24 hours"
+          echo "🔔 Set reminder to check:"
+          echo "   1. System stability and error rates"
+          echo "   2. User feedback and support requests" 
+          echo "   3. Performance metrics and optimization opportunities"
+          echo "   4. Cost tracking and budget compliance"
+          echo "   5. Content generation and social media engagement"

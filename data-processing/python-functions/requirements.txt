@@ -1,0 +1,12 @@
+# Hansard Tales PDF Scraper Dependencies
+
+# Core web scraping
+requests>=2.31.0
+beautifulsoup4>=4.12.0
+lxml>=4.9.0
+
+# Optional but recommended
+urllib3>=2.0.0
+certifi>=2023.0.0
+
+# Note: sqlite3, pathlib, argparse, logging, re, time, datetime, json, typing are built into Python

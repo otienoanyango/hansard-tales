@@ -1,0 +1,119 @@
+name: PR Validation Pipeline
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+
+env:
+  GO_VERSION: '1.21'
+  PYTHON_VERSION: '3.11'  
+  NODE_VERSION: '18'
+
+jobs:
+  code-quality:
+    name: Code Quality Validation
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Needed for diff comparisons
+          
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          
+      - name: Install Go dependencies and tools
+        run: |
+          go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+          cd data-processing/go-functions
+          go mod tidy
+          
+      - name: Install Python dependencies and tools
+        run: |
+          pip install black flake8 mypy
+          cd data-processing/python-functions
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          if [ -f requirements-dev.txt ]; then pip install -r requirements-dev.txt; fi
+          
+      - name: Install Node.js dependencies
+        run: |
+          cd frontend/web
+          npm ci
+          
+      - name: Go formatting check
+        id: go-lint-format
+        run: |
+          cd data-processing/go-functions
+          # Check if files need formatting
+          if [ -n "$(go fmt ./...)" ]; then
+            echo "❌ Go files need formatting. Run 'go fmt ./...' to fix."
+            exit 1
+          fi
+          # Run linting
+          golangci-lint run --out-format github-actions
+          
+      - name: Python formatting and linting
+        id: python-lint-format
+        run: |
+          cd data-processing/python-functions
+          # Check formatting
+          black --check --diff . --color
+          # Run linting
+          flake8 . --format='::error file=%(path)s,line=%(row)d,col=%(col)d::%(code)s %(text)s'
+          # Type checking
+          mypy . --show-error-codes --pretty
+          
+      - name: Frontend linting and formatting
+        id: frontend-lint-format
+        run: |
+          cd frontend/web
+          # Linting
+          npm run lint
+          # Type checking
+          npm run type-check
+          # Format checking
+          npm run format:check
+          
+      - name: Security scanning
+        id: security-scan
+        uses: github/codeql-action/init@v2
+        with:
+          languages: go, python, typescript
+          
+      - name: Build code for security analysis
+        run: |
+          # Go build
+          cd data-processing/go-functions
+          go build ./...
+          
+          # Python setup for analysis
+          cd ../../data-processing/python-functions
+          python -m py_compile *.py
+          
+          # Frontend build
+          cd ../../frontend/web
+          npm run build
+          
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
+        
+      - name: Validate pre-commit hooks
+        id: pre-commit-hooks
+        run: |
+          pip install pre-commit
+          pre-commit run --all-files --show-diff-on-failure

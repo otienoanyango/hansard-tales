@@ -1,0 +1,222 @@
+name: Deploy to Staging
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      force_deploy:
+        description: 'Force deployment even if tests fail'
+        required: false
+        default: false
+        type: boolean
+
+env:
+  GCP_PROJECT_ID: hansard-tales-staging
+  GCP_REGION: us-central1
+  
+jobs:
+  deploy-staging:
+    name: Deploy to Staging Environment
+    runs-on: ubuntu-latest
+    environment: staging
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          project_id: ${{ env.GCP_PROJECT_ID }}
+          service_account_key: ${{ secrets.GCP_SA_KEY_STAGING }}
+          export_default_credentials: true
+          
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.6.0
+          
+      - name: Setup Go (for function builds)
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.21'
+          
+      - name: Setup Python (for function builds)
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          
+      - name: Setup Node.js (for frontend build)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          
+      - name: Terraform Plan (Infrastructure)
+        run: |
+          cd infrastructure/terraform
+          terraform init -backend-config="bucket=hansard-tales-tf-state-staging"
+          terraform workspace select staging || terraform workspace new staging
+          terraform plan -out=tfplan-staging -var="environment=staging"
+          
+      - name: Terraform Apply (Infrastructure) 
+        run: |
+          cd infrastructure/terraform
+          terraform apply tfplan-staging
+          
+      - name: Build and Deploy Go Functions
+        run: |
+          cd data-processing/go-functions
+          
+          # Build hansard-scraper function
+          if [ -d hansard-scraper ]; then
+            cd hansard-scraper
+            go mod tidy
+            go build -o main .
+            zip function-source.zip main
+            
+            gcloud functions deploy hansard-scraper-staging \
+              --runtime=go121 \
+              --trigger-http \
+              --entry-point=HansardScraper \
+              --source=. \
+              --region=${{ env.GCP_REGION }} \
+              --memory=256MB \
+              --timeout=540s \
+              --set-env-vars="ENVIRONMENT=staging,GCP_PROJECT=${{ env.GCP_PROJECT_ID }}"
+            cd ..
+          fi
+          
+          # Build pdf-processor function
+          if [ -d pdf-processor ]; then
+            cd pdf-processor
+            go mod tidy
+            go build -o main .
+            zip function-source.zip main
+            
+            gcloud functions deploy pdf-processor-staging \
+              --runtime=go121 \
+              --trigger-bucket=hansard-pdfs-staging \
+              --entry-point=ProcessPDF \
+              --source=. \
+              --region=${{ env.GCP_REGION }} \
+              --memory=512MB \
+              --timeout=540s \
+              --set-env-vars="ENVIRONMENT=staging,GCP_PROJECT=${{ env.GCP_PROJECT_ID }}"
+            cd ..
+          fi
+          
+      - name: Build and Deploy Python Functions
+        run: |
+          cd data-processing/python-functions
+          
+          # Deploy semantic-analyzer function
+          if [ -d semantic-analyzer ]; then
+            cd semantic-analyzer
+            pip install -r requirements.txt -t .
+            
+            gcloud functions deploy semantic-analyzer-staging \
+              --runtime=python311 \
+              --trigger-http \
+              --entry-point=analyze_statements \
+              --source=. \
+              --region=${{ env.GCP_REGION }} \
+              --memory=1GB \
+              --timeout=540s \
+              --set-env-vars="ENVIRONMENT=staging,GCP_PROJECT=${{ env.GCP_PROJECT_ID }}"
+            cd ..
+          fi
+          
+          # Deploy content-generator function  
+          if [ -d content-generator ]; then
+            cd content-generator
+            pip install -r requirements.txt -t .
+            
+            gcloud functions deploy content-generator-staging \
+              --runtime=python311 \
+              --trigger-http \
+              --entry-point=generate_content \
+              --source=. \
+              --region=${{ env.GCP_REGION }} \
+              --memory=1GB \
+              --timeout=540s \
+              --set-env-vars="ENVIRONMENT=staging,GCP_PROJECT=${{ env.GCP_PROJECT_ID }}"
+            cd ..
+          fi
+          
+      - name: Build and Deploy Frontend
+        run: |
+          cd frontend/web
+          npm ci
+          
+          # Build for staging
+          echo "NEXT_PUBLIC_API_URL=https://api-staging.hansardtales.ke" > .env.production
+          echo "NEXT_PUBLIC_ENVIRONMENT=staging" >> .env.production
+          
+          npm run build
+          
+          # Deploy to Cloudflare Pages (staging)
+          npx wrangler pages publish out --project-name=hansard-tales-staging
+          
+      - name: Setup Cloud Scheduler (Weekly Batch Jobs)
+        run: |
+          # Create weekly batch job for staging
+          gcloud scheduler jobs create http weekly-hansard-batch-staging \
+            --location=${{ env.GCP_REGION }} \
+            --schedule="0 2 * * 0" \
+            --uri="https://${{ env.GCP_REGION }}-${{ env.GCP_PROJECT_ID }}.cloudfunctions.net/hansard-scraper-staging" \
+            --http-method=POST \
+            --headers="Content-Type=application/json" \
+            --message-body='{"batch_size": 10, "environment": "staging"}' \
+            --time-zone="Africa/Nairobi" \
+            || echo "Scheduler job already exists"
+            
+      - name: Run post-deployment health checks
+        run: |
+          echo "🏥 Running staging health checks..."
+          
+          # Wait for deployment to propagate
+          sleep 30
+          
+          # Basic health check script
+          cat > health_check.sh << 'EOF'
+          #!/bin/bash
+          
+          echo "Testing staging deployment health..."
+          
+          # Test frontend accessibility
+          FRONTEND_URL="https://hansard-tales-staging.pages.dev"
+          if curl -f -s --max-time 30 "$FRONTEND_URL" > /dev/null; then
+            echo "✅ Frontend accessible at $FRONTEND_URL"
+          else
+            echo "❌ Frontend not accessible"
+            exit 1
+          fi
+          
+          # Test function endpoints (if they exist)
+          FUNCTION_URL="https://${{ env.GCP_REGION }}-${{ env.GCP_PROJECT_ID }}.cloudfunctions.net/hansard-scraper-staging"
+          if curl -f -s --max-time 30 "$FUNCTION_URL" > /dev/null; then
+            echo "✅ Hansard scraper function accessible"
+          else
+            echo "⚠️  Hansard scraper function not accessible (may not exist yet)"
+          fi
+          
+          echo "🎉 Staging deployment health check completed"
+          EOF
+          
+          chmod +x health_check.sh
+          ./health_check.sh
+          
+      - name: Notify deployment status
+        if: always()
+        run: |
+          if [ "${{ job.status }}" == "success" ]; then
+            echo "✅ Staging deployment successful"
+            echo "🔗 Staging URL: https://hansard-tales-staging.pages.dev"
+          else
+            echo "❌ Staging deployment failed"
+          fi
+          
+          # In future, integrate with Slack/email notifications
+          # ./scripts/deployment/notify-deployment.sh staging ${{ job.status }}
