@@ -125,7 +125,7 @@ func TestCalculatePerformanceScore(t *testing.T) {
 			attendanceRate: 80,
 			billsSponsored: 60,
 			qualityScore:   90,
-			expected:       76, // (80*0.4 + 60*0.3 + 90*0.3)
+			expected:       77, // (80*0.4 + 60*0.3 + 90*0.3) = 32 + 18 + 27 = 77
 		},
 		{
 			name:           "zero scores",
