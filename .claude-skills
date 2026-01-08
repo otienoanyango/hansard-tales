@@ -1,0 +1,701 @@
+# Claude Skills - Hansard Tales Development Principles
+
+## Core Development Philosophy
+
+### 🎯 SIMPLICITY FIRST
+- Choose the simplest solution that works
+- Avoid over-engineering and premature optimization  
+- Prefer explicit over implicit behavior
+- Write code that tells a story
+
+### 🔧 MAINTAINABILITY OVER CLEVERNESS
+- Code should be readable by someone else in 6 months
+- Favor boring, well-understood patterns
+- Document the "why", not just the "what"
+- Build for change, not just current requirements
+
+### ✨ MINIMALISM IN DESIGN
+- Each component should have a single, clear responsibility
+- Remove code more often than adding it
+- Question every dependency and abstraction
+- Default to "no" for new features until proven essential
+
+### 📦 INCREMENTAL DEVELOPMENT
+- Small, focused changes that are easy to review
+- Each PR should tell one story
+- Ship working software early and often
+- Fail fast, learn faster
+
+---
+
+## Code Review Guidelines
+
+### 📏 IDEAL PR SIZE
+```
+✅ GOOD PR SIZE:
+- 50-200 lines of code changes
+- Single feature or bug fix
+- Clear title explaining the change
+- Easy to understand in 10-15 minutes
+
+❌ AVOID:
+- 500+ line PRs (split into smaller changes)
+- Multiple unrelated changes in one PR
+- Refactoring mixed with feature additions
+- Changes without clear context
+```
+
+### 📝 PR DESCRIPTION TEMPLATE
+```markdown
+## What
+Brief description of what this change does (1-2 sentences)
+
+## Why  
+Why is this change needed? What problem does it solve?
+
+## How
+High-level approach taken (avoid implementation details)
+
+## Testing
+How was this tested? What scenarios were covered?
+
+## Risks
+Any potential issues or dependencies?
+```
+
+### 🔍 REVIEW CHECKLIST
+```
+For Reviewer:
+□ Does this change have a clear single purpose?
+□ Can I understand what it does from the PR description?
+□ Are there any obvious edge cases not handled?
+□ Does this follow our simplicity principles?
+□ Is error handling appropriate?
+□ Are there any security concerns?
+
+For Author:
+□ Did I test this change thoroughly?
+□ Is this the simplest approach that works?
+□ Have I documented any non-obvious decisions?
+□ Can this be made smaller/simpler?
+```
+
+---
+
+## Language-Specific Guidelines
+
+### 🐹 Go Functions (Data Processing)
+```go
+// GOOD: Simple, clear function
+func ExtractTextFromPDF(pdfPath string) (string, error) {
+    file, err := os.Open(pdfPath)
+    if err != nil {
+        return "", fmt.Errorf("opening PDF: %w", err)
+    }
+    defer file.Close()
+    
+    // Extract text using unipdf
+    text, err := extractWithUnipdf(file)
+    if err != nil {
+        log.Printf("unipdf failed, trying OCR fallback: %v", err)
+        return extractWithOCR(file)
+    }
+    
+    return text, nil
+}
+
+// AVOID: Overly complex with multiple responsibilities
+func ProcessPDFWithAnalysisAndStorage(path string, config Config) (*Result, error) {
+    // 100+ lines of mixed responsibilities
+}
+```
+
+**Go Principles**:
+- Return errors explicitly, don't hide them
+- Use structured logging with consistent fields
+- Keep functions under 50 lines when possible
+- Prefer composition over inheritance
+- Handle the zero value appropriately
+
+### 🐍 Python Functions (AI/ML)
+```python
+# GOOD: Single responsibility, clear interface
+def analyze_statement_batch(statements: List[str], context: str) -> List[StatementAnalysis]:
+    """Analyze a batch of parliamentary statements using Gemini."""
+    
+    prompt = build_analysis_prompt(statements, context)
+    
+    try:
+        response = gemini_client.generate(prompt)
+        return parse_gemini_response(response)
+    except Exception as e:
+        logger.error("Gemini analysis failed", extra={"error": str(e), "batch_size": len(statements)})
+        raise AnalysisError(f"Failed to analyze batch: {e}")
+
+# AVOID: Mixing concerns
+def analyze_and_store_and_generate_content(data, config, db, ai_client):
+    # Multiple responsibilities in one function
+```
+
+**Python Principles**:
+- Use type hints consistently
+- Keep functions pure when possible (no hidden side effects)
+- Prefer dataclasses over dictionaries for structured data
+- Log with structured context, not just string messages
+- Handle exceptions at the right level
+
+### ⚛️ Frontend (React/Next.js)
+```tsx
+// GOOD: Simple, focused component
+interface MPCardProps {
+  mp: MP;
+  showScore?: boolean;
+}
+
+export function MPCard({ mp, showScore = true }: MPCardProps) {
+  return (
+    <div className="p-4 border border-gray-200 rounded-lg">
+      <h3 className="font-semibold text-lg">{mp.name}</h3>
+      <p className="text-gray-600">{mp.constituency} • {mp.party}</p>
+      {showScore && (
+        <div className="mt-2 text-sm font-medium text-green-600">
+          Performance: {mp.performanceScore}/100
+        </div>
+      )}
+    </div>
+  );
+}
+
+// AVOID: Over-engineered component with too many props
+export function ComplexMPDisplayWidget({ 
+  mp, showScore, showConstituency, theme, variant, size, onClick, onHover, 
+  customStyles, breakpoints, animations 
+}: OverlyComplexProps) {
+  // 200+ lines with numerous conditional renders
+}
+```
+
+**Frontend Principles**:
+- Components should fit on one screen
+- Prefer composition over complex props
+- Keep state local unless sharing is necessary
+- Use semantic HTML and proper accessibility
+- Mobile-first, progressive enhancement
+
+### 🗃️ Database Design
+```sql
+-- GOOD: Simple, clear schema
+CREATE TABLE mps (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    constituency VARCHAR(255) NOT NULL,
+    party VARCHAR(100) NOT NULL,
+    current_term_start DATE NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
+);
+
+-- AVOID: Over-normalized or under-normalized
+CREATE TABLE mps_constituencies_parties_relationships_with_metadata (
+    -- Overly complex relationships
+);
+```
+
+**Database Principles**:
+- Normalize reasonably, denormalize consciously
+- Use meaningful names, avoid abbreviations
+- Include created_at/updated_at timestamps
+- Add constraints that enforce business rules
+- Index based on actual query patterns, not assumptions
+
+---
+
+## File Organization Principles
+
+### 📁 DIRECTORY STRUCTURE
+```
+✅ GOOD:
+feature/
+├── handler.go           # Main logic (50-100 lines)
+├── handler_test.go      # Comprehensive tests
+├── types.go             # Data types (if needed)
+└── README.md           # Purpose and usage
+
+❌ AVOID:
+feature/
+├── handler.go           # 500+ lines
+├── utils.go            # Catch-all utilities
+├── constants.go        # Scattered constants
+├── helpers.go          # Unclear responsibilities
+└── misc.go             # Mixed purposes
+```
+
+### 📄 FILE SIZE GUIDELINES
+- **Go files**: 200-300 lines maximum
+- **Python files**: 300-400 lines maximum  
+- **React components**: 100-200 lines maximum
+- **Configuration files**: As minimal as possible
+- **Documentation**: Break into sections, use clear headings
+
+---
+
+## Development Workflow
+
+### 🔄 DEVELOPMENT CYCLE
+```
+1. 📋 Plan (5 minutes)
+   - What specific problem am I solving?
+   - What's the simplest approach?
+
+2. 🏗️ Build (15-45 minutes)
+   - Write the minimal code that works
+   - Add basic error handling
+   - Write a simple test
+
+3. 🧪 Test (10-15 minutes)
+   - Does it work as expected?
+   - What edge cases exist?
+   - Is error handling appropriate?
+
+4. 📝 Document (5 minutes)
+   - Clear commit message
+   - Update relevant documentation
+   - Add code comments for non-obvious decisions
+
+5. 📤 Submit (Small PR)
+   - Focus on single change
+   - Clear description
+   - Request review
+```
+
+### 🎯 COMMIT MESSAGE FORMAT
+```
+type: brief description (50 chars or less)
+
+Optional body explaining the why:
+- What problem this solves
+- Any important context
+- Breaking changes
+
+Examples:
+feat: add MP performance calculation
+fix: handle empty PDF documents gracefully  
+docs: update API usage examples
+refactor: simplify statement parsing logic
+```
+
+### 🚦 DEFINITION OF DONE
+```
+✅ Code Complete When:
+□ Functionality works as specified
+□ Error cases are handled appropriately
+□ Tests cover main scenarios
+□ Code follows style guidelines
+□ Documentation is updated
+□ PR is reviewable in 15 minutes
+□ No obvious performance issues
+□ Security concerns addressed
+```
+
+---
+
+## Specific Project Guidelines
+
+### 🏛️ PARLIAMENTARY DATA HANDLING
+- **Accuracy Over Speed**: Triple-check all MP attributions
+- **Source Everything**: Every claim must link to official documents
+- **Handle Ambiguity**: Mark uncertain analysis with confidence scores
+- **Fail Safely**: Better to skip than to be wrong about political content
+
+### 🤖 AI/ML BEST PRACTICES
+- **Prompt Engineering**: Iterate on prompts like code
+- **Cost Monitoring**: Track API costs per function call
+- **Confidence Thresholds**: Never publish low-confidence analysis
+- **Human Oversight**: Always have human review for sensitive content
+
+### 📊 DATA PIPELINE PRINCIPLES
+- **Idempotent Operations**: Same input always produces same output
+- **Graceful Degradation**: System works even if some components fail
+- **Monitoring Everything**: Log all important state changes
+- **Batch Processing**: Optimize for cost, not real-time performance
+
+### 🎨 CONTENT GENERATION
+- **Kenyan Context**: Use local cultural references appropriately
+- **Mobile First**: Design for slow networks and small screens
+- **Accessibility**: Support screen readers and keyboard navigation
+- **Social Sharing**: Optimize for viral distribution
+
+---
+
+## Code Quality Standards
+
+### 📐 COMPLEXITY LIMITS
+```
+Cyclomatic Complexity:
+- Functions: Maximum 10
+- Methods: Maximum 8
+- Classes/Modules: Maximum 15
+
+File Size Limits:
+- Go: 300 lines
+- Python: 400 lines
+- TypeScript: 200 lines
+- Configuration: 100 lines
+
+Function Length:
+- Ideal: 5-15 lines
+- Maximum: 50 lines
+- Exception: Data processing functions can be longer if single responsibility
+```
+
+### 🧪 TESTING REQUIREMENTS
+```
+Minimum Test Coverage:
+- Core business logic: 90%+
+- Data processing: 85%+
+- API endpoints: 80%+  
+- Frontend components: 75%+
+
+Test Types Required:
+□ Unit tests for all functions
+□ Integration tests for API flows
+□ End-to-end tests for user journeys
+□ Performance tests for data processing
+```
+
+### 📝 DOCUMENTATION STANDARDS
+```
+Required Documentation:
+□ README.md for each major component
+□ API documentation (OpenAPI/Swagger)
+□ Database schema with relationships
+□ Deployment and operational runbooks
+□ Architecture decision records (ADRs)
+
+Code Comments:
+- Explain "why", not "what"
+- Document non-obvious business logic
+- Include examples for complex functions
+- Link to external resources/documentation
+```
+
+---
+
+## Anti-Patterns to Avoid
+
+### ❌ CODE ANTI-PATTERNS
+- **God Functions**: Functions that do everything
+- **Magic Numbers**: Unexplained constants scattered in code
+- **Deep Nesting**: More than 3-4 levels of indentation
+- **Long Parameter Lists**: More than 4-5 parameters
+- **Copy-Paste Code**: Duplicated logic across files
+
+### ❌ ARCHITECTURE ANTI-PATTERNS
+- **Big Bang Deployments**: Deploying multiple features at once
+- **Tight Coupling**: Components that can't work independently
+- **Shared State**: Global variables and shared mutable state
+- **Gold Plating**: Adding features "just in case"
+- **Not Invented Here**: Avoiding proven solutions
+
+### ❌ PROJECT MANAGEMENT ANTI-PATTERNS
+- **Feature Creep**: Adding scope without removing other features
+- **Perfectionism**: Polishing instead of shipping
+- **Big Design Up Front**: Over-planning before validation
+- **Technology for Technology's Sake**: Using cool tech without clear benefit
+
+---
+
+## Success Metrics for Code Quality
+
+### 📊 QUANTITATIVE METRICS
+```
+Weekly Targets:
+- Build Success Rate: >95%
+- Test Coverage: Maintain >80%
+- Code Review Time: <2 hours average
+- Bug Report Rate: <5 bugs/week
+- Performance Regression: 0
+
+Monthly Targets:
+- Documentation Coverage: >90% of functions
+- Security Issues: 0 critical, <3 medium
+- Technical Debt: Stable or decreasing
+- Developer Velocity: Stable or increasing
+```
+
+### 🎯 QUALITATIVE GOALS
+- New team member can understand codebase in 2 days
+- Any component can be modified without fear
+- Deployments are boring and predictable
+- Code reviews generate learning, not arguments
+- System behavior is observable and debuggable
+
+---
+
+## Implementation Preferences
+
+### 🚀 MVP DEVELOPMENT APPROACH
+1. **Start with simplest possible solution**
+2. **Make it work reliably**
+3. **Measure actual usage patterns**
+4. **Optimize based on real data**
+5. **Add complexity only when necessary**
+
+### 🔄 ITERATION STRATEGY
+```
+Week 1: Basic working version (ugly but functional)
+Week 2: Clean up and add essential error handling
+Week 3: Add basic testing and monitoring
+Week 4: Polish UX and add nice-to-have features
+
+Repeat for each major component.
+```
+
+### 📈 SCALING APPROACH
+- **Scale vertically before horizontally** (simpler operations)
+- **Add caching before adding servers** (cheaper and simpler)
+- **Monitor before optimizing** (measure twice, cut once)
+- **Automate repetitive tasks** (but keep automation simple)
+
+---
+
+## Communication Guidelines
+
+### 💬 CODE REVIEW FEEDBACK
+```
+✅ CONSTRUCTIVE:
+"Consider extracting this logic into a helper function for reusability"
+"This might handle the error case more gracefully by..."
+"What happens if the API returns an empty response here?"
+
+❌ AVOID:
+"This is wrong" (without explanation)
+"Just use [framework/library]" (without context)
+"This won't scale" (without specific concerns)
+```
+
+### 📞 TEAM COMMUNICATION
+- **Async First**: Use written communication for non-urgent issues
+- **Context Rich**: Include relevant background in messages
+- **Solution Oriented**: Propose alternatives, don't just identify problems
+- **Respectful**: Assume positive intent, ask questions instead of making statements
+
+---
+
+## Tool Configuration
+
+### 🛠️ RECOMMENDED DEVELOPMENT SETUP
+```json
+// .vscode/settings.json (VS Code)
+{
+    "editor.rulers": [80, 120],
+    "editor.wordWrap": "wordWrapColumn",
+    "editor.wordWrapColumn": 80,
+    "files.trimTrailingWhitespace": true,
+    "files.insertFinalNewline": true,
+    "go.useLanguageServer": true,
+    "python.defaultInterpreterPath": "./venv/bin/python",
+    "typescript.preferences.importModuleSpecifier": "relative"
+}
+
+// .editorconfig
+root = true
+
+[*]
+indent_style = space
+indent_size = 2
+end_of_line = lf
+charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+[*.go]
+indent_size = 4
+
+[*.py]
+indent_size = 4
+```
+
+### 🔧 LINTING & FORMATTING
+```yaml
+# Pre-commit hooks (.pre-commit-config.yaml)
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-json
+      
+  - repo: https://github.com/psf/black
+    rev: 22.12.0
+    hooks:
+      - id: black
+        language_version: python3
+        
+  - repo: https://github.com/PyCQA/flake8
+    rev: 6.0.0
+    hooks:
+      - id: flake8
+        args: [--max-line-length=88, --extend-ignore=E203]
+```
+
+---
+
+## Project-Specific Conventions
+
+### 📊 DATA PROCESSING
+```python
+# GOOD: Clear data flow
+def process_hansard_document(pdf_path: str) -> HansardDocument:
+    """Process a single Hansard PDF into structured data."""
+    raw_text = extract_pdf_text(pdf_path)
+    cleaned_text = clean_text(raw_text)
+    statements = segment_statements(cleaned_text)
+    return HansardDocument(statements=statements)
+
+# Each step is testable independently
+```
+
+### 🤖 AI INTEGRATION
+```python
+# GOOD: Isolated AI calls with clear interfaces
+@retry(max_attempts=3, backoff=exponential_backoff)
+def analyze_with_gemini(batch: StatementBatch) -> AnalysisResult:
+    """Analyze statements using Gemini with structured output."""
+    
+    prompt = create_analysis_prompt(batch)
+    response = gemini_client.generate(prompt, temperature=0.1)
+    
+    result = parse_structured_response(response)
+    validate_analysis_result(result)  # Ensure quality
+    
+    return result
+```
+
+### 🎨 FRONTEND COMPONENTS
+```tsx
+// GOOD: Simple, reusable component
+interface MPPerformanceProps {
+  mp: MP;
+  metric: 'attendance' | 'bills' | 'quality';
+}
+
+export function MPPerformance({ mp, metric }: MPPerformanceProps) {
+  const score = mp.metrics[metric];
+  const color = getScoreColor(score);
+  
+  return (
+    <div className={`text-${color}-600`}>
+      <span className="font-semibold">{score}</span>
+      <span className="text-sm text-gray-500 ml-1">/{getMaxScore(metric)}</span>
+    </div>
+  );
+}
+```
+
+---
+
+## Decision Making Framework
+
+### 🤔 WHEN TO ADD COMPLEXITY
+Ask these questions before adding complexity:
+
+1. **Is this solving a real problem?** (Not just an imagined future problem)
+2. **Is this the simplest solution?** (Can we solve it with less code?)
+3. **Can we validate the assumption?** (Can we test our hypothesis first?)
+4. **What's the cost of being wrong?** (Is complexity worth the risk?)
+5. **Can we defer this decision?** (Will we know more later?)
+
+### 📋 TECHNICAL DEBT MANAGEMENT
+```
+Green (Ship It):
+- Code works correctly
+- Has basic tests
+- Follows style guide
+- Solves the immediate problem
+
+Yellow (Plan to Improve):
+- Works but could be cleaner
+- Missing some edge case handling
+- Performance could be better
+- Documentation could be improved
+
+Red (Address Before Shipping):
+- Fragile or unreliable
+- Security concerns
+- Performance problems
+- No error handling
+```
+
+### 🎯 FEATURE PRIORITIZATION
+```
+Priority Framework:
+1. Core User Value (Does this help users accomplish their goal?)
+2. Development Cost (How much effort to build and maintain?)
+3. Risk Level (What's the downside if this breaks?)
+4. Learning Value (Will this teach us something important?)
+
+Default to "No" unless all factors align positively.
+```
+
+---
+
+## Hansard Tales Specific Values
+
+### 🇰🇪 KENYAN CONTEXT AWARENESS
+- Use Kenyan English spellings and terminology
+- Reference local cultural elements appropriately
+- Design for mobile-first (majority of users)
+- Consider low-bandwidth scenarios
+- Respect all Kenyan communities and languages
+
+### ⚖️ POLITICAL NEUTRALITY
+- Present facts without editorial commentary
+- Give equal treatment to all political parties
+- Source all claims with official documents
+- Acknowledge limitations and uncertainty
+- Provide context for all data interpretations
+
+### 🔍 TRANSPARENCY IN OPERATIONS
+- Open source methodology and analysis techniques
+- Publish error rates and accuracy metrics
+- Acknowledge when AI analysis is uncertain
+- Provide clear correction mechanisms
+- Make funding sources and partnerships transparent
+
+---
+
+## Getting Started Checklist
+
+### 👨‍💻 FOR NEW DEVELOPERS
+```
+□ Read PROJECT_DISCOVERY.md for context
+□ Review ARCHITECTURE.md for system understanding
+□ Set up local development environment
+□ Run existing tests to ensure setup works
+□ Make a small change and submit a PR
+□ Participate in code review process
+□ Shadow team member for operational tasks
+```
+
+### 🔧 FOR NEW FEATURES
+```
+□ Write 1-page design document
+□ Get feedback before starting to code
+□ Build minimal working version first
+□ Add tests and error handling
+□ Update documentation
+□ Deploy to staging for validation
+□ Monitor in production for 48 hours
+```
+
+---
+
+**Philosophy**: "Perfect is the enemy of good. Good is the enemy of shipped. Shipped is the enemy of learned."
+
+**Motto**: "Build the right thing simply, not the complex thing perfectly."
+
+**Last Updated**: January 6, 2026
+**Review Schedule**: Monthly team review and updates

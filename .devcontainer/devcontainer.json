@@ -1,0 +1,78 @@
+{
+    "name": "Hansard Tales Development Environment",
+    "build": {
+        "dockerfile": "Dockerfile"
+    },
+    "features": {
+        "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "golang.go",
+                "ms-python.python",
+                "ms-python.black-formatter",
+                "ms-python.flake8",
+                "bradlc.vscode-tailwindcss",
+                "esbenp.prettier-vscode",
+                "ms-vscode.vscode-typescript-next",
+                "hashicorp.terraform",
+                "redhat.vscode-yaml",
+                "ms-playwright.playwright",
+                "github.copilot",
+                "ms-vscode.test-adapter-converter",
+                "hbenl.vscode-test-explorer"
+            ],
+            "settings": {
+                "editor.rulers": [
+                    80,
+                    120
+                ],
+                "editor.wordWrap": "wordWrapColumn",
+                "editor.wordWrapColumn": 80,
+                "files.trimTrailingWhitespace": true,
+                "files.insertFinalNewline": true,
+                "go.useLanguageServer": true,
+                "go.lintOnSave": "package",
+                "go.formatTool": "gofmt",
+                "go.testFlags": [
+                    "-v",
+                    "-race"
+                ],
+                "python.defaultInterpreterPath": "/usr/local/bin/python3",
+                "python.linting.enabled": true,
+                "python.linting.flake8Enabled": true,
+                "python.linting.mypyEnabled": true,
+                "python.formatting.provider": "black",
+                "typescript.preferences.importModuleSpecifier": "relative",
+                "[typescript]": {
+                    "editor.defaultFormatter": "esbenp.prettier-vscode",
+                    "editor.formatOnSave": true
+                },
+                "[typescriptreact]": {
+                    "editor.defaultFormatter": "esbenp.prettier-vscode",
+                    "editor.formatOnSave": true
+                },
+                "[python]": {
+                    "editor.defaultFormatter": "ms-python.black-formatter",
+                    "editor.formatOnSave": true
+                },
+                "[go]": {
+                    "editor.formatOnSave": true
+                }
+            }
+        }
+    },
+    "forwardPorts": [
+        3000,
+        5432,
+        6379,
+        4566
+    ],
+    "postCreateCommand": "chmod +x tools/local-setup.sh && ./tools/local-setup.sh && chmod +x data-processing/*/test.sh frontend/web/test.sh",
+    "remoteUser": "root",
+    "mounts": [
+        "source=${localWorkspaceFolder}/.devcontainer/cache/go,target=/go,type=bind,consistency=cached",
+        "source=${localWorkspaceFolder}/.devcontainer/cache/npm,target=/root/.npm,type=bind,consistency=cached"
+    ]
+}
