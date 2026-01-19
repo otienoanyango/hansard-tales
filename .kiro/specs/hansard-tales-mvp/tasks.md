@@ -100,11 +100,14 @@
 ### 3. MP Database Compilation
 
 - [ ] 3.1 Compile current MPs list (349 MPs)
-  - Research and compile MP names
-  - Collect constituency information
-  - Collect party affiliations
-  - Collect election dates (2022-09-08 for most)
-  - Find MP photo URLs (parliament.go.ke or other sources)
+  - Create web scraper for parliament.go.ke MP data
+  - Scrape MP names, constituencies, counties, parties, status (elected/nominated)
+  - Extract MP photo URLs from parliament website
+  - Handle pagination (10 MPs per page, 35 pages total)
+  - Support multiple parliamentary terms (2022, 2017)
+  - Save data to JSON format (data/mps_13th_parliament.json, data/mps_12th_parliament.json)
+  - Create comprehensive test suite
+  - Document scraping process and data format
 
 - [ ] 3.2 Populate MPs database
   - Create CSV or JSON file with MP data
