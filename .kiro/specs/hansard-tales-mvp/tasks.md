@@ -55,14 +55,14 @@
   - Create indexes for performance
   - Create views (current_mps, mp_current_term_performance, mp_historical_performance)
 
-- [-] 1.4 Initialize 13th Parliament data
+- [x] 1.4 Initialize 13th Parliament data
   - Insert 13th Parliament term (2022-09-08 to 2027-09-07)
   - Optionally insert 12th Parliament term (2017-08-31 to 2022-09-07)
   - Mark 13th Parliament as current
 
 ### 2. Data Collection & Processing
 
-- [ ] 2.1 Build Hansard PDF scraper
+- [-] 2.1 Build Hansard PDF scraper
   - Implement scraper for parliament.go.ke/hansard
   - Handle pagination and listing pages
   - Extract PDF URLs and metadata (date, title)
