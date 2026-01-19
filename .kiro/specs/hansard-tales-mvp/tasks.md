@@ -70,26 +70,26 @@
   - Handle rate limiting and retries
   - Log scraping activity
 
-- [-] 2.2 Implement PDF text extraction
+- [x] 2.2 Implement PDF text extraction
   - Create PDF processor using pdfplumber
   - Extract text from all pages
   - Preserve page numbers for source attribution
   - Handle malformed or scanned PDFs gracefully
   - Log extraction errors
 
-- [ ] 2.3 Build MP identification system
+- [x] 2.3 Build MP identification system
   - Create regex patterns for speaker identification (e.g., "Hon. [Name]:")
   - Implement spaCy NER for name validation
   - Extract statement text (from speaker to next speaker)
   - Handle edge cases (multiple speakers, interruptions)
   - Create MP name normalization function
 
-- [ ] 2.4 Implement bill reference extraction
+- [x] 2.4 Implement bill reference extraction
   - Create regex patterns for bill references (e.g., "Bill No. 123")
   - Extract and store bill references with statements
   - Handle multiple bill formats
 
-- [ ] 2.5 Build database update logic
+- [x] 2.5 Build database update logic
   - Implement get_or_create_mp() function
   - Link MPs to current parliamentary term (mp_terms)
   - Create hansard_session records
