@@ -40,12 +40,12 @@
   - Set up .gitignore for Python and data files
   - Initialize README.md with project overview
 
-- [-] 1.2 Set up Python development environment
+- [x] 1.2 Set up Python development environment
   - Create requirements.txt with dependencies (pdfplumber, spacy, jinja2, requests, beautifulsoup4)
   - Create virtual environment setup instructions
   - Document local development workflow
 
-- [ ] 1.3 Initialize SQLite database schema
+- [-] 1.3 Initialize SQLite database schema
   - Create database initialization script (scripts/init_db.py)
   - Implement parliamentary_terms table
   - Implement mps table
