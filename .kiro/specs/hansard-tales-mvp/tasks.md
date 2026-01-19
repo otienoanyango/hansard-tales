@@ -35,12 +35,12 @@
 ## Phase 1: Foundation & Setup (Week 1)
 
 ### 1. Project Setup
-- [ ] 1.1 Initialize Git repository structure
+- [x] 1.1 Initialize Git repository structure
   - Create directory structure (data/, scripts/, templates/, output/)
   - Set up .gitignore for Python and data files
   - Initialize README.md with project overview
 
-- [ ] 1.2 Set up Python development environment
+- [-] 1.2 Set up Python development environment
   - Create requirements.txt with dependencies (pdfplumber, spacy, jinja2, requests, beautifulsoup4)
   - Create virtual environment setup instructions
   - Document local development workflow
