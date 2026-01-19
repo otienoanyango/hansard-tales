@@ -62,7 +62,7 @@
 
 ### 2. Data Collection & Processing
 
-- [-] 2.1 Build Hansard PDF scraper
+- [x] 2.1 Build Hansard PDF scraper
   - Implement scraper for parliament.go.ke/hansard
   - Handle pagination and listing pages
   - Extract PDF URLs and metadata (date, title)
@@ -70,7 +70,7 @@
   - Handle rate limiting and retries
   - Log scraping activity
 
-- [ ] 2.2 Implement PDF text extraction
+- [-] 2.2 Implement PDF text extraction
   - Create PDF processor using pdfplumber
   - Extract text from all pages
   - Preserve page numbers for source attribution
