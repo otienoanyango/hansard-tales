@@ -77,6 +77,10 @@ hansard-tales/
 
 ## Getting Started
 
+### Quick Start
+
+See [Quick Start Guide](docs/QUICK_START.md) for a 5-minute setup.
+
 ### Prerequisites
 
 - Python 3.11 or higher
@@ -121,6 +125,8 @@ hansard-tales/
    Visit http://localhost:8000
 
 ## Development Workflow
+
+See [Development Guide](docs/DEVELOPMENT.md) for detailed development workflow, testing, and troubleshooting.
 
 ### Weekly Processing (Automated via GitHub Actions)
 
