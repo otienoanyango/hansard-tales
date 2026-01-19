@@ -45,7 +45,7 @@
   - Create virtual environment setup instructions
   - Document local development workflow
 
-- [-] 1.3 Initialize SQLite database schema
+- [x] 1.3 Initialize SQLite database schema
   - Create database initialization script (scripts/init_db.py)
   - Implement parliamentary_terms table
   - Implement mps table
@@ -55,7 +55,7 @@
   - Create indexes for performance
   - Create views (current_mps, mp_current_term_performance, mp_historical_performance)
 
-- [ ] 1.4 Initialize 13th Parliament data
+- [-] 1.4 Initialize 13th Parliament data
   - Insert 13th Parliament term (2022-09-08 to 2027-09-07)
   - Optionally insert 12th Parliament term (2017-08-31 to 2022-09-07)
   - Mark 13th Parliament as current
