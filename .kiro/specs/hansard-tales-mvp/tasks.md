@@ -70,26 +70,26 @@
   - Handle rate limiting and retries
   - Log scraping activity
 
-- [-] 2.2 Implement PDF text extraction
+- [x] 2.2 Implement PDF text extraction
   - Create PDF processor using pdfplumber
   - Extract text from all pages
   - Preserve page numbers for source attribution
   - Handle malformed or scanned PDFs gracefully
   - Log extraction errors
 
-- [ ] 2.3 Build MP identification system
+- [x] 2.3 Build MP identification system
   - Create regex patterns for speaker identification (e.g., "Hon. [Name]:")
   - Implement spaCy NER for name validation
   - Extract statement text (from speaker to next speaker)
   - Handle edge cases (multiple speakers, interruptions)
   - Create MP name normalization function
 
-- [ ] 2.4 Implement bill reference extraction
+- [x] 2.4 Implement bill reference extraction
   - Create regex patterns for bill references (e.g., "Bill No. 123")
   - Extract and store bill references with statements
   - Handle multiple bill formats
 
-- [ ] 2.5 Build database update logic
+- [x] 2.5 Build database update logic
   - Implement get_or_create_mp() function
   - Link MPs to current parliamentary term (mp_terms)
   - Create hansard_session records
@@ -100,11 +100,14 @@
 ### 3. MP Database Compilation
 
 - [ ] 3.1 Compile current MPs list (349 MPs)
-  - Research and compile MP names
-  - Collect constituency information
-  - Collect party affiliations
-  - Collect election dates (2022-09-08 for most)
-  - Find MP photo URLs (parliament.go.ke or other sources)
+  - Create web scraper for parliament.go.ke MP data
+  - Scrape MP names, constituencies, counties, parties, status (elected/nominated)
+  - Extract MP photo URLs from parliament website
+  - Handle pagination (10 MPs per page, 35 pages total)
+  - Support multiple parliamentary terms (2022, 2017)
+  - Save data to JSON format (data/mps_13th_parliament.json, data/mps_12th_parliament.json)
+  - Create comprehensive test suite
+  - Document scraping process and data format
 
 - [ ] 3.2 Populate MPs database
   - Create CSV or JSON file with MP data
