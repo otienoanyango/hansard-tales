@@ -1,5 +1,37 @@
 # Hansard Tales MVP - Implementation Tasks
 
+## Development Workflow
+
+### Branch Strategy
+- Each task MUST be implemented in a feature branch: `feat/<task-number>-<brief-description>`
+- Example: `feat/1.1-git-repo-structure`, `feat/2.1-hansard-scraper`
+- Create branch from `main` before starting each task
+- Only merge to `main` after user testing and approval
+
+### Task Completion Criteria
+1. **Implementation**: Complete all sub-tasks for the task
+2. **Testing**: Write and pass all required tests (unit tests minimum)
+3. **User Review**: Stop and allow user to test the feature branch
+4. **Merge**: User merges feature branch to `main` after approval
+5. **Mark Complete**: Only mark task complete after merge and return to `main`
+
+### Testing Requirements
+- **Unit Tests**: Required for all functions and classes
+- **Integration Tests**: Required for database operations and API calls
+- **End-to-End Tests**: Required for complete workflows
+- Tests MUST pass before requesting user review
+- Use pytest as the testing framework
+
+### Workflow Per Task
+1. Create feature branch: `git checkout -b feat/<task-number>-<description>`
+2. Implement functionality
+3. Write tests
+4. Run tests and ensure they pass
+5. Commit changes
+6. **STOP** - Inform user that feature branch is ready for testing
+7. User tests and merges to `main`
+8. Mark task complete only after merge confirmation
+
 ## Phase 1: Foundation & Setup (Week 1)
 
 ### 1. Project Setup
