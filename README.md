@@ -59,16 +59,6 @@ hansard-tales/
 │       ├── init_parliament_data.py  # Parliament data setup
 │       ├── import_mps.py         # MP data import
 │       └── db_updater.py         # Database updates
-├── scripts/                # CLI wrapper scripts
-│   ├── scraper.py         # Hansard scraper CLI
-│   ├── mp_data_scraper.py # MP scraper CLI
-│   ├── pdf_processor.py   # PDF processor CLI
-│   ├── mp_identifier.py   # MP identifier CLI
-│   ├── bill_extractor.py  # Bill extractor CLI
-│   ├── init_db.py         # Database init CLI
-│   ├── init_parliament_data.py  # Parliament data CLI
-│   ├── import_mps.py      # MP import CLI
-│   └── db_updater.py      # Database updater CLI
 ├── tests/                  # Test suite (200+ tests)
 │   ├── test_scraper.py
 │   ├── test_mp_data_scraper.py
@@ -194,10 +184,6 @@ hansard-scraper --output data/pdfs --max-pages 5
 
 # Process a specific PDF
 hansard-pdf-processor --pdf data/pdfs/Hansard_Report_2025-12-04.pdf
-
-# Or use the scripts directly
-python scripts/mp_data_scraper.py --term 2022 --output data/mps_13th_parliament.json
-python scripts/import_mps.py --file data/mps_13th_parliament.json --current
 ```
 
 ## Data Model
