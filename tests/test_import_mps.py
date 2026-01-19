@@ -391,3 +391,80 @@ class TestMPImporter:
             importer.import_from_json(str(json_path))
         
         importer.close()
+
+
+
+class TestCLI:
+    """Test suite for CLI argument parsing and main() function."""
+    
+    @patch('os.path.exists')
+    @patch('hansard_tales.database.import_mps.MPImporter')
+    @patch('sys.argv', ['hansard-import-mps', '--file', 'test_mps.json', '--current'])
+    def test_main_with_arguments(self, mock_importer_class, mock_exists):
+        """Test main() with custom arguments."""
+        from hansard_tales.database.import_mps import main
+        
+        # Mock file exists
+        mock_exists.return_value = True
+        
+        # Mock importer instance
+        mock_importer = Mock()
+        mock_importer.import_from_json.return_value = {
+            'total': 10,
+            'new_mps': 5,
+            'existing_mps': 5,
+            'new_links': 10,
+            'existing_links': 0,
+            'errors': 0
+        }
+        mock_importer.verify_import.return_value = {
+            'total_mps': 10,
+            'linked_to_term': 10
+        }
+        mock_importer_class.return_value.__enter__.return_value = mock_importer
+        
+        # Run main
+        with pytest.raises(SystemExit) as exc_info:
+            main()
+        
+        # Should exit with 0 (success)
+        assert exc_info.value.code == 0
+        
+        # Verify import_from_json was called
+        mock_importer.import_from_json.assert_called_once()
+    
+    @patch('os.path.exists')
+    @patch('hansard_tales.database.import_mps.MPImporter')
+    @patch('sys.argv', ['hansard-import-mps', '--file', 'test_mps.json', '--term-id', '1'])
+    def test_main_with_term_id(self, mock_importer_class, mock_exists):
+        """Test main() with explicit term ID."""
+        from hansard_tales.database.import_mps import main
+        
+        # Mock file exists
+        mock_exists.return_value = True
+        
+        # Mock importer instance
+        mock_importer = Mock()
+        mock_importer.import_from_json.return_value = {
+            'total': 10,
+            'new_mps': 10,
+            'existing_mps': 0,
+            'new_links': 10,
+            'existing_links': 0,
+            'errors': 0
+        }
+        mock_importer.verify_import.return_value = {
+            'total_mps': 10,
+            'linked_to_term': 10
+        }
+        mock_importer_class.return_value.__enter__.return_value = mock_importer
+        
+        # Run main
+        with pytest.raises(SystemExit) as exc_info:
+            main()
+        
+        # Should exit with 0 (success)
+        assert exc_info.value.code == 0
+        
+        # Verify import was successful
+        mock_importer.import_from_json.assert_called_once()

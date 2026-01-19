@@ -345,3 +345,57 @@ class TestMPDataScraperIntegration:
         assert 'name' in mp
         assert 'party' in mp
         assert 'term_start_year' in mp
+
+
+
+class TestCLI:
+    """Test suite for CLI argument parsing and main() function."""
+    
+    @patch('hansard_tales.scrapers.mp_data_scraper.MPDataScraper')
+    @patch('builtins.open', create=True)
+    @patch('json.dump')
+    @patch('sys.argv', ['hansard-mp-scraper', '--term', '2022', '--output', 'test_mps.json'])
+    def test_main_with_arguments(self, mock_json_dump, mock_open, mock_scraper_class):
+        """Test main() with custom arguments."""
+        from hansard_tales.scrapers.mp_data_scraper import main
+        
+        # Mock scraper instance - return actual list, not Mock
+        mock_scraper = Mock()
+        mock_scraper.scrape_all_mps.return_value = [
+            {'name': 'Test MP 1', 'constituency': 'Test 1', 'party': 'Party A', 'status': 'Elected'},
+            {'name': 'Test MP 2', 'constituency': 'Test 2', 'party': 'Party B', 'status': 'Nominated'}
+        ]
+        mock_scraper_class.return_value = mock_scraper
+        
+        # Run main - returns 0 on success
+        result = main()
+        
+        # Should return 0 (success)
+        assert result == 0
+        
+        # Verify scraper was initialized
+        mock_scraper_class.assert_called_once()
+        
+        # Verify scrape_all_mps was called with correct term
+        mock_scraper.scrape_all_mps.assert_called_once_with(term_year=2022)
+        
+        # Verify JSON was written
+        mock_json_dump.assert_called_once()
+    
+    @patch('hansard_tales.scrapers.mp_data_scraper.MPDataScraper')
+    @patch('sys.argv', ['hansard-mp-scraper', '--term', '2022', '--output', 'test.json'])
+    def test_main_no_mps_found(self, mock_scraper_class):
+        """Test main() when no MPs are found."""
+        from hansard_tales.scrapers.mp_data_scraper import main
+        
+        # Mock scraper instance that returns empty list
+        mock_scraper = Mock()
+        mock_scraper.scrape_all_mps.return_value = []
+        mock_scraper_class.return_value = mock_scraper
+        
+        # Run main
+        with pytest.raises(SystemExit) as exc_info:
+            main()
+        
+        # Should exit with 1 (failure)
+        assert exc_info.value.code == 1

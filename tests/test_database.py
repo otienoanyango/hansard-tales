@@ -8,6 +8,7 @@ with all required tables, indexes, and views.
 import sqlite3
 import tempfile
 from pathlib import Path
+from unittest.mock import patch
 
 import pytest
 
@@ -345,3 +346,44 @@ class TestDatabaseOperations:
         assert result is not None
         assert result[1] == mp_id
         assert result[2] == term_id
+
+
+
+class TestInitDBCLI:
+    """Test suite for init_db CLI."""
+    
+    @patch('hansard_tales.database.init_db.initialize_database')
+    @patch('sys.argv', ['hansard-init-db', '--db-path', 'test.db'])
+    def test_main_with_arguments(self, mock_init_db):
+        """Test init_db main() with custom arguments."""
+        from hansard_tales.database.init_db import main
+        
+        # Run main
+        with pytest.raises(SystemExit) as exc_info:
+            main()
+        
+        # Should exit with 0 (success)
+        assert exc_info.value.code == 0
+        
+        # Verify initialize_database was called
+        mock_init_db.assert_called_once_with('test.db')
+    
+    @patch('os.path.exists')
+    @patch('hansard_tales.database.init_db.initialize_database')
+    @patch('sys.argv', ['hansard-init-db'])
+    def test_main_default_path(self, mock_init_db, mock_exists):
+        """Test init_db main() with default database path."""
+        from hansard_tales.database.init_db import main
+        
+        # Mock that database doesn't exist
+        mock_exists.return_value = False
+        
+        # Run main
+        with pytest.raises(SystemExit) as exc_info:
+            main()
+        
+        # Should exit with 0 (success)
+        assert exc_info.value.code == 0
+        
+        # Verify initialize_database was called with default path
+        mock_init_db.assert_called_once_with('data/hansard.db')

@@ -503,3 +503,62 @@ class TestRealPDFIntegration:
         # Try to get a page that doesn't exist
         invalid_page = processor.get_page_text(result, 99999)
         assert invalid_page is None
+
+
+
+class TestCLI:
+    """Test suite for CLI argument parsing and main() function."""
+    
+    @patch('hansard_tales.processors.pdf_processor.PDFProcessor')
+    @patch('sys.argv', ['hansard-pdf-processor', '--pdf', 'test.pdf'])
+    def test_main_with_pdf_argument(self, mock_processor_class):
+        """Test main() with PDF file argument."""
+        from hansard_tales.processors.pdf_processor import main
+        
+        # Mock processor instance
+        mock_processor = Mock()
+        mock_processor.extract_text.return_value = {
+            'text': 'Test content',
+            'pages': 10,
+            'metadata': {}
+        }
+        mock_processor_class.return_value = mock_processor
+        
+        # Run main
+        with pytest.raises(SystemExit) as exc_info:
+            main()
+        
+        # Should exit with 0 (success)
+        assert exc_info.value.code == 0
+        
+        # Verify processor was initialized
+        mock_processor_class.assert_called_once()
+        
+        # Verify extract_text was called
+        mock_processor.extract_text.assert_called_once_with('test.pdf')
+    
+    @patch('builtins.open', create=True)
+    @patch('hansard_tales.processors.pdf_processor.PDFProcessor')
+    @patch('sys.argv', ['hansard-pdf-processor', '--pdf', 'test.pdf', '--save'])
+    def test_main_with_save_flag(self, mock_processor_class, mock_open):
+        """Test main() with --save flag."""
+        from hansard_tales.processors.pdf_processor import main
+        
+        # Mock processor instance
+        mock_processor = Mock()
+        mock_processor.extract_text.return_value = {
+            'text': 'Test content',
+            'pages': 10,
+            'metadata': {}
+        }
+        mock_processor_class.return_value = mock_processor
+        
+        # Run main
+        with pytest.raises(SystemExit) as exc_info:
+            main()
+        
+        # Should exit with 0 (success)
+        assert exc_info.value.code == 0
+        
+        # Verify file was opened for writing
+        mock_open.assert_called_once()
