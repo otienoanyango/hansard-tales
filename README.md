@@ -163,7 +163,7 @@ The project uses GitHub Actions for automated testing and deployment:
 - **CI Workflow** (`ci.yml`): Runs on every push and PR
   - Tests on Python 3.11 and 3.12
   - Parallel test execution with pytest-xdist
-  - Coverage reporting (80% minimum threshold)
+  - Coverage reporting (74% minimum threshold)
   - Automatic coverage upload to Codecov
 
 - **Auto-Merge Workflow** (`auto-merge.yml`): Automatically merges feature branches

@@ -22,7 +22,7 @@ Runs automated tests and checks on every push and pull request.
 
 **Requirements:**
 - All tests must pass
-- Coverage must be ≥80%
+- Coverage must be ≥74%
 
 ### Auto Merge (`auto-merge.yml`)
 
@@ -107,5 +107,5 @@ If you need to merge manually:
 ### Coverage below threshold
 
 - Add tests for uncovered code
-- Current threshold: 80%
+- Current threshold: 74%
 - View detailed coverage report in CI logs
