@@ -12,9 +12,7 @@ from unittest.mock import Mock, patch, MagicMock
 import pytest
 
 # Import the scraper module
-import sys
-sys.path.insert(0, str(Path(__file__).parent.parent))
-from scripts.scraper import HansardScraper
+from hansard_tales.scrapers.hansard_scraper import HansardScraper
 
 
 @pytest.fixture
@@ -161,7 +159,7 @@ class TestHansardLinkExtraction:
 class TestPDFDownload:
     """Test suite for PDF download functionality."""
     
-    @patch('scripts.scraper.requests.Session')
+    @patch('hansard_tales.scrapers.hansard_scraper.requests.Session')
     def test_download_pdf_success(self, mock_session_class, scraper):
         """Test successful PDF download."""
         # Mock response
@@ -198,7 +196,7 @@ class TestPDFDownload:
         # Content should be unchanged
         assert test_file.read_bytes() == b'existing content'
     
-    @patch('scripts.scraper.requests.Session')
+    @patch('hansard_tales.scrapers.hansard_scraper.requests.Session')
     def test_download_pdf_failure(self, mock_session_class, scraper):
         """Test PDF download failure handling."""
         # Mock failed response
@@ -267,8 +265,8 @@ class TestURLConstruction:
 class TestRateLimiting:
     """Test suite for rate limiting."""
     
-    @patch('scripts.scraper.time.sleep')
-    @patch('scripts.scraper.requests.Session')
+    @patch('hansard_tales.scrapers.hansard_scraper.time.sleep')
+    @patch('hansard_tales.scrapers.hansard_scraper.requests.Session')
     def test_rate_limit_applied(self, mock_session_class, mock_sleep, scraper):
         """Test that rate limiting delay is applied."""
         # Mock response
@@ -290,8 +288,8 @@ class TestRateLimiting:
 class TestRetryLogic:
     """Test suite for retry logic."""
     
-    @patch('scripts.scraper.time.sleep')
-    @patch('scripts.scraper.requests.Session')
+    @patch('hansard_tales.scrapers.hansard_scraper.time.sleep')
+    @patch('hansard_tales.scrapers.hansard_scraper.requests.Session')
     def test_retry_on_failure(self, mock_session_class, mock_sleep, scraper):
         """Test that failed requests are retried."""
         import requests
@@ -317,8 +315,8 @@ class TestRetryLogic:
         assert result == '<html></html>'
         assert mock_session.get.call_count == 3
     
-    @patch('scripts.scraper.time.sleep')
-    @patch('scripts.scraper.requests.Session')
+    @patch('hansard_tales.scrapers.hansard_scraper.time.sleep')
+    @patch('hansard_tales.scrapers.hansard_scraper.requests.Session')
     def test_max_retries_exceeded(self, mock_session_class, mock_sleep, scraper):
         """Test that max retries limit is respected."""
         import requests

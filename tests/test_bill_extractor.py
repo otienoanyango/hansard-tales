@@ -12,9 +12,7 @@ from pathlib import Path
 import pytest
 
 # Import the extractor module
-import sys
-sys.path.insert(0, str(Path(__file__).parent.parent))
-from scripts.bill_extractor import BillExtractor, BillReference
+from hansard_tales.processors.bill_extractor import BillExtractor, BillReference
 
 
 @pytest.fixture

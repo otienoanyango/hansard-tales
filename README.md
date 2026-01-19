@@ -46,21 +46,46 @@ This is a **static site generator** that:
 
 ```
 hansard-tales/
-├── data/                    # Data storage (Git-versioned)
-│   ├── pdfs/               # Downloaded Hansard PDFs (gitignored)
-│   └── hansard.db          # SQLite database
-├── scripts/                # Python processing scripts
-│   ├── init_db.py         # Database initialization
-│   ├── scraper.py         # Hansard PDF scraper
-│   ├── processor.py       # PDF text extraction & parsing
-│   ├── generate_site.py   # Static site generator
-│   └── main.py            # Main processing pipeline
-├── templates/              # Jinja2 HTML templates
+├── hansard_tales/          # Main Python package
+│   ├── scrapers/          # Web scraping modules
+│   │   ├── hansard_scraper.py    # Hansard PDF scraper
+│   │   └── mp_data_scraper.py    # MP data scraper
+│   ├── processors/        # Data processing modules
+│   │   ├── pdf_processor.py      # PDF text extraction
+│   │   ├── mp_identifier.py      # MP identification (NLP)
+│   │   └── bill_extractor.py     # Bill reference extraction
+│   └── database/          # Database management
+│       ├── init_db.py            # Database initialization
+│       ├── init_parliament_data.py  # Parliament data setup
+│       ├── import_mps.py         # MP data import
+│       └── db_updater.py         # Database updates
+├── tests/                  # Test suite (200+ tests)
+│   ├── test_scraper.py
+│   ├── test_mp_data_scraper.py
+│   ├── test_pdf_processor.py
+│   ├── test_mp_identifier.py
+│   ├── test_bill_extractor.py
+│   ├── test_database.py
+│   ├── test_parliament_data.py
+│   ├── test_import_mps.py
+│   └── test_db_updater.py
+├── data/                   # Data storage (Git-versioned)
+│   ├── pdfs/              # Downloaded Hansard PDFs (gitignored)
+│   ├── hansard.db         # SQLite database
+│   ├── mps_13th_parliament.json  # MP data (349 MPs)
+│   └── mps_12th_parliament.json  # Historical MP data
+├── docs/                   # Documentation
+│   ├── ARCHITECTURE.md    # System architecture
+│   ├── DEVELOPMENT.md     # Development guide
+│   ├── MP_DATA_SCRAPING.md  # MP scraping guide
+│   ├── PROJECT_SETUP.md   # Setup instructions
+│   └── QUICK_START.md     # Quick start guide
+├── templates/              # Jinja2 HTML templates (future)
 │   ├── base.html          # Base template
 │   ├── mp_profile.html    # MP profile page
 │   ├── homepage.html      # Homepage with search
 │   └── party.html         # Party pages
-├── output/                 # Generated static site (gitignored)
+├── output/                 # Generated static site (future, gitignored)
 │   ├── index.html         # Homepage
 │   ├── mp/                # MP profile pages
 │   ├── party/             # Party pages
@@ -69,8 +94,10 @@ hansard-tales/
 │   └── data/              # Search index JSON
 ├── .github/
 │   └── workflows/
-│       └── weekly-update.yml  # GitHub Actions workflow
+│       └── weekly-update.yml  # GitHub Actions workflow (future)
+├── pyproject.toml          # Package configuration
 ├── requirements.txt        # Python dependencies
+├── pytest.ini             # Test configuration
 ├── .gitignore
 └── README.md
 ```
@@ -101,28 +128,27 @@ See [Quick Start Guide](docs/QUICK_START.md) for a 5-minute setup.
    source venv/bin/activate  # On Windows: venv\Scripts\activate
    ```
 
-3. **Install dependencies**:
+3. **Install the package in development mode**:
    ```bash
-   pip install -r requirements.txt
+   pip install -e .
    python -m spacy download en_core_web_sm
    ```
 
 4. **Initialize database**:
    ```bash
-   python scripts/init_db.py
+   hansard-init-db
+   hansard-init-parliament
    ```
 
-5. **Run the processing pipeline** (with sample data):
+5. **Import MP data**:
    ```bash
-   python scripts/main.py
+   hansard-import-mps --file data/mps_13th_parliament.json --current
    ```
 
-6. **Serve the site locally**:
+6. **Run tests** (optional):
    ```bash
-   cd output
-   python -m http.server 8000
+   pytest -n auto
    ```
-   Visit http://localhost:8000
 
 ## Development Workflow
 
@@ -147,13 +173,17 @@ To process new data manually:
 # Activate virtual environment
 source venv/bin/activate
 
-# Run full pipeline
-python scripts/main.py
+# Scrape MP data
+hansard-mp-scraper --term 2022 --output data/mps_13th_parliament.json
 
-# Or run individual steps
-python scripts/scraper.py          # Download new PDFs
-python scripts/processor.py        # Process PDFs
-python scripts/generate_site.py    # Generate static site
+# Import MP data
+hansard-import-mps --file data/mps_13th_parliament.json --current
+
+# Scrape Hansard PDFs
+hansard-scraper --output data/pdfs --max-pages 5
+
+# Process a specific PDF
+hansard-pdf-processor --pdf data/pdfs/Hansard_Report_2025-12-04.pdf
 ```
 
 ## Data Model

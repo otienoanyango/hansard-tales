@@ -13,9 +13,7 @@ from unittest.mock import Mock, patch
 import pytest
 
 # Import the identifier module
-import sys
-sys.path.insert(0, str(Path(__file__).parent.parent))
-from scripts.mp_identifier import MPIdentifier, Statement
+from hansard_tales.processors.mp_identifier import MPIdentifier, Statement
 
 
 @pytest.fixture

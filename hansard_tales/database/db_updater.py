@@ -6,7 +6,7 @@ This module handles updating the SQLite database with extracted
 Hansard data including MPs, sessions, and statements.
 
 Usage:
-    from scripts.db_updater import DatabaseUpdater
+    from hansard_tales.database.db_updater import DatabaseUpdater
     
     updater = DatabaseUpdater('data/hansard.db')
     updater.process_hansard_pdf(pdf_path, pdf_url, date)
@@ -14,17 +14,13 @@ Usage:
 
 import logging
 import sqlite3
-import sys
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
-# Add parent directory to path for imports
-sys.path.insert(0, str(Path(__file__).parent.parent))
-
-from scripts.pdf_processor import PDFProcessor
-from scripts.mp_identifier import MPIdentifier, Statement
-from scripts.bill_extractor import BillExtractor
+from hansard_tales.processors.pdf_processor import PDFProcessor
+from hansard_tales.processors.mp_identifier import MPIdentifier, Statement
+from hansard_tales.processors.bill_extractor import BillExtractor
 
 
 # Configure logging

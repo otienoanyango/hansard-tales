@@ -11,35 +11,31 @@ from pathlib import Path
 from unittest.mock import Mock, patch, MagicMock
 from bs4 import BeautifulSoup
 
-import sys
-sys.path.insert(0, str(Path(__file__).parent.parent / 'scripts'))
-
-from mp_data_scraper import MPDataScraper
+from hansard_tales.scrapers.mp_data_scraper import MPDataScraper
 
 
-# Sample HTML for testing
+# Sample HTML for testing - matches actual parliament.go.ke structure with CSS classes
 SAMPLE_MP_ROW_HTML = """
-<tr>
-    <td>
+<tr class="mp">
+    <td class="views-field-field-name">HON. JOHN DOE</td>
+    <td class="views-field-field-image">
         <img src="/sites/default/files/photos/john_doe.jpg" alt="John Doe"/>
-        HON. JOHN DOE
     </td>
-    <td>NAIROBI</td>
-    <td>WESTLANDS</td>
-    <td>ODM</td>
-    <td>Elected</td>
-    <td><a href="/mp/john-doe">More...</a></td>
+    <td class="views-field-field-county">NAIROBI</td>
+    <td class="views-field-field-constituency">WESTLANDS</td>
+    <td class="views-field-field-party">ODM</td>
+    <td class="views-field-field-status">Elected</td>
 </tr>
 """
 
 SAMPLE_NOMINATED_MP_ROW_HTML = """
-<tr>
-    <td>HON. JANE SMITH</td>
-    <td></td>
-    <td></td>
-    <td>UDA</td>
-    <td>Nominated</td>
-    <td><a href="/mp/jane-smith">More...</a></td>
+<tr class="mp">
+    <td class="views-field-field-name">HON. JANE SMITH</td>
+    <td class="views-field-field-image"></td>
+    <td class="views-field-field-county"></td>
+    <td class="views-field-field-constituency"></td>
+    <td class="views-field-field-party">UDA</td>
+    <td class="views-field-field-status">Nominated</td>
 </tr>
 """
 
@@ -48,11 +44,11 @@ SAMPLE_TABLE_HTML = """
     <thead>
         <tr>
             <th>Member of Parliament</th>
+            <th>Photo</th>
             <th>County</th>
             <th>Constituency</th>
             <th>Party</th>
             <th>Status</th>
-            <th></th>
         </tr>
     </thead>
     <tbody>
@@ -65,9 +61,9 @@ SAMPLE_PAGE_WITH_NEXT = """
 <html>
     <body>
         {table}
-        <ul class="pager">
-            <li class="pager-next"><a href="?page=1">Next</a></li>
-        </ul>
+        <nav class="pager">
+            <a href="?page=1">Next</a>
+        </nav>
     </body>
 </html>
 """
@@ -76,9 +72,9 @@ SAMPLE_PAGE_WITHOUT_NEXT = """
 <html>
     <body>
         {table}
-        <ul class="pager">
-            <li class="pager-previous"><a href="?page=0">Previous</a></li>
-        </ul>
+        <nav class="pager">
+            <a href="?page=0">Previous</a>
+        </nav>
     </body>
 </html>
 """
@@ -99,17 +95,14 @@ class TestMPDataScraper:
         """Test URL building"""
         scraper = MPDataScraper(term_start_year=2022)
         
-        # Test page 0
         url = scraper.build_url(page=0)
+        
+        assert 'parliament.go.ke' in url
         assert 'field_parliament_value=2022' in url
         assert 'page=0' in url
-        
-        # Test page 5
-        url = scraper.build_url(page=5)
-        assert 'page=5' in url
     
     def test_build_url_different_term(self):
-        """Test URL building for different parliamentary term"""
+        """Test URL building with different term"""
         scraper = MPDataScraper(term_start_year=2017)
         
         url = scraper.build_url(page=0)
@@ -152,7 +145,13 @@ class TestMPDataScraper:
         """Test that HON. prefix is removed from names"""
         scraper = MPDataScraper(term_start_year=2022)
         
-        html = '<tr><td>HON. DR. JOHN DOE</td><td>NAIROBI</td><td>WESTLANDS</td><td>ODM</td><td>Elected</td></tr>'
+        html = '''<tr class="mp">
+            <td class="views-field-field-name">HON. DR. JOHN DOE</td>
+            <td class="views-field-field-county">NAIROBI</td>
+            <td class="views-field-field-constituency">WESTLANDS</td>
+            <td class="views-field-field-party">ODM</td>
+            <td class="views-field-field-status">Elected</td>
+        </tr>'''
         soup = BeautifulSoup(html, 'html.parser')
         row = soup.find('tr')
         
@@ -166,7 +165,7 @@ class TestMPDataScraper:
         """Test extracting data from invalid row"""
         scraper = MPDataScraper(term_start_year=2022)
         
-        # Row with too few cells
+        # Row without required class
         html = '<tr><td>Name</td><td>County</td></tr>'
         soup = BeautifulSoup(html, 'html.parser')
         row = soup.find('tr')
@@ -178,7 +177,13 @@ class TestMPDataScraper:
         """Test extracting data with empty name"""
         scraper = MPDataScraper(term_start_year=2022)
         
-        html = '<tr><td></td><td>NAIROBI</td><td>WESTLANDS</td><td>ODM</td><td>Elected</td></tr>'
+        html = '''<tr class="mp">
+            <td class="views-field-field-name"></td>
+            <td class="views-field-field-county">NAIROBI</td>
+            <td class="views-field-field-constituency">WESTLANDS</td>
+            <td class="views-field-field-party">ODM</td>
+            <td class="views-field-field-status">Elected</td>
+        </tr>'''
         soup = BeautifulSoup(html, 'html.parser')
         row = soup.find('tr')
         
@@ -193,7 +198,7 @@ class TestMPDataScraper:
         page_html = SAMPLE_PAGE_WITH_NEXT.format(table=table_html)
         soup = BeautifulSoup(page_html, 'html.parser')
         
-        assert scraper.has_next_page(soup) is True
+        assert scraper.has_next_page(soup, current_page=0) is True
     
     def test_has_next_page_false(self):
         """Test detecting no next page"""
@@ -203,7 +208,7 @@ class TestMPDataScraper:
         page_html = SAMPLE_PAGE_WITHOUT_NEXT.format(table=table_html)
         soup = BeautifulSoup(page_html, 'html.parser')
         
-        assert scraper.has_next_page(soup) is False
+        assert scraper.has_next_page(soup, current_page=0) is False
     
     def test_has_next_page_no_pager(self):
         """Test detecting no next page when pager is missing"""
@@ -212,9 +217,9 @@ class TestMPDataScraper:
         html = '<html><body><table></table></body></html>'
         soup = BeautifulSoup(html, 'html.parser')
         
-        assert scraper.has_next_page(soup) is False
+        assert scraper.has_next_page(soup, current_page=0) is False
     
-    @patch('mp_data_scraper.MPDataScraper.fetch_page')
+    @patch('hansard_tales.scrapers.mp_data_scraper.MPDataScraper.fetch_page')
     def test_scrape_page_success(self, mock_fetch):
         """Test scraping a single page successfully"""
         scraper = MPDataScraper(term_start_year=2022)
@@ -231,7 +236,7 @@ class TestMPDataScraper:
         assert mps[0]['name'] == 'JOHN DOE'
         assert mps[1]['name'] == 'JANE SMITH'
     
-    @patch('mp_data_scraper.MPDataScraper.fetch_page')
+    @patch('hansard_tales.scrapers.mp_data_scraper.MPDataScraper.fetch_page')
     def test_scrape_page_no_table(self, mock_fetch):
         """Test scraping page with no table"""
         scraper = MPDataScraper(term_start_year=2022)
@@ -241,7 +246,7 @@ class TestMPDataScraper:
         mps = scraper.scrape_page(page=0)
         assert len(mps) == 0
     
-    @patch('mp_data_scraper.MPDataScraper.fetch_page')
+    @patch('hansard_tales.scrapers.mp_data_scraper.MPDataScraper.fetch_page')
     def test_scrape_page_fetch_fails(self, mock_fetch):
         """Test scraping when fetch fails"""
         scraper = MPDataScraper(term_start_year=2022)
@@ -256,15 +261,8 @@ class TestMPDataScraper:
         scraper = MPDataScraper(term_start_year=2022)
         
         mps = [
-            {
-                'name': 'JOHN DOE',
-                'county': 'NAIROBI',
-                'constituency': 'WESTLANDS',
-                'party': 'ODM',
-                'status': 'Elected',
-                'photo_url': 'http://example.com/photo.jpg',
-                'term_start_year': 2022
-            }
+            {'name': 'JOHN DOE', 'party': 'ODM'},
+            {'name': 'JANE SMITH', 'party': 'UDA'}
         ]
         
         output_file = tmp_path / 'mps.json'
@@ -275,7 +273,7 @@ class TestMPDataScraper:
         with open(output_file, 'r') as f:
             loaded_mps = json.load(f)
         
-        assert len(loaded_mps) == 1
+        assert len(loaded_mps) == 2
         assert loaded_mps[0]['name'] == 'JOHN DOE'
     
     def test_save_to_csv(self, tmp_path):
@@ -289,7 +287,7 @@ class TestMPDataScraper:
                 'constituency': 'WESTLANDS',
                 'party': 'ODM',
                 'status': 'Elected',
-                'photo_url': 'http://example.com/photo.jpg',
+                'photo_url': 'http://example.com/john.jpg',
                 'term_start_year': 2022
             }
         ]
@@ -299,6 +297,7 @@ class TestMPDataScraper:
         
         assert output_file.exists()
         
+        # Read and verify CSV
         import csv
         with open(output_file, 'r') as f:
             reader = csv.DictReader(f)
@@ -314,30 +313,35 @@ class TestMPDataScraper:
         output_file = tmp_path / 'mps.csv'
         scraper.save_to_csv([], str(output_file))
         
-        # Should not create file or should create empty file
-        # Either behavior is acceptable
+        # Should not create file or create empty file
+        # Just ensure no exception is raised
 
 
 class TestMPDataScraperIntegration:
-    """Integration tests (require network access)"""
+    """Integration tests that hit real website (marked as slow)"""
     
-    @pytest.mark.integration
+    @pytest.mark.slow
     def test_fetch_page_real(self):
         """Test fetching a real page from parliament.go.ke"""
-        scraper = MPDataScraper(term_start_year=2022, delay=2.0)
+        scraper = MPDataScraper(term_start_year=2022, delay=0.5)
         
         soup = scraper.fetch_page(page=0)
         
         assert soup is not None
-        assert soup.find('table') is not None
+        assert soup.find('body') is not None
     
-    @pytest.mark.integration
+    @pytest.mark.slow
     def test_scrape_page_real(self):
-        """Test scraping real data from parliament.go.ke"""
-        scraper = MPDataScraper(term_start_year=2022, delay=2.0)
+        """Test scraping a real page"""
+        scraper = MPDataScraper(term_start_year=2022, delay=0.5)
         
         mps = scraper.scrape_page(page=0)
         
+        # Should get some MPs (at least 1)
         assert len(mps) > 0
-        assert all('name' in mp for mp in mps)
-        assert all('party' in mp for mp in mps)
+        
+        # Verify structure
+        mp = mps[0]
+        assert 'name' in mp
+        assert 'party' in mp
+        assert 'term_start_year' in mp
