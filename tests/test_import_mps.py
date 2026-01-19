@@ -11,10 +11,7 @@ import sqlite3
 from pathlib import Path
 from unittest.mock import Mock, patch
 
-import sys
-sys.path.insert(0, str(Path(__file__).parent.parent / 'scripts'))
-
-from import_mps import MPImporter
+from hansard_tales.database.import_mps import MPImporter
 
 
 @pytest.fixture

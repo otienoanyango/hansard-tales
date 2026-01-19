@@ -14,11 +14,9 @@ from unittest.mock import Mock, patch, MagicMock
 import pytest
 
 # Import the modules
-import sys
-sys.path.insert(0, str(Path(__file__).parent.parent))
-from scripts.db_updater import DatabaseUpdater
-from scripts.mp_identifier import Statement
-from scripts.bill_extractor import BillReference
+from hansard_tales.database.db_updater import DatabaseUpdater
+from hansard_tales.processors.mp_identifier import Statement
+from hansard_tales.processors.bill_extractor import BillReference
 
 
 @pytest.fixture
@@ -375,9 +373,9 @@ class TestStatementInsertion:
 class TestProcessHansardPDF:
     """Test suite for complete PDF processing."""
     
-    @patch('scripts.db_updater.PDFProcessor')
-    @patch('scripts.db_updater.MPIdentifier')
-    @patch('scripts.db_updater.BillExtractor')
+    @patch('hansard_tales.database.db_updater.PDFProcessor')
+    @patch('hansard_tales.database.db_updater.MPIdentifier')
+    @patch('hansard_tales.database.db_updater.BillExtractor')
     def test_process_hansard_pdf_success(
         self,
         mock_bill_extractor,

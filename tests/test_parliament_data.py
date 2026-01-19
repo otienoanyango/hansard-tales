@@ -12,10 +12,8 @@ from pathlib import Path
 import pytest
 
 # Import modules
-import sys
-sys.path.insert(0, str(Path(__file__).parent.parent))
-from scripts.init_db import initialize_database
-from scripts.init_parliament_data import (
+from hansard_tales.database.init_db import initialize_database
+from hansard_tales.database.init_parliament_data import (
     insert_parliamentary_term,
     verify_parliamentary_terms,
     initialize_parliament_data

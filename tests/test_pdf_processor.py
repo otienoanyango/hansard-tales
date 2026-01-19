@@ -13,9 +13,7 @@ from unittest.mock import Mock, patch, MagicMock
 import pytest
 
 # Import the processor module
-import sys
-sys.path.insert(0, str(Path(__file__).parent.parent))
-from scripts.pdf_processor import PDFProcessor
+from hansard_tales.processors.pdf_processor import PDFProcessor
 
 
 @pytest.fixture
@@ -86,7 +84,7 @@ class TestPDFProcessor:
 class TestTextExtraction:
     """Test suite for text extraction from PDFs."""
     
-    @patch('scripts.pdf_processor.pdfplumber.open')
+    @patch('hansard_tales.processors.pdf_processor.pdfplumber.open')
     def test_extract_text_success(self, mock_pdfplumber, processor):
         """Test successful text extraction from PDF."""
         # Mock PDF pages
@@ -126,7 +124,7 @@ class TestTextExtraction:
         result = processor.extract_text_from_pdf('nonexistent.pdf')
         assert result is None
     
-    @patch('scripts.pdf_processor.pdfplumber.open')
+    @patch('hansard_tales.processors.pdf_processor.pdfplumber.open')
     def test_extract_text_empty_page(self, mock_pdfplumber, processor):
         """Test handling of pages with no text."""
         # Mock page with no text
@@ -154,7 +152,7 @@ class TestTextExtraction:
         finally:
             Path(pdf_path).unlink()
     
-    @patch('scripts.pdf_processor.pdfplumber.open')
+    @patch('hansard_tales.processors.pdf_processor.pdfplumber.open')
     def test_extract_text_page_error(self, mock_pdfplumber, processor):
         """Test handling of page extraction errors."""
         # Mock page that raises error
@@ -267,7 +265,7 @@ class TestSaveExtractedText:
 class TestStatistics:
     """Test suite for extraction statistics."""
     
-    @patch('scripts.pdf_processor.pdfplumber.open')
+    @patch('hansard_tales.processors.pdf_processor.pdfplumber.open')
     def test_statistics_calculation(self, mock_pdfplumber, processor):
         """Test that statistics are calculated correctly."""
         # Mock pages with varying text lengths
@@ -307,7 +305,7 @@ class TestStatistics:
 class TestProcessPDF:
     """Test suite for complete PDF processing."""
     
-    @patch('scripts.pdf_processor.pdfplumber.open')
+    @patch('hansard_tales.processors.pdf_processor.pdfplumber.open')
     def test_process_pdf_with_save(self, mock_pdfplumber, processor):
         """Test processing PDF with save enabled."""
         # Mock PDF
@@ -336,7 +334,7 @@ class TestProcessPDF:
         finally:
             Path(pdf_path).unlink()
     
-    @patch('scripts.pdf_processor.pdfplumber.open')
+    @patch('hansard_tales.processors.pdf_processor.pdfplumber.open')
     def test_process_pdf_without_save(self, mock_pdfplumber, processor):
         """Test processing PDF without saving."""
         # Mock PDF
@@ -374,14 +372,14 @@ class TestProcessDirectory:
         results = processor.process_directory('nonexistent_dir')
         assert results == []
     
-    @patch('scripts.pdf_processor.PDFProcessor.process_pdf')
+    @patch('hansard_tales.processors.pdf_processor.PDFProcessor.process_pdf')
     def test_process_directory_no_pdfs(self, mock_process, processor):
         """Test processing directory with no PDF files."""
         with tempfile.TemporaryDirectory() as tmpdir:
             results = processor.process_directory(tmpdir)
             assert results == []
     
-    @patch('scripts.pdf_processor.PDFProcessor.process_pdf')
+    @patch('hansard_tales.processors.pdf_processor.PDFProcessor.process_pdf')
     def test_process_directory_with_pdfs(self, mock_process, processor):
         """Test processing directory with PDF files."""
         with tempfile.TemporaryDirectory() as tmpdir:

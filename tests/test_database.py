@@ -12,9 +12,7 @@ from pathlib import Path
 import pytest
 
 # Import the init_db module
-import sys
-sys.path.insert(0, str(Path(__file__).parent.parent))
-from scripts.init_db import (
+from hansard_tales.database.init_db import (
     create_tables,
     create_indexes,
     create_views,
