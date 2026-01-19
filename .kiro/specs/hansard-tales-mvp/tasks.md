@@ -109,12 +109,15 @@
   - Create comprehensive test suite
   - Document scraping process and data format
 
-- [ ] 3.2 Populate MPs database
-  - Create CSV or JSON file with MP data
-  - Write import script (scripts/import_mps.py)
-  - Insert MPs into mps table
-  - Link MPs to 13th Parliament via mp_terms table
-  - Verify data integrity
+- [x] 3.2 Populate MPs database
+  - Created import script (scripts/import_mps.py) with comprehensive functionality
+  - Imports MP data from JSON files into SQLite database
+  - Features: get_term_by_year(), get_or_create_mp(), link_mp_to_term(), import_from_json(), verify_import()
+  - Handles nominated MPs (without constituencies) using 'Nominated' placeholder
+  - Prevents duplicate MP and term link creation
+  - Created comprehensive test suite (13 tests, all passing)
+  - Successfully imported 349 MPs from 13th Parliament (333 elected, 15 nominated)
+  - Verified data integrity with statistics
 
 ## Phase 2: Site Generation & Search (Week 2)
 
