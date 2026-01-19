@@ -352,8 +352,8 @@ def main():
     print(f"Output file: {args.output}")
     
     # Count by status
-    elected = sum(1 for mp in mps if mp.get('status', '').lower() == 'elected')
-    nominated = sum(1 for mp in mps if mp.get('status', '').lower() == 'nominated')
+    elected = sum(1 for mp in mps if mp.get('status', '') and mp.get('status', '').lower() == 'elected')
+    nominated = sum(1 for mp in mps if mp.get('status', '') and mp.get('status', '').lower() == 'nominated')
     print(f"Elected: {elected}")
     print(f"Nominated: {nominated}")
     

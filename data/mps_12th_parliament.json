@@ -1,0 +1,2072 @@
+[
+  {
+    "name": "Hon Okoth, Benard Otieno",
+    "county": "Nairobi",
+    "constituency": "Kibra",
+    "party": "ODM",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2019-11/Hon%20Imran%20Okoth.png?itok=xOY1nLAW",
+    "term_start_year": 2017
+  },
+  {
+    "name": "(Dr.) Keynan, Wehliye Adan, CBS, MP",
+    "county": "Wajir",
+    "constituency": "Eldas",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/860e3c633b6ce74ee8a3064d9a8d0cdd_M.jpg?itok=5MI_5UqJ",
+    "term_start_year": 2017
+  },
+  {
+    "name": "(Dr.) Mutunga, John Kanyuithia",
+    "county": "Meru",
+    "constituency": "Tigania West",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/d746d8fb171ad62b07b108cdd1b7986c_M.jpg?itok=7u-aArY4",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Abdi, Yusuf Hassan",
+    "county": "Nairobi",
+    "constituency": "Kamukunji",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/531fa9636bc95fc322dfb7a73f42bbbf_M.jpg?itok=eEK8w9sA",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Abdullah, Bashir Sheikh",
+    "county": "Mandera",
+    "constituency": "Mandera North",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/06f4997694d4fbc67e936ed9847b6d35_M.jpg?itok=CwLUzOTt",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Abuor, Paul",
+    "county": "Migori",
+    "constituency": "Rongo",
+    "party": "ODM",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/c71fd534850869fd13f91e0993d9dddb_M.jpg?itok=8Eibk58a",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Adagala, Beatrice Kahai",
+    "county": "Vihiga",
+    "constituency": "Vihiga",
+    "party": "ANC",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/bce0f859edd7399a9211f0de3e5e0a10_M.jpg?itok=lkEZrVNw",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Adan, Safia Sheikh",
+    "county": "Marsabit",
+    "constituency": "Marsabit",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/4ba80adb85a1e17536e4e0616bc60990_M.jpg?itok=TGGmer3W",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Ahmed, Shakeel Ahmed Shabbir",
+    "county": "Kisumu",
+    "constituency": "Kisumu East",
+    "party": "IND",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/c07f134e0f4dfa9628ce03732dcbcd15_M.jpg?itok=yd-C90yl",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Alfah, Miruka Ondieki",
+    "county": "Kisii",
+    "constituency": "Bomachoge Chache",
+    "party": "KNC",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/b025045f4f2e8832c57d1f3413acf539_M.jpg?itok=TTAajZKB",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Ali, Adan Haji",
+    "county": "Mandera",
+    "constituency": "Mandera South",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/f16c3089012335af8414b146795098dc_M.jpg?itok=P6wSa-Vi",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Ali, Amin Deddy Mohamed",
+    "county": "Laikipia",
+    "constituency": "Laikipia East",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/f99abe01004e55861ffe30d81bd582e8_M.jpg?itok=CfXxOh3S",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Ali, Fatuma Gedi",
+    "county": "Wajir",
+    "constituency": "Wajir",
+    "party": "PDR",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/331cc23b99ba1f3968c8e515604da6be_M.jpg?itok=IDAA_ebk",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Ali, Sharif Athman",
+    "county": "Lamu",
+    "constituency": "Lamu East",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/e2b0261e1c50dc271e2baecf577af371_M.jpg?itok=hB9XoavH",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Aluoch, John Olago",
+    "county": "Kisumu",
+    "constituency": "Kisumu West",
+    "party": "FORD-K",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/d615156b6c83d0ed6e4a0f85ce341a17_M.jpg?itok=ccYStT-7",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Amin, Rashid Kassim",
+    "county": "Wajir",
+    "constituency": "Wajir East",
+    "party": "WDM-K",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/fcc674c9aea15c292f8b296612164388_M.jpg?itok=cIeBjy1x",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Amollo, Paul Otiende",
+    "county": "Siaya",
+    "constituency": "Rarieda",
+    "party": "ODM",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/d9db825e422ebda626554a84f9df350a_M.jpg?itok=bEYVZbKh",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Angatia, Ayub Savula",
+    "county": "Kakamega",
+    "constituency": "Lugari",
+    "party": "ANC",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/bb07d6737f95e5edb1ed95dd57d3d01d_M.jpg?itok=D-3UBBRP",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Angwenyi, Jimmy Nuru Ondieki",
+    "county": "Kisii",
+    "constituency": "Kitutu Chache North",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/44359994484f5fab27c5151b0fc3de0b_M.jpg?itok=0KI7bCgD",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Arama, Samuel",
+    "county": "Nakuru",
+    "constituency": "Nakuru Town West",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/c25ae6f8d15b74dbec4391e838005cf7_M.jpg?itok=MbYU1zyZ",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Aramat, Lemanken",
+    "county": "Narok",
+    "constituency": "Narok East",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/b83554c528da03ce36128838e77295cf_M.jpg?itok=pMVSIVDm",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Arati, Paul Simba",
+    "county": "Nairobi",
+    "constituency": "Dagoretti North",
+    "party": "ODM",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/d33547ddfc9abda50f6871bd03dc4943_M.jpg?itok=x2FjIalK",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Arbelle, Marselino Malimo",
+    "county": "Marsabit",
+    "constituency": "Laisamis",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/8e7d507d4623ae30b8360c5039e6a1d0_M.jpg?itok=OUBJ5oR8",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Atandi, Samuel Onunga",
+    "county": "Siaya",
+    "constituency": "Alego Usonga",
+    "party": "ODM",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/4b34110ec8cbbd2a2f61cbc907d69994_M.jpg?itok=QAhIsm0C",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Babu, Owino Paul Ongili",
+    "county": "Nairobi",
+    "constituency": "Embakasi East",
+    "party": "ODM",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/821e82510d42213c52dadeb31bd1893a_M.jpg?itok=BMfvUi6X",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Bader, Feisal Abdalla",
+    "county": "Kwale",
+    "constituency": "Msambweni",
+    "party": "UDA",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/default_images/person-outline-icon-png-person-outline-icon-png-person-17.png?itok=Nbz0asMk",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Bady, Bady Twalib",
+    "county": "Mombasa",
+    "constituency": "Jomvu",
+    "party": "ODM",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/a74045605f04a1b4723dd8b89cf349b1_M.jpg?itok=oxR-04dS",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Baya, Owen Yaa",
+    "county": "Kilifi",
+    "constituency": "Kilifi North",
+    "party": "ODM",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/18104543d8ce827a7225e455a026090f_M.jpg?itok=iy6P6DNo",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Bowen, David Kangogo",
+    "county": "Elgeyo Marakwet",
+    "constituency": "Marakwet East",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/88d9a0cb55d81b8a3601ff79f8d5c68d_M.jpg?itok=QgovtRz5",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Bunyasi, Sakwa John",
+    "county": "Busia",
+    "constituency": "Nambale",
+    "party": "ANC",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/2ded9d06202dff1f6b8071cb70aba6eb_M.jpg?itok=Uf2EKbFM",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Buyu, Rozaah Akinyi",
+    "county": "Kisumu",
+    "constituency": "Kisumu",
+    "party": "ODM",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/f93e0976a80d799f0eb3ad0ba276f287_M.jpg?itok=j4JBPc5s",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Chebaibai, Jane Jepkorir Kiptoo",
+    "county": "Elgeyo Marakwet",
+    "constituency": "Elgeyo\\/Marakwet",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/365e1c894653db3df15422863ba1cc45_M.jpg?itok=8SP9DX9R",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Cheboi, Moses Kipkemboi",
+    "county": "Nakuru",
+    "constituency": "Kuresoi North",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/a3d3006b022af92f9255b8a42d389e65_M.jpg?itok=lU41WDwG",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Chege, Maitu Sabina Wanjiru",
+    "county": "Murang'a",
+    "constituency": "Murang'a",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/3263c0e8877a411d722992596dbaa3df_M.jpg?itok=U5rov2hz",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Chepkoech, Joyce Korir",
+    "county": "Bomet",
+    "constituency": "Bomet",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/88c9db60db08f693776a4a523f26de7b_M.jpg?itok=BslFWb7L",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Chepkut, William Kamuren Chirchir",
+    "county": "Uasin Gishu",
+    "constituency": "Ainabkoi",
+    "party": "IND",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/91154518c6f0cafa827116d9e4363014_M.jpg?itok=H3Fj-ILN",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Chepkwony, Charity Kathambi",
+    "county": "Nakuru",
+    "constituency": "Njoro",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/b88a066c55eab9737c73b04fcc6006a1_M.jpg?itok=kWu9QZL_",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Cheruiyot, Gladwell Jesire",
+    "county": "Baringo",
+    "constituency": "Baringo",
+    "party": "KANU",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/e3098320bc9e754479592595bffb1b21_M.jpg?itok=ILL4n5XR",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Chesebe, Fred Kapondi",
+    "county": "Bungoma",
+    "constituency": "Mt. Elgon",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/67d1eae3e9598f9411cacd63103dd8a9_M.jpg?itok=RmQbYtAY",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Chumel, Samwel Moroto",
+    "county": "West Pokot",
+    "constituency": "Kapenguria",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/1bbaad13db4af2c2ee70cb76148e9d8a_M.jpg?itok=pSELQIkP",
+    "term_start_year": 2017
+  },
+  {
+    "name": "David Ochieng",
+    "county": "Siaya",
+    "constituency": "Ugenya",
+    "party": "Movement for Democracy and Growth (MDG) Party",
+    "status": null,
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/default_images/person-outline-icon-png-person-outline-icon-png-person-17.png?itok=Nbz0asMk",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Dawood, Abdul Rahim",
+    "county": "Meru",
+    "constituency": "North Imenti",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/fc22a1b66ed7e8dc368c09f8c417e025_M.jpg?itok=nevgBLke",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Duale, Aden Bare",
+    "county": "Garissa",
+    "constituency": "Garissa Township",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/eda88fd0c704e7516b7954c21650310b_M.jpg?itok=2FbYZHiQ",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Duale, Mohamed Dahir",
+    "county": "Garissa",
+    "constituency": "Dadaab",
+    "party": "KANU",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/7ad1bc4bf40bceffc470ffe3aab1a249_M.jpg?itok=Jj_JNHcF",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Ekomwa, James Lomenen",
+    "county": "Turkana",
+    "constituency": "Turkana South",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/30650c2c44cf5fecb793487c0d61c0ed_M.jpg?itok=49ZTmecG",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Emanikor, Joyce Akai",
+    "county": "Turkana",
+    "constituency": "Turkana",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/8f7997ac35b97e9818117af746ef5397_M.jpg?itok=CnWZ5Fm-",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Gaal, Ahmed Bashane",
+    "county": "Wajir",
+    "constituency": "Tarbaj",
+    "party": "PDR",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/0269c2cf61824f126a7fc8ba28612eae_M.jpg?itok=C_WRDL-4",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Gachagua, Rigathi",
+    "county": "Nyeri",
+    "constituency": "Mathira",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/8837262661355ba7f14bfb9ac2d34fd2_M.jpg?itok=AFkOnDmd",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Gachobe, Samuel Kinuthia",
+    "county": "Nakuru",
+    "constituency": "Subukia",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/2338160a7cc88e5339f9d10742a77113_M.jpg?itok=TezIa452",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Gakuya, James Mwangi",
+    "county": "Nairobi",
+    "constituency": "Embakasi North",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/1538fa6a909fa10bd550ecd0c6ab5e72_M.jpg?itok=zjNTuyIg",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Gakuya, Mercy Wanjiku",
+    "county": "Nairobi",
+    "constituency": "Kasarani",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/a78794f1bdd8b2ecf8cb6e485934052c_M.jpg?itok=Zxf79jQh",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Ganya, Francis Chachu",
+    "county": "Marsabit",
+    "constituency": "North Horr",
+    "party": "FAP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/93c651dedbc07f5957173e5e55915d60_M.jpg?itok=W-5dX6vG",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Garane, Mohamed Hire",
+    "county": "Garissa",
+    "constituency": "Lagdera",
+    "party": "KANU",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/53fda0f303c7d0c538d217dafcea2ab4_M.jpg?itok=1HFehJn2",
+    "term_start_year": 2017
+  },
+  {
+    "name": "George Koimburi",
+    "county": "Kiambu",
+    "constituency": "Juja",
+    "party": "PEP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/default_images/person-outline-icon-png-person-outline-icon-png-person-17.png?itok=Nbz0asMk",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Ghati, Dennitah",
+    "county": "N\\/A",
+    "constituency": "Nominated",
+    "party": "ODM",
+    "status": "Nominated",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/6a50c9cc0f667726695a092dcb0e894b_M.jpg?itok=M5lFFT9-",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Gikaria, David",
+    "county": "Nakuru",
+    "constituency": "Nakuru Town East",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/140800f06a83a38cc18f4df3ed9abedb_M.jpg?itok=DvoMR_YI",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Gimose, Charles Gumini",
+    "county": "Vihiga",
+    "constituency": "Hamisi",
+    "party": "FORD-K",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/1cc013b4b30bb2f3138b82c49b6ffbba_M.jpg?itok=JezrKXKr",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Gitau, Faith Wairimu",
+    "county": "Nyandarua County",
+    "constituency": "Nyandarua",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/d385f1097f2e54a09345d6a9db3c6508_M.jpg?itok=mnUDOy8v",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Githinji, Robert Gichimu",
+    "county": "Kirinyaga",
+    "constituency": "Gichugu",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/621e04774107f8d6d16119a4df4b377b_M.jpg?itok=vHbskdq1",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Gk, George Macharia Kariuki",
+    "county": "Kirinyaga",
+    "constituency": "Ndia",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/87fe29ea5bfce46eb2c814a38cc656c1_M.jpg?itok=0S3Kgi4e",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Gogo, Lilian Achieng",
+    "county": "Homa Bay",
+    "constituency": "Rangwe",
+    "party": "ODM",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/ea3f6af0bce488203091602f07eab688_M.jpg?itok=UxFbK12V",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Gure, Anab Mohamed",
+    "county": "Garissa",
+    "constituency": "Garissa",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/dacd8a0c118889e979828e974f4a232b_M.jpg?itok=DbGN3AD_",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Guyo, Ali Wario",
+    "county": "Tana River",
+    "constituency": "Garsen",
+    "party": "WDM-K",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/7e1dc8b9134f1e90b7387fabc1f747cc_M.jpg?itok=iFG0QWpf",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Hassan, Amina Gedow",
+    "county": "Mandera",
+    "constituency": "Mandera",
+    "party": "EFP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/7fa687df0b499f5d3357b01a278280e8_M.jpg?itok=FoUEKugC",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Hassan, Kulow Maalim",
+    "county": "Mandera",
+    "constituency": "Banissa",
+    "party": "EFP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/da899b4f6aecd3b25897ae28f89b2f5e_M.jpg?itok=RCGpt0sk",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Hassan, Omar Mohamed Maalim",
+    "county": "Mandera",
+    "constituency": "Mandera East",
+    "party": "EFP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/c865d8ec4e84a21ba22c5a0c805e56fc_M.jpg?itok=10LTHVwc",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Hassan, Rehema",
+    "county": "Tana River",
+    "constituency": "Tana River",
+    "party": "MCCP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/c1fbba98d3e1826cc2ca4ec2fafee185_M.jpg?itok=sGE5DnoI",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Hassan, Zuleikha Juma",
+    "county": "Kwale",
+    "constituency": "Kwale",
+    "party": "ODM",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/bfed5da4e668e375c60eefa8cf381ee2_M.jpg?itok=YQboNweH",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Hiribae, Said Buya",
+    "county": "Tana River",
+    "constituency": "Galole",
+    "party": "FORD-K",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/107cc2f08833bc13b95a0891974ee1a9_M.jpg?itok=m5d9Drgn",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Hulufo, Hassan Oda",
+    "county": "Isiolo",
+    "constituency": "Isiolo North",
+    "party": "KPP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/c32747aadb20d65bf8931a58bf042d00_M.jpg?itok=Fsgpt6L7",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Ibrahim, Abdi Mude",
+    "county": "Mandera",
+    "constituency": "Lafey",
+    "party": "EFP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/08b1cd314c9fb06eec06f7bd0ea9dedc_M.jpg?itok=9In63P9Y",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Ibrahim, Ahmed Abdisalan",
+    "county": "Wajir",
+    "constituency": "Wajir North",
+    "party": "ODM",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/8f7e71390d72d9ea8d2e9c3e36b68d2e_M.jpg?itok=qKzOopJk",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Ibrahim, Nasri Sahal",
+    "county": "N\\/A",
+    "constituency": "Nominated",
+    "party": "FORD - K",
+    "status": "Nominated",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/f225425ad4e97f603b376b8125383fae_M.jpg?itok=pProKDqT",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Ichung'wah, Anthony Kimani",
+    "county": "Kiambu",
+    "constituency": "Kikuyu",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/2bab3fe1f5c438a1345c3a32387dad33_M.jpg?itok=awH0Ju3X",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Iringo, Cyprian Kubai",
+    "county": "Meru",
+    "constituency": "Igembe Central",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/3452b7591c3d95f16ebd3ca0f6eac17a_M.jpg?itok=0qYkCRT6",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Jaldesa, Rehema Dida",
+    "county": "Isiolo",
+    "constituency": "Isiolo",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/70265694c1397a38e93527516b73a10c_M.jpg?itok=nEcXk4-k",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Jungle, Patrick Kimani Wainaina",
+    "county": "Kiambu",
+    "constituency": "Thika Town",
+    "party": "IND",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/5445a93d27f2b991d911dcc3c82aa251_M.jpg?itok=KHYTuroR",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Justin B. N. Muturi, EGH, MP",
+    "county": null,
+    "constituency": null,
+    "party": null,
+    "status": null,
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2018-11/speaker%20NA.jpeg?itok=40ZRuc9I",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Kabeabea, Josphat Gichunge Mwirabua",
+    "county": "Meru",
+    "constituency": "Tigania East",
+    "party": "PNU",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/146385ea9784615c2816204dbf9d5cfa_M.jpg?itok=lxbjC1qA",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Kajwang’, Francis Tom Joseph",
+    "county": "Nairobi",
+    "constituency": "Ruaraka",
+    "party": "ODM",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/a9e9f42914223665d97ad02bf448f9bc_M.jpg?itok=nZ24dav5",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Kaluma, George Peter Opondo",
+    "county": "Homa Bay",
+    "constituency": "Homa Bay Town",
+    "party": "ODM",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/648cedeb1f9039827c51528b6d2f0bbf_M.jpg?itok=Zt3s5KMe",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Kamanda, Maina",
+    "county": "N\\/A",
+    "constituency": "Nominated",
+    "party": "JP",
+    "status": "Nominated",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2021-07/IMG-20210610-WA0004.jpg?itok=Vgl9lzdO",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Kamene, Joyce",
+    "county": "Machakos",
+    "constituency": "Machakos",
+    "party": "WDM-K",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/21c0576bea23dc1b15ecf44c7e7851b7_M.jpg?itok=umDaaXwQ",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Kamket Kassait, William",
+    "county": "Baringo",
+    "constituency": "Tiaty",
+    "party": "KANU",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/a00faca0fcac606f5ed9174b6103a6e8_M.jpg?itok=twL-9UkI",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Kamuren, Charles",
+    "county": null,
+    "constituency": "Baringo South",
+    "party": "Jubilee Party",
+    "status": null,
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/default_images/person-outline-icon-png-person-outline-icon-png-person-17.png?itok=Nbz0asMk",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Kanchory, Elijah Memusi",
+    "county": "Kajiado",
+    "constituency": "Kajiado Central",
+    "party": "ODM",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/350dd1a4eb1b2150e3f5ece8e33ee186_M.jpg?itok=OOJgqG_T",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Kandie, Joshua Chepyegon",
+    "county": "Baringo",
+    "constituency": "Baringo Central",
+    "party": "MCCP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/b934a112f613d98a0215e11533a8997b_M.jpg?itok=ZwqTnGCv",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Karani, Christopher Odhiambo",
+    "county": "Siaya",
+    "constituency": "Ugenya",
+    "party": "ODM",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/6401108ad245c086aa79c48f1d124c7c_M.jpg?itok=wIGKx2OC",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Kasalu, Irene Muthoni",
+    "county": "Kitui",
+    "constituency": "Kitui",
+    "party": "WDM-K",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/88a07779463fcb36b69aa3ddbde1a262_M.jpg?itok=yQYgEFQN",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Katana, Aisha Jumwa Karisa",
+    "county": "Malindi",
+    "constituency": "Malindi",
+    "party": "ODM",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/f89028c31c66001585f476905f4afb25_M.jpg?itok=YNOpGgrn",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Katana, Paul Kahindi",
+    "county": "Kilifi",
+    "constituency": "Kaloleni",
+    "party": "ODM",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/2b5886a6af7ffe0890f131c7646b1472_M.jpg?itok=d75i-rfA",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Kaunya, Edward Oku",
+    "county": "Busia",
+    "constituency": "Teso North",
+    "party": "ANC",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/eb9bf436458080249c7633d607611800_M.jpg?itok=KphDQHx5",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Kega, Mathenge James Kanini",
+    "county": "Nyeri",
+    "constituency": "Kieni",
+    "party": "N\\/A",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/c9bc241ebc9f52611d92694886ac1a8c_M.jpg?itok=0LPDiYsx",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Keter, Alfred Kiptoo",
+    "county": "Nandi",
+    "constituency": "Nandi Hills",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/b68b3ccfe896ef105681f423d72ff5a9_M.jpg?itok=Hx-522I9",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Keter, Gideon",
+    "county": "Nakuru",
+    "constituency": "Nominated",
+    "party": "JP",
+    "status": "Nominated",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2024-11/Website%20About%20Gideon%20Keter%20%281%29.jpg?itok=0QX3K82Q",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Kiai, Anthony Githiaka",
+    "county": "Nyeri",
+    "constituency": "Mukurweini",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/48d890cd826326e9a53289fa7114cca6_M.jpg?itok=VycgK7tO",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Kiaraho, David Njuguna",
+    "county": "Nyandarua",
+    "constituency": "Ol Kalou",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/21932c06430f4fed99e3c8195fc591d6_M.jpg?itok=joJG0eZw",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Kibeh, Annie Wanjiku",
+    "county": "Kiambu",
+    "constituency": "Gatundu North",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/b574a0ae91fb70e737fbed289783496a_M.jpg?itok=SkuyAR-P",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Kibiwot, Julius Melly",
+    "county": "Nandi",
+    "constituency": "Tinderet",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/4e402c8920f4be037902c4be9402ea8f_M.jpg?itok=s67oIrOD",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Kibunguchy, Enoch Wamalwa",
+    "county": "Kakamega",
+    "constituency": "Likuyani",
+    "party": "FORD-K",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/e65a3cb5bf8ddad3661b23ae64e6228c_M.jpg?itok=XbNCRRCg",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Kigano, Clement Muturi",
+    "county": "Murang'a",
+    "constituency": "Kangema",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/ee9b37a543af30509248a26f2de04a60_M.jpg?itok=DdrwGqb3",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Kihara, Jayne Njeri Wanjiru",
+    "county": "Nakuru",
+    "constituency": "Naivasha",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/a28f2bb5ffa79ee030e1076395c03c79_M.jpg?itok=aLIrAx0m",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Kihara, Peter Kimari",
+    "county": "Murang'a",
+    "constituency": "Mathioya",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/3e96d38302447f1cf99d475dfb5c308d_M.jpg?itok=f-P0yxCA",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Kilonzo, Charles Mutavi",
+    "county": "Machakos",
+    "constituency": "Yatta",
+    "party": "IND",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/f7724547f17b9a1373fb429f1124f806_M.jpg?itok=u7uoQa1Z",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Kimani, Francis Kuria",
+    "county": "Nakuru",
+    "constituency": "Molo",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/6408056b72e0df42b9dd4870cb84668b_M.jpg?itok=aUmyMB0b",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Kimilu, Joshua Kivinda",
+    "county": "Makueni",
+    "constituency": "Kaiti",
+    "party": "WDM-K",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/2ea7bf7f3b1670977aa6b5b00fc6b7f0_M.jpg?itok=pXSwGyzd",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Kimunya, Amos Muhinga",
+    "county": "Nyandarua",
+    "constituency": "Kipipiri",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/cc88f2d6d7efb87c36fab36d95f2f33a_M.jpg?itok=KtL8KL_8",
+    "term_start_year": 2017
+  },
+  {
+    "name": "King'ola, Patrick Makau",
+    "county": "Machakos",
+    "constituency": "Mavoko",
+    "party": "WDM-K",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/cdcfe1cb542202f1e6585f7193c3f6c5_M.jpg?itok=AOOJH4q_",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Kingara, Simon Nganga",
+    "county": "Kiambu",
+    "constituency": "Ruiru",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/fae60ae7df930361d387c921e7911069_M.jpg?itok=OY7tEvoX",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Kingi, Michael Thoyah",
+    "county": "Kilifi",
+    "constituency": "Magarini",
+    "party": "ODM",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/384d40a35806de1d1fe854b3ee846eec_M.jpg?itok=Cca8J0kr",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Kioni, Jeremiah Ng’ayu",
+    "county": "Nyandarua",
+    "constituency": "Ndaragwa",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/6531b8388fa2ad0f5c5aba34b81863bb_M.jpg?itok=EhhuwHJ7",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Kipkiror, William Cheptumo",
+    "county": "Baringo",
+    "constituency": "Baringo North",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/81e88cc0ea51deee3c244a6338205ec0_M.jpg?itok=Q9FOIO1r",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Kipkosgei, Joseph Tonui",
+    "county": "Nakuru",
+    "constituency": "Kuresoi South",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/02b93e40a87f77a216584ee602e530cc_M.jpg?itok=ClnkHRfX",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Kipyegon, Johana Ngeno",
+    "county": "Narok",
+    "constituency": "Emurua Dikirr",
+    "party": "KANU",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/83f568eba26f72d953890f7053aa6edf_M.jpg?itok=V8VvV-RL",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Kirima, Moses Nguchine",
+    "county": "Meru",
+    "constituency": "Central Imenti",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/e2d733482b305304240a334a4d695c6b_M.jpg?itok=iqmr8SGZ",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Kisang, William Kipkemoi",
+    "county": "Elgeyo-Marakwet",
+    "constituency": "Marakwet West",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/ca581b6d1396a912166c447ce59cde17_M.jpg?itok=wKJ0GJQq",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Kitayama, Marwa Kemero Maisori",
+    "county": "Migori",
+    "constituency": "Kuria East",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/11d123796086c1d809e731bf566e453d_M.jpg?itok=LwcstTxX",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Kiti, Richard Ken Chonga",
+    "county": "Kilfi",
+    "constituency": "Kilifi South",
+    "party": "ODM",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/295fdc87d658f559ef2cffb7fe8f65ee_M.jpg?itok=L0mDIDxO",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Kivai, Ernest Ogesi",
+    "county": "Vihiga",
+    "constituency": "Vihiga",
+    "party": "ANC",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/9d7c2d4b3357e7ba03c3b8ad3fb9a8b0_M.jpg?itok=xqXAHX27",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Koech, Nelson",
+    "county": "Kericho",
+    "constituency": "Belgut",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/ac37d23a1bfab39ff0118c3645959b54_M.jpg?itok=X1rlLiT3",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Kogo, Wilson Kipngetich",
+    "county": "Nandi",
+    "constituency": "Chesumei",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/0b9af8663810178a91c6ebea9711fcd6_M.jpg?itok=LCdpr4Zm",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Konchela, Gideon Sitelu",
+    "county": "Narok",
+    "constituency": "Kilgoris",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/fe7ba1caaed873cdbf5005a34108c0b8_M.jpg?itok=lJN3VxIw",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Kones, Beatrice Pauline Cherono",
+    "county": "Bomet",
+    "constituency": "Bomet East",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/ff6f995ca52e8cb4d412e7c56015c435_M.jpg?itok=nBpAITTR",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Korere, Sarah Paulata",
+    "county": "Laikipia",
+    "constituency": "Laikipia North",
+    "party": "N\\/A",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/03ef9152d82e5bb58ebe9973fc1e07bc_M.jpg?itok=bwN_JFl6",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Korir, Generali Nixon Kiprotich",
+    "county": "Nairobi",
+    "constituency": "Lang'ata",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/e78c46e17fcaf25ae5e3fd895121344b_M.jpg?itok=PsrCkpoJ",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Koros, Benard Kipsengeret",
+    "county": "Kericho",
+    "constituency": "Sigowet\\/Soin",
+    "party": "IND",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/0a434987072cff0c2790d532730a5ea1_M.jpg?itok=PDumBil3",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Kosgei, Hilary Kiplang’at",
+    "county": "Kericho",
+    "constituency": "Kipkelion West",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2020-09/hon.%20kosgei.jpg?itok=EyiyMf06",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Kosgey, Alexander Kimutai Kigen",
+    "county": "Nandi",
+    "constituency": "Emgwen",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/984f36722996e0131597718783789a28_M.jpg?itok=RBuUYQ89",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Kositany, Caleb Kipkemei",
+    "county": "Uasin Gishu",
+    "constituency": "Soy",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/127e8ddb840f2663dc84cecc020b26ec_M.jpg?itok=QhwiTErQ",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Koske, Gideon Kimutai",
+    "county": "Bomet",
+    "constituency": "Chepalungu",
+    "party": "CCM",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2019-02/PHOTO-2019-02-19-20-39-54.jpg?itok=4euqmzhv",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Koskei, Dominic Kipkoech",
+    "county": "Bomet",
+    "constituency": "Sotik",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/a7a067594506e5669665df7513e36111_M.jpg?itok=CGoXwBtx",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Koskey, Florence Chepngetich",
+    "county": "Kericho",
+    "constituency": "Kericho",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/72c467482339fb1363b4c01596c51a1f_M.jpg?itok=SDw1NasQ",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Koyi, John Waluke",
+    "county": "Bungoma",
+    "constituency": "Sirisia",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/54156bdcd7316e7eeaa9c4bdf4e0b58e_M.jpg?itok=eyIAA844",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Kuria, Moses Kiarie",
+    "county": "Kiambu",
+    "constituency": "Gatundu South",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/671e1b97d5db31a8bc1d973f463cac5a_M.jpg?itok=VetlxgaP",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Lekumontare, Lentoi Joni L. Jackson",
+    "county": "Samburu",
+    "constituency": "Samburu East",
+    "party": "KANU",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/a262496e7bd5ef16097803badbbe7ffc_M.jpg?itok=3BbfHOSw",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Lentoimaga, Alois Musa",
+    "county": "Samburu",
+    "constituency": "Samburu North",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/13e5f342406151e0de1a1cca53fbdba9_M.jpg?itok=sz2vk1GO",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Leonard, Yegon Brighton",
+    "county": "Bomet",
+    "constituency": "Konoin",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/0b3079625ed50d96c18af4d0014dae15_M.jpg?itok=q42cVn26",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Leshoomo, Maison",
+    "county": "Samburu",
+    "constituency": "Samburu",
+    "party": "KANU",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/f6f60bca57a307b0a8335b4c2aabc72c_M.jpg?itok=jN_WB8Fm",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Lessonet, Moses K.",
+    "county": "Baringo",
+    "constituency": "Eldama Ravine",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/d975d352a3946dff3e435c75b58b4538_M.jpg?itok=FcHHBvzw",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Lesuuda, Josephine Naisula",
+    "county": "Samburu",
+    "constituency": "Samburu West",
+    "party": "KANU",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/cd0e81ab26f554fcc1d1545c3b911154_M.jpg?itok=Z58jnbmN",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Limo, Kirui Joseph",
+    "county": "Kericho",
+    "constituency": "Kipkelion East",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/3ad8a93d69f0d23db55fddb7a3241ed2_M.jpg?itok=cbarCB-3",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Liza, Chelule Chepkorir",
+    "county": "Nakuru",
+    "constituency": "Nakuru",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/3793b7e33956f452215e5447180502e1_M.jpg?itok=s0GafY8a",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Lochakapong, Peter",
+    "county": "West Pokot",
+    "constituency": "Sigor",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/da497ded6b58ebe690c1a1ad4e7cb3a9_M.jpg?itok=xYHyXrJ5",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Lomorukai, Jeremiah Ekamais",
+    "county": "Turkana",
+    "constituency": "Loima",
+    "party": "ODM",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/a968d988da3b5623e52a9338e2760928_M.jpg?itok=uxQy6OZL",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Lomunokol, Mark",
+    "county": "West Pokot",
+    "constituency": "Kacheliba",
+    "party": "PDR",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/b5b911d9cf2a6c396203842ba429d5ba_M.jpg?itok=_dBw3NVm",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Luyai, Caleb Amisi",
+    "county": "Trans-Nzoia",
+    "constituency": "Saboti",
+    "party": "ODM",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/67fe64e2f26a1adfd23a6bb5094d9921_M.jpg?itok=3PDCZ-yE",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Maanzo, Daniel Kitonga",
+    "county": "Makueni",
+    "constituency": "Makueni",
+    "party": "WDM-K",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/272afcf7fec66e45774ad9a2da6df643_M.jpg?itok=if1YGk0P",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Mabonga, Moses Wekesa Mwambu",
+    "county": "Bungoma",
+    "constituency": "Bumula",
+    "party": "IND",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2019-02/WhatsApp%20Image%202019-02-21%20at%2014.12.49.jpeg?itok=pYnTyIHp",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Majimbo, Joseph Kalasinga",
+    "county": "Bungoma",
+    "constituency": "Kabuchai",
+    "party": "FORD-K",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/default_images/person-outline-icon-png-person-outline-icon-png-person-17.png?itok=Nbz0asMk",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Manje, Joseph Wathigo",
+    "county": "Kajiado",
+    "constituency": "Kajiado North",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/666186747472cea2e8b7b44fd124836d_M.jpg?itok=CkjgKFix",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Maoka, Richard Maore",
+    "county": "Meru",
+    "constituency": "Igembe North",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/ee942152895ab17379319f19b18980a9_M.jpg?itok=FwpCk5k9",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Mariru, Patrick Kariuki",
+    "county": "Laikipia",
+    "constituency": "Laikipia West",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/34fd4e0b469b2ccdf7f11c99e7d372b6_M.jpg?itok=E5HqZoiG",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Maritim, Sylvanus",
+    "county": "Kericho",
+    "constituency": "Ainamoi",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/4bfe9873ff58983fca7af755db4ae8e4_M.jpg?itok=j_YgPhph",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Masadia, Alfred Agoi",
+    "county": "Vihiga",
+    "constituency": "Sabatia",
+    "party": "ANC",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/7915731e4e19ceea4d73d26bebb0d76a_M.jpg?itok=yRm6IGze",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Masara, Peter Francis",
+    "county": "Migori",
+    "constituency": "Suna West",
+    "party": "IND",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2019-07/WhatsApp%20Image%202019-07-04%20at%2013.27.58.jpeg?itok=YMKhByzM",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Mawathe, Julius Musili",
+    "county": "Nairobi",
+    "constituency": "Embakasi South",
+    "party": "WDM-K",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/e94c9fec1d4737ab646df2330968a9dc_M.jpg?itok=FdtmD0z7",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Mbai, Nimrod Mbithuka",
+    "county": "Kitui",
+    "constituency": "Kitui East",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/18a30248707b02ced05d1e20645ce489_M.jpg?itok=U_gTEdz3",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Mbalu, Jessica Nduku Kiko",
+    "county": "Makueni",
+    "constituency": "Kibwezi East",
+    "party": "WDM-K",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/db6d8759d923145272110190aa661283_M.jpg?itok=AZ3RIcSU",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Mbarire, Cecily",
+    "county": "N\\/A",
+    "constituency": "Nominated",
+    "party": "JP",
+    "status": "Nominated",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/e62c5a16916906b4dcc06f9443575a5c_M.jpg?itok=X81fdga1",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Mbiuki, Japhet Miriti Kareke",
+    "county": "Tharaka-Nithi",
+    "constituency": "Maara",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/05372347c9cef3383a926462463047c8_M.jpg?itok=AHIh1qlm",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Mbogo, Ali Menza",
+    "county": "Mombasa",
+    "constituency": "Kisauni",
+    "party": "WDM-K",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/5aa798659041a7adb924f828cf0b7c17_M.jpg?itok=ZFMM04h6",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Mboko, Mishi Juma Khamisi",
+    "county": "Mombasa",
+    "constituency": "Likoni",
+    "party": "ODM",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/c6834ff6846b4e9fabf44cbbbe734bae_M.jpg?itok=NrfGHQuR",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Mboni, David Mwalika",
+    "county": "Kitui",
+    "constituency": "Kitui Rural",
+    "party": "CCU",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/f6594de3cb599e60cb8a7e426b64b0ca_M.jpg?itok=2lHjsCNa",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Mbui, Robert",
+    "county": "Machakos",
+    "constituency": "Kathiani",
+    "party": "WDM-K",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/c8bc579716d220284dabf41e7ca6a091_M.jpg?itok=N7gl0SOB",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Milemba, Jeremiah Omboko",
+    "county": "Vihiga",
+    "constituency": "Emuhaya",
+    "party": "ANC",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/c1667055b4667ffdd5b09e569b37e5d5_M.jpg?itok=tvAlB5y8",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Mishra, Swarup Ranjan",
+    "county": "Uasin Gishu",
+    "constituency": "Kesses",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/f9fbc54627494d6ca586c60b370d6414_M.jpg?itok=jKeuPXxT",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Mizighi, Lydia Haika Mnene",
+    "county": "Taita Taveta",
+    "constituency": "Taita Taveta",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/1133cfc56b1bf70c27f631bd8c3c835d_M.jpg?itok=q2orz63d",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Mlolwa, Jones Mwagogo",
+    "county": "Voi",
+    "constituency": "Voi",
+    "party": "ODM",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/e68080f5317e776c361ceb03623476de_M.jpg?itok=5gicAyok",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Mogaka, Vincent Kemosi",
+    "county": "Nyamira",
+    "constituency": "West Mugirango",
+    "party": "FORD-K",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/4ffe4c55e2862ec13bd51ae5d98195aa_M.jpg?itok=vH1Hj5WU",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Mohamed, Abdikhaim Osman",
+    "county": "Garissa",
+    "constituency": "Fafi",
+    "party": "KANU",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/ac3087196275113f2b5554030333c964_M.jpg?itok=g-3PpRf_",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Mohamed, Ahmed Kolosh",
+    "county": "Wajir",
+    "constituency": "Wajir West",
+    "party": "ODM",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/8ecba96dffb0e9e3fa11255471375ec8_M.jpg?itok=VB43-DsU",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Mohamed, Asha Hussein",
+    "county": "Mombasa",
+    "constituency": "Mombasa",
+    "party": "ODM",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/b59bbc536b03252f3860595000450d51_M.jpg?itok=lLB3XjoV",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Mohamed, Mohamed Ali",
+    "county": "Mombasa",
+    "constituency": "Nyali",
+    "party": "IND",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/852c2fa5e5468761c3ae8b796ca9be85_M.jpg?itok=w_0SPrvS",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Mohammed, Lokiru Ali",
+    "county": "Turkana",
+    "constituency": "Turkana East",
+    "party": "ODM",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/2add8384f1661c58873d6d3aebb128ac_M.jpg?itok=xPpdBjRP",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Mohammed, Mohamud Sheikh",
+    "county": "Wajir",
+    "constituency": "Wajir South",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/d1495fd50aec8a7f22f99ef1d7dfe1a1_M.jpg?itok=KeRIg1TU",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Moi, Kipruto",
+    "county": "Nakuru",
+    "constituency": "Rongai",
+    "party": "KANU",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/e5f13757360abae96edaf4672d276461_M.jpg?itok=H4azrtyW",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Momanyi, Ben George Orori",
+    "county": "Nyamira",
+    "constituency": "Borabu",
+    "party": "WDM-K",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/54d2b8d82508951e326f978814425351_M.jpg?itok=nLXhgKNV",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Momanyi, Jerusha Mongina",
+    "county": "Nyamira",
+    "constituency": "Nyamira",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/643c25a4835bc55ae5bec094d51b8381_M.jpg?itok=P79KOIeO",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Mose, Shadrack John",
+    "county": "Nyamira",
+    "constituency": "Kitutu Masaba",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/1babebb6e3082b7c74215afaef8a900c_M.jpg?itok=qF6nEq-L",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Muchira, Michael Mwangi",
+    "county": "Nyandarua",
+    "constituency": "Ol Jorok",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/39cbec347225b2c21c5ceb40381af16c_M.jpg?itok=NeB8mUUc",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Muchira, Michael Mwangi",
+    "county": "Nyandarua",
+    "constituency": "Ol Jorok",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/39cbec347225b2c21c5ceb40381af16c_M.jpg?itok=NeB8mUUc",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Mugambi, James Gichuki",
+    "county": "Nyeri",
+    "constituency": "Othaya",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/7a2b676bb85d1be84ddcbc1aa8d36513_M.jpg?itok=_ULkqvQ0",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Muhanda, Elsie Busihile",
+    "county": "Kakamega",
+    "constituency": "Kakamega",
+    "party": "ODM",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/548d41fc70d47d3bf3dafd1fd364ee6b_M.jpg?itok=ciKEnNrT",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Mukhwana, Titus Khamala",
+    "county": "Kakamega",
+    "constituency": "Lurambi",
+    "party": "ANC",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/ef53d18ea3f2390ab2b101ee9426bf01_M.jpg?itok=_cdnYUjk",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Mukuha, Gabriel Kago",
+    "county": "Kiambu",
+    "constituency": "Githunguri",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/377731d40ea33c1c7cdc23e7ace5e053_M.jpg?itok=qyXFwAL0",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Mule, Stephen Mutinda",
+    "county": "Machakos",
+    "constituency": "Matungulu",
+    "party": "WDM-K",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/7b9d41e68c1d4d315e896b5e82209a87_M.jpg?itok=8ffqazq7",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Muli, Fabian Kyule",
+    "county": "Machakos",
+    "constituency": "Kangundo",
+    "party": "MUUNGANO",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/1d10e97ee6299d36828eddc9f92530e2_M.jpg?itok=68vUdXq2",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Mulu, Benson Makali",
+    "county": "Kitui",
+    "constituency": "Kitui Central",
+    "party": "WDM-K",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/f641f67efa680afb475bb32af1ab6c16_M.jpg?itok=lC-4Ps-R",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Mulyungi, Gideon Mutemi",
+    "county": "Kitui",
+    "constituency": "Mwingi Central",
+    "party": "WDM-K",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/72700a14a2a02b35fe25ed088f8895bc_M.jpg?itok=iE7wnxTa",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Mumo, Rose Museo",
+    "county": "Makueni",
+    "constituency": "Makueni",
+    "party": "WDM-K",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/52188659ef88a401b1213c4a355f83e3_M.jpg?itok=BpSwMy2z",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Munyaka, Victor Kioko",
+    "county": "Machakos",
+    "constituency": "Machakos Town",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/635d0a11c7b39cba615275bd75b58c0e_M.jpg?itok=DOxeR8AK",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Murgor, James Kipkosgei",
+    "county": "Elgeyo-Marakwet",
+    "constituency": "Keiyo North",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/5c91d269c799df7f54bd4efd5c3d493b_M.jpg?itok=KAiHWxFK",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Murugara, George Gitonga",
+    "county": "Tharaka-Nithi",
+    "constituency": "Tharaka",
+    "party": "DP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/dc1d6f777886429c4e95ddd8c1ab062e_M.jpg?itok=JanLyEhZ",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Murungi, Kathuri",
+    "county": "Meru",
+    "constituency": "South Imenti",
+    "party": "IND",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/27ae4a7fde52e0f0f4b3f6507837c4eb_M.jpg?itok=f76opZOO",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Musau, Vincent Musyoka",
+    "county": "Machakos",
+    "constituency": "Mwala",
+    "party": "MCCP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/f7333766001349d91d9a4030b2201a2e_M.jpg?itok=fFkEfnQO",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Musimba, Patrick Mweu",
+    "county": "Makueni",
+    "constituency": "Kibwezi West",
+    "party": "IND",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/a5fe069d96534a42c0b2ab6d9d74598d_M.jpg?itok=YP5521_4",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Mutai, Japheth Kiplangat",
+    "county": "Kericho",
+    "constituency": "Bureti",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/dfd56ec516270ddb1a6acdd0b88948d4_M.jpg?itok=QrgtB4nw",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Muthama, Stanley Muiruri",
+    "county": "Lamu",
+    "constituency": "Lamu West",
+    "party": "MCCP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/e2ad8b69042b9b1779ce7d6a5fa4d265_M.jpg?itok=khjpPo6V",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Mutua, Didmus Wekesa Barasa",
+    "county": "Bungoma",
+    "constituency": "Kimilili",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/b278cbdaf7c839ab95dcc8c220ab1eb7_M.jpg?itok=3sHV4dJ6",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Mutua, Florence Mwikali",
+    "county": "Busia",
+    "constituency": "Busia",
+    "party": "ODM",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/dfa5bd35ee353a18219b16bd4f1ed9c3_M.jpg?itok=SiBkykMm",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Muturi, Geoffrey Kingagi",
+    "county": "Embu",
+    "constituency": "Mbeere South",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/a8a60643bafa0307d300af23aba7c13b_M.jpg?itok=yk6rREim",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Mwadime, Andrew",
+    "county": "Taita Taveta",
+    "constituency": "Mwatate",
+    "party": "ODM",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/68904008f966ea86ffdacaa829261e3d_M.jpg?itok=LaH70kd9",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Mwakuwona, Danson Mwashako",
+    "county": "Taita Taveta",
+    "constituency": "Wundanyi",
+    "party": "WDM-K",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/3e4b3d256a2531e5e21a869496b34598_M.jpg?itok=geFyYTNO",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Mwale, Nicholas Scott Tindi",
+    "county": "Kakamega",
+    "constituency": "Butere",
+    "party": "ANC",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/1853390e25be66b39b7e605f6bd79cbb_M.jpg?itok=FWD0rGFG",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Mwalyo, Joshua Mbithi",
+    "county": "Machakos",
+    "constituency": "Masinga",
+    "party": "WDM-K",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/0eba82086d309eaeb0c5011201911b1a_M.jpg?itok=YEPHtcCS",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Mwambire, Teddy Ngumbao",
+    "county": "Kilifi",
+    "constituency": "Ganze",
+    "party": "ODM",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/26a8595bb1d20a9361ae1165668813f8_M.jpg?itok=l9cXrbjV",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Mwamkale, William Kamoti",
+    "county": "Kilifi",
+    "constituency": "Rabai",
+    "party": "ODM",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/cc1343f4bf58ce9d4e32f3a11e5bec16_M.jpg?itok=Oobh6krx",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Mwangaza, Kawira",
+    "county": "Meru",
+    "constituency": "Meru",
+    "party": "IND",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/dcbcc53d33478b7f38471d5dbbe6eecc_M.jpg?itok=N4xfdqc-",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Mwangi, Benjamin Gathiru",
+    "county": "Nairobi",
+    "constituency": "Embakasi Central",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/e91f5df61683ad642f80f8746e777635_M.jpg?itok=AtLjNwmA",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Mwangi, James Gichuhi",
+    "county": "Nyeri",
+    "constituency": "Tetu",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/e3ef4446c24c2b9192ff481ba246ca12_M.jpg?itok=CscLx3oY",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Mwangi, Jonah Mburu",
+    "county": "Kiambu",
+    "constituency": "Lari",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/1710039b773a156fdc79812b49212f3e_M.jpg?itok=KSLqx92e",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Mwaniki, Ruth W.",
+    "county": "Murang'a",
+    "constituency": "Kigumo",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/78d3f08868d2b2dab244209bac283fa2_M.jpg?itok=IUkkV9xL",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Mwanyanje, Gertrude Mbeyu",
+    "county": "Kilifi",
+    "constituency": "Kilifi",
+    "party": "ODM",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/2c76be6100f94fcbc7b01029a02f2e20_M.jpg?itok=nPvYgoeU",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Mwashetani, Khatib Abdallah",
+    "county": "Kwale",
+    "constituency": "Lungalunga",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/815594ee7850f83c34de8dafc6ed2b26_M.jpg?itok=b8ARITHH",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Mwathi, Peter Mungai",
+    "county": "Kiambu",
+    "constituency": "Limuru",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/719fb666b0ace48aca3c20e8ba12e1b2_M.jpg?itok=aAP1KKr6",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Mwirigi, John Paul",
+    "county": "Meru",
+    "constituency": "Igembe South",
+    "party": "IND",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/833cb7b8d4faef1124c12c2fcc377ccd_M.jpg?itok=Bjafl5Hv",
+    "term_start_year": 2017
+  },
+  {
+    "name": "M’mbaya, Justus Gesito Mugali",
+    "county": "Kakamega",
+    "constituency": "Shinyalu",
+    "party": "ODM",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/798af74e083f2c49d397b5a47f7e4452_M.jpg?itok=npLa6Pfk",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Nabulindo, Oscar Peter",
+    "county": "Kakamega",
+    "constituency": "Matungu",
+    "party": "ANC",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/default_images/person-outline-icon-png-person-outline-icon-png-person-17.png?itok=Nbz0asMk",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Naicca, Johnson Manya",
+    "county": "Kakamega",
+    "constituency": "Mumias West",
+    "party": "ODM",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/7aed15c0eec6780801cf15fe872dd63a_M.jpg?itok=xyGeRaG3",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Nakara, John Lodepe",
+    "county": "Turkana",
+    "constituency": "Turkana Central",
+    "party": "ODM",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/13cf665de00e3d3ffc61de183a9459cd_M.jpg?itok=vq_DU6QT",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Nakuleu, Christopher Doye",
+    "county": "Turkana",
+    "constituency": "Turkana North",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/1d74f72896ceee72d213abc42e174515_M.jpg?itok=pQetz7j3",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Nanok, Daniel Epuyo",
+    "county": "Turkana",
+    "constituency": "Turkana West",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/8bcad8f505be89b6084318a70084a542_M.jpg?itok=GfaTExTG",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Nanok, Daniel Epuyo",
+    "county": "Turkana",
+    "constituency": "Turkana West",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/8bcad8f505be89b6084318a70084a542_M.jpg?itok=GfaTExTG",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Nassir, Abdullswamad Sheriff",
+    "county": "Mombasa",
+    "constituency": "Mvita",
+    "party": "ODM",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/e027c4032dd7e9a75b2ece7beabff93c_M.jpg?itok=hlK7uP7Y",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Ndirangu, Isaac Waihenya",
+    "county": "Nairobi",
+    "constituency": "Roysambu",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/f58a2c3db8ae4635490262c0d46e8c26_M.jpg?itok=W9rx_dv0",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Ngirici, Purity Wangui",
+    "county": "Kirinyaga",
+    "constituency": "Kirinyaga",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/8e0b77fbc9ff40024476dada4337e4e5_M.jpg?itok=8QUb4RV8",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Ngugi, Joseph Nduati",
+    "county": "Murang'a",
+    "constituency": "Gatanga",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/a8c5f873636bfa50a3430fb69e587265_M.jpg?itok=CpkzBt9V",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Nguna, Charles Ngusya",
+    "county": "Kitui",
+    "constituency": "Mwingi West",
+    "party": "WDM-K",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/5b74654ec36fd487c37a4827a65a7e86_M.jpg?itok=S2a0jdF8",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Ngunjiri, Onesmas Kimani",
+    "county": "Nakuru",
+    "constituency": "Bahati",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/901250b7663e25ea6e0926b8ec942be1_M.jpg?itok=Kr95-Y6i",
+    "term_start_year": 2017
+  },
+  {
+    "name": "Njagagua, Charles Muriuki",
+    "county": "Embu",
+    "constituency": "Mbeere North",
+    "party": "JP",
+    "status": "Elected",
+    "photo_url": "https://parliament.go.ke/sites/default/files/styles/mp_photo/public/2017-10/d3f6f7ce604e372317182d1f9bbbf284_M.jpg?itok=2f5iXIPb",
+    "term_start_year": 2017
+  }
+]
