@@ -26,6 +26,12 @@
                 class="block bg-white border-2 border-black rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow group">
                 <!-- Party Header -->
                 <div class="flex items-start justify-between mb-4">
+                    <!-- Party Logo -->
+                    <div class="flex-shrink-0 mr-4">
+                        <img src="/static/images/party-logos/{{ party.logo_filename }}" alt="{{ party.name }} logo"
+                            class="w-16 h-16 rounded-full border-2 border-black" onerror="this.style.display='none'">
+                    </div>
+
                     <div class="flex-1">
                         <h2
                             class="text-2xl font-bold text-gray-900 group-hover:text-kenya-red-600 transition-colors mb-1">
@@ -35,8 +41,8 @@
                         <p class="text-sm text-gray-600">{{ party.full_name }}</p>
                         {% endif %}
                     </div>
-                    <svg class="w-6 h-6 text-gray-400 group-hover:text-kenya-red-600 transition-colors" fill="none"
-                        stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-6 h-6 text-gray-400 group-hover:text-kenya-red-600 transition-colors flex-shrink-0"
+                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                     </svg>
                 </div>

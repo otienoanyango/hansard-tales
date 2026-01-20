@@ -10,13 +10,19 @@
             <a href="/parties/" class="text-kenya-red-600 hover:text-kenya-red-800 underline">← Back to All Parties</a>
         </nav>
 
-        <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-2">
-            {{ party_name }}
-        </h1>
-
-        {% if party_full_name and party_full_name != party_name %}
-        <p class="text-xl text-gray-700 mb-4">{{ party_full_name }}</p>
-        {% endif %}
+        <!-- Party Name with Logo -->
+        <div class="flex items-center gap-6 mb-6">
+            <img src="/static/images/party-logos/{{ party_logo_filename }}" alt="{{ party_name }} logo"
+                class="w-24 h-24 rounded-full border-2 border-black flex-shrink-0" onerror="this.style.display='none'">
+            <div>
+                <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-2">
+                    {{ party_name }}
+                </h1>
+                {% if party_full_name and party_full_name != party_name %}
+                <p class="text-xl text-gray-700">{{ party_full_name }}</p>
+                {% endif %}
+            </div>
+        </div>
 
         <!-- Party Stats Summary -->
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">

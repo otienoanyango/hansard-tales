@@ -116,6 +116,24 @@ def mp_profile(mp_id):
                          active_page='mps')
 
 
+def get_logo_filename(party_name):
+    """
+    Generate logo filename from party name, handling special cases.
+    Normalizes party names to match generated logo files.
+    """
+    # Normalize the party name
+    normalized = party_name.strip()
+    
+    # Handle special cases
+    if normalized in ['FORD - K', 'FORD-K']:
+        return 'FORD-K.svg'
+    elif normalized in ['IND', 'IND.']:
+        return 'IND.svg'
+    
+    # Default: remove spaces and periods
+    return normalized.replace(' ', '-').replace('.', '') + '.svg'
+
+
 @app.route('/parties/')
 def parties():
     """Parties page."""
@@ -142,10 +160,13 @@ def parties():
     for party in parties_data:
         # Create slug from party name
         slug = party['party'].lower().replace(' ', '-').replace('.', '')
+        # Create logo filename (handle special characters)
+        logo_filename = get_logo_filename(party['party'])
         parties.append({
             'name': party['party'],
             'full_name': party['party'],  # Could be expanded with full names
             'slug': slug,
+            'logo_filename': logo_filename,
             'mp_count': party['mp_count'],
             'statement_count': party['statement_count'] if party['statement_count'] else 0,
             'avg_statements_per_mp': party['avg_statements_per_mp'] if party['avg_statements_per_mp'] else 0
@@ -205,9 +226,13 @@ def party_detail(party_slug):
     
     conn.close()
     
+    # Create logo filename (handle special cases)
+    party_logo_filename = get_logo_filename(party_stats['party'])
+    
     return render_template('pages/party.html',
                          party_name=party_stats['party'],
                          party_full_name=party_stats['party'],
+                         party_logo_filename=party_logo_filename,
                          mp_count=party_stats['mp_count'],
                          total_statements=party_stats['total_statements'],
                          avg_statements=party_stats['avg_statements'],
