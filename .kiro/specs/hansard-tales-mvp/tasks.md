@@ -165,7 +165,7 @@
   - Add party filter
   - Link to individual profiles
 
-- [ ] 4.6 Implement site generation script
+- [x] 4.6 Implement site generation script
   - Create scripts/generate_site.py
   - Query database for MP data
   - Render templates with Jinja2
@@ -177,7 +177,7 @@
 ### 5. Client-Side Search
 
 - [ ] 5.1 Generate search index JSON
-  - Create scripts/generate_search_index.py
+  - Create generate_search_index.py
   - Query current MPs with performance data
   - Query historical terms for each MP
   - Format data for Fuse.js (name, constituency, party, keywords)
