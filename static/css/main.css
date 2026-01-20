@@ -1,0 +1,47 @@
+/* 
+ * Hansard Tales - Custom CSS
+ * Minimal custom styles - Tailwind CSS handles most styling
+ */
+
+/* Helvetica Neue as primary with system font fallback */
+body {
+    font-family: "Helvetica Neue", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+/* Smooth scrolling */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Print styles */
+@media print {
+
+    header,
+    footer,
+    .no-print {
+        display: none !important;
+    }
+
+    body {
+        background: white !important;
+    }
+
+    a {
+        text-decoration: underline;
+    }
+
+    a[href]:after {
+        content: " (" attr(href) ")";
+    }
+}
+
+/* Custom focus styles for accessibility */
+*:focus-visible {
+    outline: 2px solid #2f9e6b;
+    outline-offset: 2px;
+}
+
+/* Ensure mobile menu animation is smooth */
+#navMenu {
+    transition: max-height 0.3s ease-in-out;
+}
