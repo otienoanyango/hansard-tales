@@ -36,7 +36,7 @@
 
 ### 1. Project Setup
 - [x] 1.1 Initialize Git repository structure
-  - Create directory structure (data/, scripts/, templates/, output/)
+  - Create directory structure (data/, templates/, output/)
   - Set up .gitignore for Python and data files
   - Initialize README.md with project overview
 
@@ -46,7 +46,8 @@
   - Document local development workflow
 
 - [x] 1.3 Initialize SQLite database schema
-  - Create database initialization script (scripts/init_db.py)
+  - Create database initialization module (hansard_tales/database/init_db.py)
+  - Add console entry point (hansard-init-db) in pyproject.toml
   - Implement parliamentary_terms table
   - Implement mps table
   - Implement mp_terms junction table
@@ -110,7 +111,8 @@
   - Document scraping process and data format
 
 - [x] 3.2 Populate MPs database
-  - Created import script (scripts/import_mps.py) with comprehensive functionality
+  - Created import module (hansard_tales/database/import_mps.py) with comprehensive functionality
+  - Added console entry point (hansard-import-mps) in pyproject.toml
   - Imports MP data from JSON files into SQLite database
   - Features: get_term_by_year(), get_or_create_mp(), link_mp_to_term(), import_from_json(), verify_import()
   - Handles nominated MPs (without constituencies) using 'Nominated' placeholder
@@ -130,7 +132,7 @@
   - Configured Helvetica Neue as primary font with system font fallback (zero downloads)
   - Implemented mobile-first responsive design with mobile navigation toggle
   - Created Flask development server (app.py) with hot-reload for local testing
-  - Created static site generator (scripts/generate_static_site.py) for GitHub Pages deployment
+  - Created static site generator module (hansard_tales/site_generator.py) with console entry point (hansard-generate-site)
   - Set up Docker environment (Dockerfile, docker-compose.yml) for containerized development
   - Created comprehensive documentation (DOCKER_SETUP.md, QUICKSTART.md, templates/README.md, templates/COLOR_GUIDE.md)
   - Created test page (templates/pages/test.html) demonstrating color palette and components
@@ -166,13 +168,15 @@
   - Link to individual profiles
 
 - [x] 4.6 Implement site generation script
-  - Create scripts/generate_site.py
+  - Create site generator module (hansard_tales/site_generator.py)
+  - Add console entry point (hansard-generate-site) in pyproject.toml
   - Query database for MP data
   - Render templates with Jinja2
   - Generate all 349 MP profile pages
   - Generate homepage, party pages, listings
   - Copy static assets (CSS, JS, images)
   - Output to output/ directory
+  - Support configurable base path for GitHub Pages deployment
 
 ### 5. Client-Side Search
 
