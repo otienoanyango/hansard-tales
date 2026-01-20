@@ -216,12 +216,15 @@
 
 ### 6. GitHub Actions Setup
 
-- [ ] 6.1 Create weekly processing workflow
-  - Create .github/workflows/weekly-update.yml
-  - Configure cron schedule (Sunday 2 AM EAT)
-  - Add manual trigger option (workflow_dispatch)
-  - Set up Python environment (3.11+)
-  - Install dependencies (requirements.txt, spaCy model)
+- [x] 6.1 Create weekly processing workflow
+  - Created .github/workflows/weekly-update.yml with complete automation
+  - Configured cron schedule (Sunday 2 AM EAT = 23:00 UTC Saturday)
+  - Added manual trigger option (workflow_dispatch)
+  - Set up Python 3.11 environment with pip caching
+  - Install dependencies including spaCy model (en_core_web_sm)
+  - Database initialization check (creates if missing)
+  - Automated commit and push of changes
+  - Integrated with GitHub Pages deployment
 
 - [ ] 6.2 Implement processing pipeline
   - Run scraper to download new PDFs
