@@ -1,0 +1,100 @@
+name: Weekly Hansard Update
+
+on:
+  # Run every Sunday at 2 AM EAT (23:00 UTC Saturday)
+  schedule:
+    - cron: '0 23 * * 6'
+  
+  # Allow manual trigger
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+          python -m spacy download en_core_web_sm
+      
+      - name: Initialize database (if needed)
+        run: |
+          if [ ! -f data/hansard.db ]; then
+            echo "Database not found, initializing..."
+            hansard-init-db
+            hansard-init-parliament-data
+            hansard-import-mps --file data/mps_13th_parliament.json --current
+          else
+            echo "Database exists, skipping initialization"
+          fi
+      
+      - name: Run Hansard scraper
+        run: |
+          echo "Scraping new Hansard PDFs..."
+          hansard-scraper
+      
+      - name: Process PDFs
+        run: |
+          echo "Processing downloaded PDFs..."
+          hansard-pdf-processor
+      
+      - name: Update database
+        run: |
+          echo "Updating database with new statements..."
+          hansard-db-updater
+      
+      - name: Generate search index
+        run: |
+          echo "Generating search index..."
+          hansard-generate-search-index
+      
+      - name: Generate static site
+        run: |
+          echo "Generating static site..."
+          hansard-generate-site --base-path /hansard-tales
+      
+      - name: Commit and push changes
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          
+          # Add database and PDFs
+          git add data/hansard.db data/pdfs/*.pdf
+          
+          # Check if there are changes to commit
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "chore: weekly Hansard update - $(date +'%Y-%m-%d')"
+            git push
+          fi
+      
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+      
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './output'
+      
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
