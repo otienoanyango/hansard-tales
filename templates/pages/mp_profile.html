@@ -1,0 +1,235 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}{{ mp.name }} - {{ mp.constituency }} MP - Hansard Tales{% endblock %}
+
+{% block meta_description %}Track {{ mp.name }}, MP for {{ mp.constituency }} ({{ mp.party }}). View parliamentary
+statements, bills mentioned, and performance metrics from Hansard records.{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto">
+    <!-- MP Header Card -->
+    <div class="bg-white border-2 border-black rounded-lg shadow-sm p-6 mb-8">
+        <div class="flex flex-col md:flex-row gap-6">
+            <!-- MP Photo -->
+            <div class="flex-shrink-0">
+                {% if mp.photo_url %}
+                <img src="{{ mp.photo_url }}" alt="{{ mp.name }}"
+                    class="w-32 h-32 md:w-40 md:h-40 rounded-lg border-2 border-black object-cover">
+                {% else %}
+                <div
+                    class="w-32 h-32 md:w-40 md:h-40 rounded-lg border-2 border-black bg-kenya-green-100 flex items-center justify-center">
+                    <span class="text-4xl md:text-5xl text-kenya-green-700 font-bold">
+                        {{ mp.name.split()[0][0] }}{{ mp.name.split()[-1][0] }}
+                    </span>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- MP Info -->
+            <div class="flex-grow">
+                <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">{{ mp.name }}</h1>
+
+                <div class="space-y-2 text-gray-700">
+                    <p class="text-lg">
+                        <span class="font-semibold text-kenya-green-700">Constituency:</span>
+                        {{ mp.constituency }}
+                    </p>
+                    <p class="text-lg">
+                        <span class="font-semibold text-kenya-green-700">Party:</span>
+                        {{ mp.party or 'Independent' }}
+                    </p>
+                    <p class="text-lg">
+                        <span class="font-semibold text-kenya-green-700">Current Term:</span>
+                        {{ current_term.term_number }}th Parliament ({{ current_term.start_date[:4] }}-{{
+                        current_term.end_date[:4] }})
+                    </p>
+                    {% if mp.first_elected_year %}
+                    <p class="text-sm text-gray-600">
+                        First elected: {{ mp.first_elected_year }}
+                    </p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Current Term Performance -->
+    <div class="bg-white border-2 border-black rounded-lg shadow-sm p-6 mb-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-4 pb-2 border-b-4 border-kenya-green-500 inline-block">
+            Current Term Performance
+        </h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+            <!-- Statements Count -->
+            <div class="bg-kenya-green-50 border-2 border-black rounded-lg p-6 text-center">
+                <div class="text-4xl font-bold text-kenya-green-700 mb-2">
+                    {{ performance.statement_count or 0 }}
+                </div>
+                <div class="text-sm font-semibold text-gray-700 uppercase tracking-wide">
+                    Statements
+                </div>
+            </div>
+
+            <!-- Sessions Attended -->
+            <div class="bg-kenya-red-50 border-2 border-black rounded-lg p-6 text-center">
+                <div class="text-4xl font-bold text-kenya-red-700 mb-2">
+                    {{ performance.sessions_attended or 0 }}
+                </div>
+                <div class="text-sm font-semibold text-gray-700 uppercase tracking-wide">
+                    Sessions Attended
+                </div>
+            </div>
+
+            <!-- Bills Mentioned -->
+            <div class="bg-warm-white border-2 border-black rounded-lg p-6 text-center">
+                <div class="text-4xl font-bold text-gray-900 mb-2">
+                    {{ performance.bills_mentioned or 0 }}
+                </div>
+                <div class="text-sm font-semibold text-gray-700 uppercase tracking-wide">
+                    Bills Mentioned
+                </div>
+            </div>
+        </div>
+
+        {% if performance.last_active_date %}
+        <p class="text-sm text-gray-600 mt-4 text-center">
+            Last active: {{ performance.last_active_date }}
+        </p>
+        {% endif %}
+    </div>
+
+    <!-- Historical Terms (if applicable) -->
+    {% if historical_terms and historical_terms|length > 1 %}
+    <div class="bg-white border-2 border-black rounded-lg shadow-sm p-6 mb-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-4 pb-2 border-b-4 border-kenya-red-400 inline-block">
+            Historical Performance
+        </h2>
+
+        <div class="mt-6 space-y-4">
+            {% for term in historical_terms %}
+            {% if not term.is_current %}
+            <div class="bg-gray-50 border-2 border-gray-300 rounded-lg p-4">
+                <h3 class="text-lg font-bold text-gray-900 mb-2">
+                    {{ term.term_number }}th Parliament
+                    <span class="text-sm font-normal text-gray-600">
+                        ({{ term.elected_date[:4] if term.elected_date else '?' }}-{{ term.left_date[:4] if
+                        term.left_date else 'present' }})
+                    </span>
+                </h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+                    <div>
+                        <span class="font-semibold text-gray-700">Constituency:</span>
+                        <span class="text-gray-600">{{ term.constituency }}</span>
+                    </div>
+                    <div>
+                        <span class="font-semibold text-gray-700">Party:</span>
+                        <span class="text-gray-600">{{ term.party or 'Independent' }}</span>
+                    </div>
+                    <div>
+                        <span class="font-semibold text-gray-700">Statements:</span>
+                        <span class="text-gray-600">{{ term.statement_count or 0 }}</span>
+                    </div>
+                    <div>
+                        <span class="font-semibold text-gray-700">Sessions:</span>
+                        <span class="text-gray-600">{{ term.sessions_attended or 0 }}</span>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Recent Statements -->
+    <div class="bg-white border-2 border-black rounded-lg shadow-sm p-6">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+            <h2
+                class="text-2xl font-bold text-gray-900 pb-2 border-b-4 border-kenya-green-500 inline-block mb-4 md:mb-0">
+                Recent Statements
+            </h2>
+
+            <!-- Term Filter -->
+            {% if historical_terms and historical_terms|length > 1 %}
+            <div class="flex items-center gap-2">
+                <label for="term-filter" class="text-sm font-semibold text-gray-700">Filter by term:</label>
+                <select id="term-filter"
+                    class="px-3 py-2 border-2 border-black rounded-md bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-kenya-green-500">
+                    <option value="current" selected>Current ({{ current_term.term_number }}th)</option>
+                    {% for term in historical_terms %}
+                    {% if not term.is_current %}
+                    <option value="{{ term.term_number }}">{{ term.term_number }}th Parliament</option>
+                    {% endif %}
+                    {% endfor %}
+                </select>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Statements List -->
+        <div id="statements-list" class="space-y-4">
+            {% if statements and statements|length > 0 %}
+            {% for statement in statements %}
+            <div class="statement-item border-l-4 border-kenya-green-500 pl-4 py-3 bg-gray-50 rounded-r-lg"
+                data-term="{{ statement.term_number }}">
+                <div class="flex flex-col md:flex-row md:items-start md:justify-between mb-2">
+                    <p class="text-sm font-semibold text-gray-700">
+                        {{ statement.date }}
+                        {% if statement.term_number != current_term.term_number %}
+                        <span class="text-xs text-gray-500">({{ statement.term_number }}th Parliament)</span>
+                        {% endif %}
+                    </p>
+                    {% if statement.hansard_url %}
+                    <a href="{{ statement.hansard_url }}" target="_blank" rel="noopener"
+                        class="text-sm text-kenya-green-700 hover:text-kenya-green-900 font-semibold flex items-center gap-1">
+                        View in Hansard (Page {{ statement.page_number }})
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                        </svg>
+                    </a>
+                    {% endif %}
+                </div>
+                <p class="text-gray-800 leading-relaxed">{{ statement.text[:500] }}{% if statement.text|length > 500
+                    %}...{% endif %}</p>
+                {% if statement.bill_reference %}
+                <p class="text-sm text-kenya-red-700 font-semibold mt-2">
+                    📋 {{ statement.bill_reference }}
+                </p>
+                {% endif %}
+            </div>
+            {% endfor %}
+            {% else %}
+            <div class="text-center py-12 text-gray-500">
+                <p class="text-lg">No statements recorded yet for this MP.</p>
+                <p class="text-sm mt-2">Check back after the next Hansard processing cycle.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Term filter functionality
+    const termFilter = document.getElementById('term-filter');
+    if (termFilter) {
+        termFilter.addEventListener('change', function (e) {
+            const selectedTerm = e.target.value;
+            const statements = document.querySelectorAll('.statement-item');
+
+            statements.forEach(stmt => {
+                const stmtTerm = stmt.dataset.term;
+                if (selectedTerm === 'current') {
+                    // Show only current term statements
+                    stmt.style.display = stmtTerm === '{{ current_term.term_number }}' ? 'block' : 'none';
+                } else {
+                    // Show statements from selected term
+                    stmt.style.display = stmtTerm === selectedTerm ? 'block' : 'none';
+                }
+            });
+        });
+    }
+</script>
+{% endblock %}
