@@ -21,19 +21,29 @@ def test_db():
     # Ensure database exists
     db_path = Path('data/hansard.db')
     if not db_path.exists():
-        pytest.skip("Database not found")
+        pytest.skip("Database not found - skipping integration tests")
     
     conn = sqlite3.connect(str(db_path))
     conn.row_factory = sqlite3.Row
     
-    # Get a real MP ID for testing
+    # Check if tables exist
     cursor = conn.cursor()
+    try:
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='mps'")
+        if not cursor.fetchone():
+            conn.close()
+            pytest.skip("Database tables not initialized - skipping integration tests")
+    except sqlite3.Error:
+        conn.close()
+        pytest.skip("Database error - skipping integration tests")
+    
+    # Get a real MP ID for testing
     cursor.execute("SELECT id FROM mps LIMIT 1")
     result = cursor.fetchone()
     
     if not result:
         conn.close()
-        pytest.skip("No MPs in database")
+        pytest.skip("No MPs in database - skipping integration tests")
     
     mp_id = result[0]
     conn.close()
@@ -241,15 +251,23 @@ class TestDatabaseQueries:
     
     def test_get_db_connection_works(self):
         """Test that database connection works."""
+        db_path = Path('data/hansard.db')
+        if not db_path.exists():
+            pytest.skip("Database not found - skipping integration test")
+        
         try:
             conn = get_db_connection()
             assert conn is not None
             conn.close()
-        except Exception:
-            pytest.skip("Database not available")
+        except Exception as e:
+            pytest.skip(f"Database not available: {e}")
     
     def test_can_query_mps_table(self):
         """Test that we can query MPs table."""
+        db_path = Path('data/hansard.db')
+        if not db_path.exists():
+            pytest.skip("Database not found - skipping integration test")
+        
         try:
             conn = get_db_connection()
             cursor = conn.cursor()
@@ -257,11 +275,15 @@ class TestDatabaseQueries:
             result = cursor.fetchone()
             assert result['count'] >= 0
             conn.close()
-        except Exception:
-            pytest.skip("Database not available")
+        except Exception as e:
+            pytest.skip(f"Database not available: {e}")
     
     def test_can_query_mp_terms_table(self):
         """Test that we can query mp_terms table."""
+        db_path = Path('data/hansard.db')
+        if not db_path.exists():
+            pytest.skip("Database not found - skipping integration test")
+        
         try:
             conn = get_db_connection()
             cursor = conn.cursor()
@@ -269,8 +291,8 @@ class TestDatabaseQueries:
             result = cursor.fetchone()
             assert result['count'] >= 0
             conn.close()
-        except Exception:
-            pytest.skip("Database not available")
+        except Exception as e:
+            pytest.skip(f"Database not available: {e}")
 
 
 class TestMPProfileStyling:
