@@ -33,13 +33,13 @@ jobs:
     
     - name: Run tests with coverage
       run: |
-        python -m pytest -n auto --cov=hansard_tales --cov-report=term-missing --cov-report=xml -v
+        python -m pytest -n auto --cov=hansard_tales --cov-report=term-missing --cov-report=xml --junitxml=junit.xml -v
     
     - name: Upload coverage to Codecov
       if: matrix.python-version == '3.11'
       uses: codecov/codecov-action@v4
       with:
-        file: ./coverage.xml
+        files: ./coverage.xml,./junit.xml
         fail_ci_if_error: false
         token: ${{ secrets.CODECOV_TOKEN }}
     
