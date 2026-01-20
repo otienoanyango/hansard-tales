@@ -162,7 +162,7 @@ class TestMPProfileRoute:
         response = client.get(f'/mp/{test_db}/')
         assert response.status_code == 200
     
-    def test_mp_profile_not_found(self, client):
+    def test_mp_profile_not_found(self, client, test_db):
         """Test MP profile returns 404 for non-existent MP."""
         response = client.get('/mp/999999/')
         assert response.status_code == 404
