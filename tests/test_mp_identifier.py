@@ -474,3 +474,100 @@ class TestRealPDFIntegration:
             # Should have page number
             assert stmt.page_number is not None
             assert stmt.page_number > 0
+
+
+
+class TestCLI:
+    """Test suite for CLI functionality."""
+    
+    def test_main_with_text_file(self, tmp_path):
+        """Test CLI with plain text file."""
+        # Create test text file
+        text_file = tmp_path / "test.txt"
+        text_file.write_text("Hon. John Doe: This is a test statement.")
+        
+        # Mock sys.argv
+        with patch('sys.argv', ['mp-identifier', str(text_file)]):
+            from hansard_tales.processors.mp_identifier import main
+            result = main()
+        
+        assert result == 0
+    
+    def test_main_with_json_file(self, tmp_path):
+        """Test CLI with JSON file from PDFProcessor."""
+        # Create test JSON file
+        json_file = tmp_path / "pages.json"
+        json_data = {
+            'pages': [
+                {
+                    'page_number': 1,
+                    'text': 'Hon. Jane Smith: This is a statement.'
+                }
+            ]
+        }
+        json_file.write_text(json.dumps(json_data))
+        
+        # Mock sys.argv
+        with patch('sys.argv', ['mp-identifier', str(json_file)]):
+            from hansard_tales.processors.mp_identifier import main
+            result = main()
+        
+        assert result == 0
+    
+    def test_main_with_output_file(self, tmp_path):
+        """Test CLI with output file."""
+        # Create test text file
+        text_file = tmp_path / "test.txt"
+        text_file.write_text("Hon. Alice Brown: Test statement here.")
+        
+        output_file = tmp_path / "output.json"
+        
+        # Mock sys.argv
+        with patch('sys.argv', ['mp-identifier', str(text_file), '--output', str(output_file)]):
+            from hansard_tales.processors.mp_identifier import main
+            result = main()
+        
+        assert result == 0
+        assert output_file.exists()
+        
+        # Verify output content
+        with open(output_file) as f:
+            data = json.load(f)
+        
+        assert 'statistics' in data
+        assert 'statements' in data
+    
+    def test_main_with_include_non_mps(self, tmp_path):
+        """Test CLI with --include-non-mps flag."""
+        # Create test text file
+        text_file = tmp_path / "test.txt"
+        text_file.write_text("The Speaker: Order! Order!\nHon. Bob Wilson: Thank you, Mr. Speaker.")
+        
+        # Mock sys.argv
+        with patch('sys.argv', ['mp-identifier', str(text_file), '--include-non-mps']):
+            from hansard_tales.processors.mp_identifier import main
+            result = main()
+        
+        assert result == 0
+    
+    def test_main_file_not_found(self):
+        """Test CLI with non-existent file."""
+        # Mock sys.argv
+        with patch('sys.argv', ['mp-identifier', '/nonexistent/file.txt']):
+            from hansard_tales.processors.mp_identifier import main
+            result = main()
+        
+        assert result == 1
+    
+    def test_main_invalid_json(self, tmp_path):
+        """Test CLI with invalid JSON format."""
+        # Create invalid JSON file
+        json_file = tmp_path / "invalid.json"
+        json_file.write_text('{"invalid": "format"}')
+        
+        # Mock sys.argv
+        with patch('sys.argv', ['mp-identifier', str(json_file)]):
+            from hansard_tales.processors.mp_identifier import main
+            result = main()
+        
+        assert result == 1

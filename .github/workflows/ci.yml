@@ -46,4 +46,4 @@ jobs:
     - name: Check coverage threshold
       if: matrix.python-version == '3.11'
       run: |
-        python -m pytest --cov=hansard_tales --cov-fail-under=74 --cov-report=term-missing
+        python -m pytest --cov=hansard_tales --cov-fail-under=85 --cov-report=term-missing

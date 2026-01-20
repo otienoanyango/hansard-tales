@@ -509,15 +509,19 @@ class TestRealPDFIntegration:
 class TestCLI:
     """Test suite for CLI argument parsing and main() function."""
     
+    @patch('pathlib.Path.is_file')
     @patch('hansard_tales.processors.pdf_processor.PDFProcessor')
-    @patch('sys.argv', ['hansard-pdf-processor', '--pdf', 'test.pdf'])
-    def test_main_with_pdf_argument(self, mock_processor_class):
+    @patch('sys.argv', ['hansard-pdf-processor', 'test.pdf'])
+    def test_main_with_pdf_argument(self, mock_processor_class, mock_is_file):
         """Test main() with PDF file argument."""
         from hansard_tales.processors.pdf_processor import main
         
+        # Mock that path is a file
+        mock_is_file.return_value = True
+        
         # Mock processor instance
         mock_processor = Mock()
-        mock_processor.extract_text.return_value = {
+        mock_processor.process_pdf.return_value = {
             'text': 'Test content',
             'pages': 10,
             'metadata': {}
@@ -534,23 +538,27 @@ class TestCLI:
         # Verify processor was initialized
         mock_processor_class.assert_called_once()
         
-        # Verify extract_text was called
-        mock_processor.extract_text.assert_called_once_with('test.pdf')
+        # Verify process_pdf was called
+        mock_processor.process_pdf.assert_called_once()
     
-    @patch('builtins.open', create=True)
+    @patch('pathlib.Path.is_file')
     @patch('hansard_tales.processors.pdf_processor.PDFProcessor')
-    @patch('sys.argv', ['hansard-pdf-processor', '--pdf', 'test.pdf', '--save'])
-    def test_main_with_save_flag(self, mock_processor_class, mock_open):
-        """Test main() with --save flag."""
+    @patch('sys.argv', ['hansard-pdf-processor', 'test.pdf', '--print-text'])
+    def test_main_with_print_flag(self, mock_processor_class, mock_is_file):
+        """Test main() with --print-text flag."""
         from hansard_tales.processors.pdf_processor import main
+        
+        # Mock that path is a file
+        mock_is_file.return_value = True
         
         # Mock processor instance
         mock_processor = Mock()
-        mock_processor.extract_text.return_value = {
+        mock_processor.process_pdf.return_value = {
             'text': 'Test content',
             'pages': 10,
             'metadata': {}
         }
+        mock_processor.get_full_text.return_value = 'Test content'
         mock_processor_class.return_value = mock_processor
         
         # Run main
@@ -560,5 +568,5 @@ class TestCLI:
         # Should exit with 0 (success)
         assert exc_info.value.code == 0
         
-        # Verify file was opened for writing
-        mock_open.assert_called_once()
+        # Verify get_full_text was called
+        mock_processor.get_full_text.assert_called_once()

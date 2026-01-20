@@ -369,6 +369,9 @@ class TestCLI:
         """Test main() with custom arguments."""
         from hansard_tales.database.init_parliament_data import main
         
+        # Mock successful initialization
+        mock_init_parliament.return_value = True
+        
         # Run main
         with pytest.raises(SystemExit) as exc_info:
             main()
@@ -377,13 +380,16 @@ class TestCLI:
         assert exc_info.value.code == 0
         
         # Verify initialize_parliament_data was called
-        mock_init_parliament.assert_called_once_with('test.db')
+        mock_init_parliament.assert_called_once_with('test.db', False)
     
     @patch('hansard_tales.database.init_parliament_data.initialize_parliament_data')
     @patch('sys.argv', ['hansard-init-parliament'])
     def test_main_default_path(self, mock_init_parliament):
         """Test main() with default database path."""
         from hansard_tales.database.init_parliament_data import main
+        
+        # Mock successful initialization
+        mock_init_parliament.return_value = True
         
         # Run main
         with pytest.raises(SystemExit) as exc_info:
@@ -393,4 +399,4 @@ class TestCLI:
         assert exc_info.value.code == 0
         
         # Verify initialize_parliament_data was called with default path
-        mock_init_parliament.assert_called_once_with('data/hansard.db')
+        mock_init_parliament.assert_called_once_with('data/hansard.db', False)

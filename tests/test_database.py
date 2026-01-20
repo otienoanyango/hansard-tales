@@ -368,15 +368,18 @@ class TestInitDBCLI:
         # Verify initialize_database was called
         mock_init_db.assert_called_once_with('test.db')
     
-    @patch('os.path.exists')
+    @patch('pathlib.Path.exists')
     @patch('hansard_tales.database.init_db.initialize_database')
     @patch('sys.argv', ['hansard-init-db'])
-    def test_main_default_path(self, mock_init_db, mock_exists):
+    def test_main_default_path(self, mock_init_db, mock_path_exists):
         """Test init_db main() with default database path."""
         from hansard_tales.database.init_db import main
         
         # Mock that database doesn't exist
-        mock_exists.return_value = False
+        mock_path_exists.return_value = False
+        
+        # Mock successful initialization
+        mock_init_db.return_value = True
         
         # Run main
         with pytest.raises(SystemExit) as exc_info:
