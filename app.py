@@ -26,7 +26,7 @@ def get_db_connection():
 @app.route('/')
 def index():
     """Home page."""
-    return render_template('pages/test.html', active_page='home')
+    return render_template('pages/homepage.html', active_page='home')
 
 
 @app.route('/mps/')
