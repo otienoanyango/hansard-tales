@@ -47,31 +47,75 @@ jobs:
           fi
       
       - name: Run Hansard scraper
+        id: scraper
+        continue-on-error: true
         run: |
           echo "Scraping new Hansard PDFs..."
+          hansard-scraper || {
+            echo "::error::Hansard scraper failed"
+            exit 1
+          }
+      
+      - name: Retry Hansard scraper (if failed)
+        if: steps.scraper.outcome == 'failure'
+        run: |
+          echo "Retrying Hansard scraper after failure..."
+          sleep 30
           hansard-scraper
       
       - name: Process PDFs
+        id: processor
+        continue-on-error: true
         run: |
           echo "Processing downloaded PDFs..."
+          hansard-pdf-processor || {
+            echo "::error::PDF processor failed"
+            exit 1
+          }
+      
+      - name: Retry PDF processor (if failed)
+        if: steps.processor.outcome == 'failure'
+        run: |
+          echo "Retrying PDF processor after failure..."
+          sleep 10
           hansard-pdf-processor
       
       - name: Update database
+        id: db_updater
+        continue-on-error: true
         run: |
           echo "Updating database with new statements..."
+          hansard-db-updater || {
+            echo "::error::Database updater failed"
+            exit 1
+          }
+      
+      - name: Retry database update (if failed)
+        if: steps.db_updater.outcome == 'failure'
+        run: |
+          echo "Retrying database update after failure..."
+          sleep 10
           hansard-db-updater
       
       - name: Generate search index
         run: |
           echo "Generating search index..."
-          hansard-generate-search-index
+          hansard-generate-search-index || {
+            echo "::error::Search index generation failed"
+            exit 1
+          }
       
       - name: Generate static site
         run: |
           echo "Generating static site..."
-          hansard-generate-site --base-path /hansard-tales
+          hansard-generate-site --base-path /hansard-tales || {
+            echo "::error::Static site generation failed"
+            exit 1
+          }
       
       - name: Commit and push changes
+        id: commit
+        continue-on-error: true
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
@@ -84,8 +128,18 @@ jobs:
             echo "No changes to commit"
           else
             git commit -m "chore: weekly Hansard update - $(date +'%Y-%m-%d')"
-            git push
+            git push || {
+              echo "::error::Git push failed"
+              exit 1
+            }
           fi
+      
+      - name: Retry commit and push (if failed)
+        if: steps.commit.outcome == 'failure'
+        run: |
+          echo "Retrying git push after failure..."
+          sleep 10
+          git push
       
       - name: Setup Pages
         uses: actions/configure-pages@v4
@@ -98,3 +152,47 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+      
+      - name: Create workflow summary
+        if: always()
+        run: |
+          echo "## Weekly Hansard Update Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Date:** $(date +'%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Step Results" >> $GITHUB_STEP_SUMMARY
+          echo "- Scraper: ${{ steps.scraper.outcome || 'skipped' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- PDF Processor: ${{ steps.processor.outcome || 'skipped' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Database Update: ${{ steps.db_updater.outcome || 'skipped' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Commit & Push: ${{ steps.commit.outcome || 'skipped' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Deployment: ${{ steps.deployment.outcome || 'skipped' }}" >> $GITHUB_STEP_SUMMARY
+      
+      - name: Send failure notification
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issue_body = `## ⚠️ Weekly Hansard Update Failed
+            
+            **Workflow Run:** [#${context.runNumber}](${context.payload.repository.html_url}/actions/runs/${context.runId})
+            **Date:** ${new Date().toISOString()}
+            
+            ### Failed Steps
+            - Scraper: ${{ steps.scraper.outcome }}
+            - PDF Processor: ${{ steps.processor.outcome }}
+            - Database Update: ${{ steps.db_updater.outcome }}
+            - Commit & Push: ${{ steps.commit.outcome }}
+            - Deployment: ${{ steps.deployment.outcome }}
+            
+            Please check the [workflow logs](${context.payload.repository.html_url}/actions/runs/${context.runId}) for details.
+            
+            ---
+            *This issue was automatically created by the Weekly Hansard Update workflow.*`;
+            
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `Weekly Hansard Update Failed - ${new Date().toISOString().split('T')[0]}`,
+              body: issue_body,
+              labels: ['automation', 'bug']
+            });
