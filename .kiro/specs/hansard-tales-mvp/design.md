@@ -113,7 +113,8 @@ Weekly Batch Process:
 | **PDF Processing** | pdfplumber | Free | Pure Python, good accuracy, no external dependencies |
 | **NLP** | spaCy | Free | Fast, accurate NER, works offline |
 | **Database** | SQLite | Free | Serverless, versioned in Git, perfect for read-heavy workloads |
-| **Static Site** | Hugo or Jinja2 | Free | Hugo: blazing fast builds; Jinja2: Python-native |
+| **Static Site** | Jinja2 | Free | Python-native, simple templates, easy to maintain |
+| **CSS Framework** | Tailwind CSS (CDN) | Free | No build step, utility-first, mobile-first responsive |
 | **Search** | Fuse.js | Free | Client-side fuzzy search, no backend needed |
 | **Hosting** | Cloudflare Pages | Free | Unlimited bandwidth, global CDN, auto HTTPS |
 | **CI/CD** | GitHub Actions | Free | 2,000 minutes/month free for public repos |
@@ -620,6 +621,33 @@ jobs:
 ```
 
 ### 5.3 Static Site Templates (Jinja2)
+
+**Design System:**
+- **CSS Framework**: Tailwind CSS via CDN (no build step required)
+- **Color Palette**: Kenyan flag-inspired colors
+  - Warm white (#FAF9F6) as base background
+  - Kenya green (subtle shades 50-900) for primary accents
+  - Kenya red (subtle shades 50-900) for secondary accents
+  - Black borders (2px) for clear visual definition
+- **Typography**: Helvetica Neue as primary font with system font fallback
+  - Font stack: "Helvetica Neue" → San Francisco → Segoe UI → Roboto → Arial
+  - Zero font downloads (uses pre-installed fonts)
+  - Excellent readability across all devices
+- **Responsive Design**: Mobile-first with Tailwind breakpoints
+- **Accessibility**: WCAG AA compliant, semantic HTML, ARIA labels
+
+**Template Structure:**
+- `templates/layouts/base.html` - Base layout with navigation, header, footer
+- `templates/pages/` - Page-specific templates
+- `templates/components/` - Reusable UI components
+- `static/css/main.css` - Minimal custom CSS (smooth scroll, print, focus)
+- `static/js/main.js` - Mobile navigation toggle
+
+**Development & Deployment:**
+- Flask development server (app.py) with hot-reload for local testing
+- Docker environment (Dockerfile, docker-compose.yml) for containerized development
+- Static site generator (scripts/generate_static_site.py) for GitHub Pages
+- GitHub Actions workflow for auto-deployment on push
 
 ```html
 <!-- templates/mp_profile.html -->
