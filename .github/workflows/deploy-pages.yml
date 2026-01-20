@@ -37,6 +37,10 @@ jobs:
           hansard-init-parliament-data
           hansard-import-mps --file data/mps_13th_parliament.json --current
 
+      - name: Generate search index
+        run: |
+          hansard-generate-search-index
+
       - name: Generate static site
         run: |
           hansard-generate-site --base-path /hansard-tales
