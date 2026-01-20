@@ -1,5 +1,9 @@
 # Hansard Tales - Quick Start Guide
 
+## Live Demo
+
+**View the live site**: https://otienoanyango.github.io/hansard-tales/
+
 ## View Templates Locally
 
 ### Option 1: Docker (Recommended)
