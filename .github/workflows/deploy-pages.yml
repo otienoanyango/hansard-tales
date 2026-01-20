@@ -35,7 +35,7 @@ jobs:
         run: |
           hansard-init-db
           hansard-init-parliament-data
-          hansard-import-mps --year 2022 --file data/mps_13th_parliament.json
+          hansard-import-mps --file data/mps_13th_parliament.json --current
 
       - name: Generate static site
         run: |
