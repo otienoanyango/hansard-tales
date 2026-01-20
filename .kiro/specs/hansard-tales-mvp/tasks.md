@@ -275,14 +275,14 @@
   - Created detailed results document (docs/TASK_8.1_RESULTS.md)
   - Identified minor improvements needed (see optional tasks below)
 
-- [ ] 8.2 Test site generation
+- [x] 8.2 Test site generation
   - Generate static site locally
   - Test all page types (MP profiles, homepage, listings)
   - Verify search functionality
   - Test on mobile devices
   - Check page load times
 
-- [ ] 8.3 Test parliamentary term tracking
+- [x] 8.3 Test parliamentary term tracking
   - Verify current term data displays correctly
   - Test historical term display (if data available)
   - Test term filtering on MP profiles

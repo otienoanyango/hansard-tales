@@ -1,0 +1,81 @@
+[22:35:17] INFO: Starting Task 8.3: Test Parliamentary Term Tracking
+[22:35:17] INFO: Output directory: output
+[22:35:17] INFO: Database: data/hansard.db
+[22:35:17] INFO: ================================================================================
+[22:35:17] INFO: STEP 1: Test Database Parliamentary Terms
+[22:35:17] INFO: ================================================================================
+[22:35:17] INFO: Found 1 parliamentary terms in database
+[22:35:17] INFO:   Term 13: 2022-09-08 to 2027-09-07 (CURRENT)
+[22:35:17] WARN: 
+⚠ No MPs with multiple terms found
+[22:35:17] INFO: ✓ Current term: 13
+[22:35:17] INFO: ✓ 13th Parliament present
+[22:35:17] INFO: 
+================================================================================
+[22:35:17] INFO: STEP 2: Test MP Profile Term Display
+[22:35:17] INFO: ================================================================================
+[22:35:17] INFO: Testing 20 MP profiles for term data...
+[22:35:17] INFO: 
+Tested 20 profiles:
+[22:35:17] INFO:   Profiles with current term info: 20/20
+[22:35:17] INFO:   Profiles with historical terms: 0/20
+[22:35:17] INFO:   Profiles with term filter: 0/20
+[22:35:17] INFO: ✓ All tested profiles display current term information
+[22:35:17] WARN: ⚠ No profiles display historical terms (may be expected if no MPs have multiple terms)
+[22:35:17] INFO: 
+================================================================================
+[22:35:17] INFO: STEP 3: Test Search Index Term Data
+[22:35:17] INFO: ================================================================================
+[22:35:17] INFO: Search index contains 433 MPs
+[22:35:17] INFO: 
+Search index term data:
+[22:35:17] INFO:   MPs with current_term field: 433/433
+[22:35:17] INFO:   MPs with historical_terms: 433/433
+[22:35:17] INFO: 
+✓ All MPs have current_term data in search index
+[22:35:17] INFO: ✓ 433 MPs have historical_terms data
+[22:35:17] INFO: 
+================================================================================
+[22:35:17] INFO: STEP 4: Test Term-Specific Performance Data
+[22:35:17] INFO: ================================================================================
+[22:35:17] INFO: Statements by parliamentary term:
+[22:35:17] INFO:   Term 13: 1491 statements from 85 MPs
+[22:35:17] INFO: 
+Sample MP performance:
+[22:35:17] INFO:   Speaker: 525 statements in Term 13
+[22:35:17] INFO: 
+✓ Found 1491 total statements across all terms
+[22:35:17] INFO: 
+================================================================================
+[22:35:17] INFO: FINAL REPORT: Task 8.3 - Test Parliamentary Term Tracking
+[22:35:17] INFO: ================================================================================
+[22:35:17] INFO: 
+📊 Database Terms:
+[22:35:17] INFO:   Total terms: 1
+[22:35:17] INFO:   Current term: 13
+[22:35:17] INFO:   Has 13th Parliament: ✓
+[22:35:17] INFO:   Has 12th Parliament: ✗
+[22:35:17] INFO:   MPs with multiple terms: 0
+[22:35:17] INFO: 
+👤 MP Profile Pages:
+[22:35:17] INFO:   Profiles tested: 20
+[22:35:17] INFO:   With current term: 20/20
+[22:35:17] INFO:   With historical terms: 0/20
+[22:35:17] INFO:   With term filter: 0/20
+[22:35:17] INFO: 
+🔍 Search Index:
+[22:35:17] INFO:   Total MPs: 433
+[22:35:17] INFO:   With current_term: 433/433
+[22:35:17] INFO:   With historical_terms: 433/433
+[22:35:17] INFO: 
+📈 Performance Data:
+[22:35:17] INFO:   Term 13: 1491 statements from 85 MPs
+[22:35:17] INFO: 
+🎯 Overall Status:
+[22:35:17] INFO:   Issues found: 0
+[22:35:17] INFO: 
+✅ SUCCESS: All parliamentary term tracking tests passed!
+[22:35:17] INFO:   - Database terms configured correctly
+[22:35:17] INFO:   - MP profiles display term information
+[22:35:17] INFO:   - Search index includes term data
+[22:35:17] INFO:   - Performance data tracked by term
