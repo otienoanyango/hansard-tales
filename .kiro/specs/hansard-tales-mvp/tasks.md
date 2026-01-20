@@ -191,20 +191,26 @@
   - Export to output/data/mp-search-index.json
   - Update .github/workflows/deploy-pages.yml to run hansard-generate-search-index after site generation
 
-- [ ] 5.2 Implement Fuse.js search
-  - Create js/search.js
-  - Load Fuse.js from CDN
-  - Fetch mp-search-index.json
-  - Configure fuzzy search (name, constituency, party)
-  - Implement search input handler
-  - Display search results with links
-  - Handle empty results gracefully
+- [x] 5.2 Implement Fuse.js search
+  - Created static/js/search.js with full Fuse.js integration
+  - Loads Fuse.js 7.0.0 from CDN
+  - Fetches mp-search-index.json with error handling
+  - Configured fuzzy search (name 40%, constituency 30%, party 20%, keywords 10%)
+  - Implemented debounced search input handler (300ms)
+  - Displays search results with MP photos, stats, and links
+  - Handles empty results, loading states, and errors gracefully
+  - Added keyboard navigation (Escape to close)
+  - Added Flask route for local development (/data/mp-search-index.json)
+  - Created comprehensive test suite (17 tests, all passing)
+  - All 461 tests passing with 87% coverage maintained
 
-- [ ] 5.3 Add search UI to homepage
-  - Add search input field
-  - Add search results container
-  - Style search results (mobile-friendly)
-  - Add loading states
+- [x] 5.3 Add search UI to homepage
+  - Search input field already present in homepage template
+  - Search results container already styled and positioned
+  - Mobile-friendly responsive design with Tailwind CSS
+  - Loading states implemented in search.js
+  - All UI elements functional with Task 5.2 implementation
+  - Note: This task was completed as part of Task 4.3 (homepage template)
 
 ## Phase 3: Deployment & Automation (Week 3)
 
