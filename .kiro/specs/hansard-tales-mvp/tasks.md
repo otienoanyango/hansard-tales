@@ -154,12 +154,12 @@
   - Add recent activity feed (optional)
   - Include navigation to all MPs and parties
 
-- [ ] 4.4 Create party pages template
+- [x] 4.4 Create party pages template
   - List all MPs by party
   - Show party statistics (total MPs, avg statements)
   - Link to individual MP profiles
 
-- [ ] 4.5 Create all MPs listing template
+- [x] 4.5 Create all MPs listing template
   - Display all 349 MPs in a table/grid
   - Add sorting options (name, constituency, statements)
   - Add party filter
