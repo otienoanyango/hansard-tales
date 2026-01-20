@@ -2,6 +2,13 @@
 
 **Transparency platform tracking Kenyan MPs through parliamentary records**
 
+[![CI](https://github.com/otienoanyango/hansard-tales/actions/workflows/ci.yml/badge.svg)](https://github.com/otienoanyango/hansard-tales/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/otienoanyango/hansard-tales/branch/main/graph/badge.svg)](https://codecov.io/gh/otienoanyango/hansard-tales)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+
+**Live Demo**: https://otienoanyango.github.io/hansard-tales/
+
 ## Overview
 
 Hansard Tales makes political accountability accessible to ordinary citizens by analyzing official parliamentary records (Hansard transcripts) and presenting MP performance data in an easy-to-understand format.
