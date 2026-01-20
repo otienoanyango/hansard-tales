@@ -29,6 +29,24 @@ def index():
     return render_template('pages/homepage.html', active_page='home')
 
 
+@app.route('/data/mp-search-index.json')
+def search_index():
+    """Serve search index JSON file."""
+    from flask import send_file
+    import os
+    
+    # Path to search index
+    index_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'output', 'data', 'mp-search-index.json')
+    
+    # Check if file exists
+    if not os.path.exists(index_path):
+        return {
+            "error": "Search index not found. Please run: hansard-generate-search-index"
+        }, 404
+    
+    return send_file(index_path, mimetype='application/json')
+
+
 @app.route('/mps/')
 def mps_list():
     """MPs listing page."""
