@@ -202,35 +202,9 @@
 {% endblock %}
 
 {% block extra_js %}
-<script>
-    // Search functionality placeholder
-    // This will be implemented with Fuse.js in task 5.2
-    const searchInput = document.getElementById('mp-search');
-    const searchResults = document.getElementById('search-results');
+<!-- Fuse.js for fuzzy search -->
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@7.0.0/dist/fuse.min.js"></script>
 
-    searchInput.addEventListener('input', function (e) {
-        const query = e.target.value.trim();
-
-        if (query.length < 2) {
-            searchResults.classList.add('hidden');
-            return;
-        }
-
-        // Placeholder: Show "coming soon" message
-        searchResults.innerHTML = `
-            <div class="p-4 text-center text-gray-600">
-                <p class="font-semibold mb-2">Search functionality coming soon!</p>
-                <p class="text-sm">For now, please <a href="/mps/" class="text-kenya-green-600 hover:text-kenya-green-800 underline">browse all MPs</a>.</p>
-            </div>
-        `;
-        searchResults.classList.remove('hidden');
-    });
-
-    // Hide results when clicking outside
-    document.addEventListener('click', function (e) {
-        if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
-            searchResults.classList.add('hidden');
-        }
-    });
-</script>
+<!-- MP Search functionality -->
+<script src="{{ url_for('static', filename='js/search.js') }}"></script>
 {% endblock %}

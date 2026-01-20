@@ -132,7 +132,10 @@ class TestHomepageSearch:
         template_path = Path('templates/pages/homepage.html')
         content = template_path.read_text()
         assert '{% block extra_js %}' in content
-        assert 'addEventListener' in content
+        # Check that search.js is loaded
+        assert 'search.js' in content
+        # Check that Fuse.js is loaded
+        assert 'fuse' in content.lower()
 
 
 class TestHomepageParliamentInfo:
