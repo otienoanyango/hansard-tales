@@ -31,8 +31,47 @@ def index():
 
 @app.route('/mps/')
 def mps_list():
-    """MPs listing page (placeholder)."""
-    return render_template('pages/test.html', active_page='mps')
+    """MPs listing page."""
+    conn = get_db_connection()
+    
+    # Get all current MPs with performance data
+    mps = conn.execute('''
+        SELECT 
+            m.id,
+            m.name,
+            mt.constituency,
+            mt.party,
+            m.photo_url,
+            COUNT(DISTINCT s.id) as statement_count,
+            COUNT(DISTINCT s.session_id) as sessions_attended
+        FROM mps m
+        JOIN mp_terms mt ON m.id = mt.mp_id
+        LEFT JOIN statements s ON s.mp_id = m.id
+        LEFT JOIN hansard_sessions hs ON s.session_id = hs.id
+        LEFT JOIN parliamentary_terms pt ON hs.term_id = pt.id AND pt.is_current = 1
+        WHERE mt.is_current = 1
+        GROUP BY m.id
+        ORDER BY statement_count DESC, m.name ASC
+    ''').fetchall()
+    
+    # Get party counts for filter dropdown
+    parties = conn.execute('''
+        SELECT 
+            mt.party as name,
+            COUNT(DISTINCT mt.mp_id) as count
+        FROM mp_terms mt
+        WHERE mt.is_current = 1 AND mt.party IS NOT NULL AND mt.party != ''
+        GROUP BY mt.party
+        ORDER BY count DESC, mt.party ASC
+    ''').fetchall()
+    
+    conn.close()
+    
+    return render_template('pages/mps_list.html',
+                         mps=mps,
+                         parties=parties,
+                         total_mps=len(mps),
+                         active_page='mps')
 
 
 @app.route('/mp/<int:mp_id>/')
