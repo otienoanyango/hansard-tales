@@ -12,32 +12,33 @@ This guide walks you through deploying Hansard Tales to Cloudflare Pages with a 
 
 **Important**: Cloudflare does NOT support registration of .ke domains. You must register with a Kenyan domain registrar and then transfer DNS management to Cloudflare.
 
-### Choosing Your Domain Type
+### Domain Choice: .co.ke with Safaricom
 
-**Recommended: .co.ke (Commercial)**
-- Cost: KES 850-1,200/year (~$6.55-9.25 USD)
-- No special requirements
-- Professional appearance
-- Suitable for commercial/informational sites
+**Selected Configuration:**
+- **Domain Type**: .co.ke (Commercial)
+- **Registrar**: Safaricom Digital
+- **Cost**: KES 1,200/year (~$9.25 USD / ~£0.77/month)
+- **Payment**: M-Pesa or Airtel Money
 
-**Alternative: .or.ke (Organization)**
-- Cost: Similar to .co.ke
-- Requires: NGO or organization registration documents
-- Best for: Registered non-profits and civil society organizations
+**Why .co.ke?**
+- No special registration requirements (unlike .or.ke which requires NGO documentation)
+- Professional appearance suitable for civic transparency platform
+- Supports hybrid revenue model (ads, partnerships, grants)
+- Widely used by legitimate civic tech and journalism platforms in Kenya
+- Immediate registration - no paperwork delays
 
-**Not Recommended: .ke (Country Code)**
-- Cost: Significantly higher
-- Requires: Company registration documents
-- Restricted availability
-- Unnecessary for MVP
+**Why Safaricom?**
+- Most trusted brand in Kenya
+- Excellent local customer support
+- Reliable infrastructure and uptime
+- Easy M-Pesa payment integration
+- Strong reputation for domain management
 
-### Recommended Kenyan Domain Registrars
-
+**Alternative Registrars** (if needed):
 | Registrar | .co.ke Price | Payment Options | Key Features |
 |-----------|--------------|-----------------|--------------|
-| **Truehost Kenya** | KES 850/year (~$6.55) | M-Pesa, Card, PayPal | Cheapest option, good reputation, easy DNS management |
-| **Kenya Web Experts** | KES 999/year (~$7.70) | M-Pesa, Card, Bank | Established since 2003, excellent support, free WHOIS privacy |
-| **Safaricom** | KES 1,200/year (~$9.25) | M-Pesa, Airtel Money | Most trusted brand, local support, reliable infrastructure |
+| **Truehost Kenya** | KES 850/year (~$6.55) | M-Pesa, Card, PayPal | Cheapest option, good reputation |
+| **Kenya Web Experts** | KES 999/year (~$7.70) | M-Pesa, Card, Bank | Established since 2003, free WHOIS privacy |
 
 ### Registrar Selection Criteria
 
@@ -54,18 +55,21 @@ When choosing a registrar, verify:
 9. **Hidden Fees**: Verify renewal prices match initial price
 10. **Bulk Discounts**: Consider if planning multiple domains
 
-### Domain Registration Process
+### Domain Registration Process with Safaricom
 
-1. **Choose your domain name** (e.g., `hansardtales.co.ke`)
-2. **Select a registrar** from the recommendations above
-3. **Search for availability** on registrar's website
-4. **Complete registration**:
-   - Provide contact details (email, phone)
-   - Choose registration period (1 year minimum)
-   - Add WHOIS privacy if available
-   - Complete payment via M-Pesa or card
-5. **Save login credentials** for registrar control panel
-6. **Proceed to Step 2** to add domain to Cloudflare
+1. **Visit Safaricom Digital**: Go to [safaricom.co.ke](https://www.safaricom.co.ke/) and navigate to domain services
+2. **Search for your domain**: Enter `hansardtales.co.ke` to check availability
+3. **Complete registration**:
+   - Provide contact details (email, phone number)
+   - Choose registration period (1 year recommended for MVP)
+   - Add WHOIS privacy if available (protects personal details)
+   - Review total cost: KES 1,200/year
+4. **Payment via M-Pesa**:
+   - Select M-Pesa as payment method
+   - Follow prompts to complete payment
+   - Save payment confirmation
+5. **Save credentials**: Store Safaricom account login details in password manager
+6. **Proceed to Step 2**: Add domain to Cloudflare for DNS management
 
 ## Step 2: Add Domain to Cloudflare
 
@@ -339,16 +343,20 @@ nslookup hansardtales.ke
 
 ## Cost Breakdown
 
+**Selected Configuration: .co.ke with Safaricom**
+
 | Item | Cost (USD) | Cost (KES) | Frequency |
 |------|-----------|------------|-----------|
-| .co.ke Domain (Truehost) | ~$6.55 | 850 | Annual |
-| .co.ke Domain (Kenya Web Experts) | ~$7.70 | 999 | Annual |
 | .co.ke Domain (Safaricom) | ~$9.25 | 1,200 | Annual |
 | Cloudflare Pages | $0 | 0 | Free tier |
-| **Total (Cheapest)** | **~$6.55/year** | **~850 KES/year** | **~£0.55/month** |
-| **Total (Most Trusted)** | **~$9.25/year** | **~1,200 KES/year** | **~£0.77/month** |
+| **Total Annual Cost** | **~$9.25/year** | **~1,200 KES/year** | **~£0.77/month** |
 
-**Well within budget**: Even with the most expensive option (Safaricom), total cost is less than £1/month - far below the £30/month budget.
+**Budget Status**: Well within the £30/month budget - using less than 3% of available budget for infrastructure.
+
+**Cost Comparison** (for reference):
+- Truehost Kenya: KES 850/year (~$6.55 / ~£0.55/month) - saves KES 350/year
+- Kenya Web Experts: KES 999/year (~$7.70 / ~£0.64/month) - saves KES 201/year
+- **Safaricom (selected)**: KES 1,200/year - premium for trusted brand and support
 
 ## Security Best Practices
 
@@ -374,9 +382,12 @@ nslookup hansardtales.ke
 
 ### Kenyan Domain Registrar Links
 
+**Selected Registrar:**
+- [Safaricom Digital](https://www.safaricom.co.ke/) - Domain registration services
+
+**Alternative Registrars** (if needed):
 - [Truehost Kenya](https://truehost.co.ke/) - Cheapest option
 - [Kenya Web Experts](https://www.kenyawebexperts.com/) - Established provider
-- [Safaricom Digital](https://www.safaricom.co.ke/) - Most trusted brand
 
 ### Domain Registration Tips
 
