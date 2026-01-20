@@ -226,14 +226,16 @@
   - Automated commit and push of changes
   - Integrated with GitHub Pages deployment
 
-- [ ] 6.2 Implement processing pipeline
-  - Run scraper to download new PDFs
-  - Process PDFs (extract, parse, identify)
-  - Update SQLite database
-  - Generate search index (hansard-generate-search-index)
-  - Generate static site (hansard-generate-site)
-  - Commit and push changes to Git
-  - Note: Search index generation already included in this pipeline
+- [x] 6.2 Implement processing pipeline
+  - Implemented complete automation pipeline in .github/workflows/weekly-update.yml
+  - Runs hansard-scraper to download new PDFs from parliament.go.ke
+  - Processes PDFs with hansard-pdf-processor (extract text, preserve page numbers)
+  - Updates SQLite database with hansard-db-updater (MP identification, statements, bills)
+  - Generates search index with hansard-generate-search-index
+  - Generates static site with hansard-generate-site --base-path /hansard-tales
+  - Auto-commits changes (database, PDFs) with github-actions bot
+  - Deploys updated site to GitHub Pages
+  - Note: All steps integrated into weekly-update workflow from Task 6.1
 
 - [ ] 6.3 Add error handling and notifications
   - Implement try-catch blocks
