@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="{% block meta_description %}Track Kenya's 349 MPs through parliamentary Hansard records. Search statements, bills, and performance metrics.{% endblock %}">
+    <title>{% block title %}Hansard Tales - Kenya Parliament Transparency{% endblock %}</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'warm-white': '#FAF9F6',
+                        'kenya-green': {
+                            50: '#f0f9f4',
+                            100: '#dcf2e4',
+                            200: '#bae5cd',
+                            300: '#8bd3ad',
+                            400: '#56b887',
+                            500: '#2f9e6b',
+                            600: '#1f7f54',
+                            700: '#1a6545',
+                            800: '#175138',
+                            900: '#14422f',
+                        },
+                        'kenya-red': {
+                            50: '#fef2f2',
+                            100: '#fee2e2',
+                            200: '#fecaca',
+                            300: '#fca5a5',
+                            400: '#f87171',
+                            500: '#ef4444',
+                            600: '#dc2626',
+                            700: '#b91c1c',
+                            800: '#991b1b',
+                            900: '#7f1d1d',
+                        },
+                    },
+                    fontFamily: {
+                        sans: ['"Helvetica Neue"', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'Arial', '"Noto Sans"', 'sans-serif', '"Apple Color Emoji"', '"Segoe UI Emoji"', '"Segoe UI Symbol"', '"Noto Color Emoji"'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    {% block extra_css %}{% endblock %}
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png') }}">
+</head>
+
+<body class="bg-warm-white text-gray-900 min-h-screen flex flex-col">
+    <!-- Header -->
+    <header class="bg-white border-b-2 border-black shadow-sm">
+        <div class="container mx-auto px-4">
+            <nav class="flex items-center justify-between py-4">
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <a href="{{ url_for('index') }}"
+                        class="flex items-center space-x-2 text-xl font-bold text-gray-900 hover:text-kenya-green-600 transition-colors">
+                        <span class="text-2xl">📜</span>
+                        <span>Hansard Tales</span>
+                    </a>
+                </div>
+
+                <!-- Mobile menu toggle -->
+                <button
+                    class="lg:hidden p-2 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-kenya-green-500"
+                    id="navToggle" aria-label="Toggle navigation">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+
+                <!-- Desktop Navigation -->
+                <ul class="hidden lg:flex items-center space-x-1">
+                    <li><a href="{{ url_for('index') }}"
+                            class="px-4 py-2 rounded-md transition-colors {% if active_page == 'home' %}bg-kenya-green-100 text-kenya-green-800 font-semibold border border-black{% else %}text-gray-700 hover:bg-gray-100 hover:text-kenya-green-700{% endif %}">
+                            Home
+                        </a></li>
+                    <li><a href="{{ url_for('mps_list') }}"
+                            class="px-4 py-2 rounded-md transition-colors {% if active_page == 'mps' %}bg-kenya-green-100 text-kenya-green-800 font-semibold border border-black{% else %}text-gray-700 hover:bg-gray-100 hover:text-kenya-green-700{% endif %}">
+                            All MPs
+                        </a></li>
+                    <li><a href="{{ url_for('parties') }}"
+                            class="px-4 py-2 rounded-md transition-colors {% if active_page == 'parties' %}bg-kenya-green-100 text-kenya-green-800 font-semibold border border-black{% else %}text-gray-700 hover:bg-gray-100 hover:text-kenya-green-700{% endif %}">
+                            Parties
+                        </a></li>
+                    <li><a href="{{ url_for('about') }}"
+                            class="px-4 py-2 rounded-md transition-colors {% if active_page == 'about' %}bg-kenya-green-100 text-kenya-green-800 font-semibold border border-black{% else %}text-gray-700 hover:bg-gray-100 hover:text-kenya-green-700{% endif %}">
+                            About
+                        </a></li>
+                </ul>
+            </nav>
+
+            <!-- Mobile Navigation Menu -->
+            <div class="hidden lg:hidden pb-4" id="navMenu">
+                <ul class="space-y-2">
+                    <li><a href="{{ url_for('index') }}"
+                            class="block px-4 py-2 rounded-md transition-colors {% if active_page == 'home' %}bg-kenya-green-100 text-kenya-green-800 font-semibold border border-black{% else %}text-gray-700 hover:bg-gray-100 hover:text-kenya-green-700{% endif %}">
+                            Home
+                        </a></li>
+                    <li><a href="{{ url_for('mps_list') }}"
+                            class="block px-4 py-2 rounded-md transition-colors {% if active_page == 'mps' %}bg-kenya-green-100 text-kenya-green-800 font-semibold border border-black{% else %}text-gray-700 hover:bg-gray-100 hover:text-kenya-green-700{% endif %}">
+                            All MPs
+                        </a></li>
+                    <li><a href="{{ url_for('parties') }}"
+                            class="block px-4 py-2 rounded-md transition-colors {% if active_page == 'parties' %}bg-kenya-green-100 text-kenya-green-800 font-semibold border border-black{% else %}text-gray-700 hover:bg-gray-100 hover:text-kenya-green-700{% endif %}">
+                            Parties
+                        </a></li>
+                    <li><a href="{{ url_for('about') }}"
+                            class="block px-4 py-2 rounded-md transition-colors {% if active_page == 'about' %}bg-kenya-green-100 text-kenya-green-800 font-semibold border border-black{% else %}text-gray-700 hover:bg-gray-100 hover:text-kenya-green-700{% endif %}">
+                            About
+                        </a></li>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main content -->
+    <main class="flex-grow container mx-auto px-4 py-8">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t-2 border-black mt-auto">
+        <div class="container mx-auto px-4 py-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
+                <!-- About Section -->
+                <div>
+                    <h3
+                        class="text-lg font-bold text-gray-900 mb-3 border-b-2 border-kenya-green-500 pb-1 inline-block">
+                        Hansard Tales</h3>
+                    <p class="text-gray-600 text-sm mb-2">Tracking Kenya's 349 MPs through parliamentary Hansard
+                        records.</p>
+                    <p class="text-xs text-kenya-green-700 font-semibold">Current Term: 13th Parliament (2022-2027)</p>
+                </div>
+
+                <!-- Quick Links -->
+                <div>
+                    <h4
+                        class="text-md font-semibold text-gray-900 mb-3 border-b-2 border-kenya-red-400 pb-1 inline-block">
+                        Quick Links</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="{{ url_for('index') }}"
+                                class="text-gray-600 hover:text-kenya-green-700 transition-colors">Home</a></li>
+                        <li><a href="{{ url_for('mps_list') }}"
+                                class="text-gray-600 hover:text-kenya-green-700 transition-colors">All MPs</a></li>
+                        <li><a href="{{ url_for('parties') }}"
+                                class="text-gray-600 hover:text-kenya-green-700 transition-colors">Parties</a></li>
+                        <li><a href="{{ url_for('about') }}"
+                                class="text-gray-600 hover:text-kenya-green-700 transition-colors">About</a></li>
+                    </ul>
+                </div>
+
+                <!-- Data Sources -->
+                <div>
+                    <h4
+                        class="text-md font-semibold text-gray-900 mb-3 border-b-2 border-kenya-red-400 pb-1 inline-block">
+                        Data Sources</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="https://parliament.go.ke" target="_blank" rel="noopener"
+                                class="text-gray-600 hover:text-kenya-green-700 transition-colors">Parliament of
+                                Kenya</a></li>
+                        <li><a href="https://parliament.go.ke/hansard" target="_blank" rel="noopener"
+                                class="text-gray-600 hover:text-kenya-green-700 transition-colors">Hansard Records</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Legal -->
+                <div>
+                    <h4
+                        class="text-md font-semibold text-gray-900 mb-3 border-b-2 border-kenya-red-400 pb-1 inline-block">
+                        Legal</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="{{ url_for('disclaimer') }}"
+                                class="text-gray-600 hover:text-kenya-green-700 transition-colors">Disclaimer</a></li>
+                        <li><a href="{{ url_for('privacy') }}"
+                                class="text-gray-600 hover:text-kenya-green-700 transition-colors">Privacy</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Footer Bottom -->
+            <div class="border-t border-gray-300 pt-6 text-center text-sm text-gray-600">
+                <p class="mb-1">&copy; {{ current_year }} Hansard Tales. Data sourced from Parliament of Kenya.</p>
+                <p class="text-xs text-gray-500">Last updated: {{ last_updated }}</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+
+</html>
