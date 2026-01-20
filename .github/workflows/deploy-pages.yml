@@ -31,6 +31,12 @@ jobs:
         run: |
           pip install -e .
 
+      - name: Initialize database
+        run: |
+          hansard-init-db
+          hansard-init-parliament-data
+          hansard-import-mps --year 2022 --file data/mps_13th_parliament.json
+
       - name: Generate static site
         run: |
           hansard-generate-site --base-path /hansard-tales
