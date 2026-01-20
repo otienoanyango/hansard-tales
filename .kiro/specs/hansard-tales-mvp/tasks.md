@@ -288,7 +288,7 @@
   - Test term filtering on MP profiles
   - Verify search index includes term data
 
-- [ ] 8.4 End-to-end testing
+- [x] 8.4 End-to-end testing
   - Run complete workflow from scraping to deployment
   - Verify GitHub Actions workflow
   - Test Cloudflare Pages deployment
