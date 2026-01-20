@@ -11,6 +11,12 @@
 **Prerequisites**: Docker Desktop installed
 
 ```bash
+# First time setup: Initialize database and generate search index
+hansard-init-db
+hansard-init-parliament-data
+hansard-import-mps --file data/mps_13th_parliament.json --current
+hansard-generate-search-index
+
 # Start the development server
 docker-compose up
 
@@ -27,8 +33,16 @@ The server includes hot-reload - edit templates or CSS and refresh to see change
 **Prerequisites**: Python 3.11+
 
 ```bash
-# Install Flask
-pip install flask
+# Install dependencies
+pip install -e .
+
+# Initialize database (first time only)
+hansard-init-db
+hansard-init-parliament-data
+hansard-import-mps --file data/mps_13th_parliament.json --current
+
+# Generate search index (first time only)
+hansard-generate-search-index
 
 # Run the development server
 python app.py
