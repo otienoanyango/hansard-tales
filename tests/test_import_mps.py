@@ -391,3 +391,97 @@ class TestMPImporter:
             importer.import_from_json(str(json_path))
         
         importer.close()
+
+
+
+class TestCLI:
+    """Test suite for CLI argument parsing and main() function."""
+    
+    @patch('pathlib.Path.exists')
+    @patch('hansard_tales.database.import_mps.MPImporter')
+    @patch('builtins.open', new_callable=lambda: Mock(return_value=Mock(__enter__=Mock(return_value=Mock()), __exit__=Mock())))
+    @patch('json.load')
+    @patch('sys.argv', ['hansard-import-mps', '--file', 'test_mps.json', '--current'])
+    def test_main_with_arguments(self, mock_json_load, mock_open, mock_importer_class, mock_exists):
+        """Test main() with custom arguments."""
+        from hansard_tales.database.import_mps import main
+        
+        # Mock file exists
+        mock_exists.return_value = True
+        
+        # Mock JSON data
+        mock_json_load.return_value = [
+            {'name': 'Test MP', 'term_start_year': 2022}
+        ]
+        
+        # Mock importer instance
+        mock_importer = Mock()
+        mock_importer.import_from_json.return_value = {
+            'total': 10,
+            'new_mps': 5,
+            'existing_mps': 5,
+            'new_links': 10,
+            'existing_links': 0,
+            'errors': 0
+        }
+        mock_importer.get_term_by_year.return_value = 1
+        mock_importer.verify_import.return_value = {
+            'total_mps': 10,
+            'elected': 8,
+            'nominated': 2,
+            'top_parties': {'Party A': 5, 'Party B': 3}
+        }
+        mock_importer_class.return_value = mock_importer
+        
+        # Run main - returns 0 on success
+        result = main()
+        
+        # Should return 0 (success)
+        assert result == 0
+        
+        # Verify import_from_json was called
+        mock_importer.import_from_json.assert_called_once()
+    
+    @patch('pathlib.Path.exists')
+    @patch('hansard_tales.database.import_mps.MPImporter')
+    @patch('pathlib.Path.open', create=True)
+    @patch('json.load')
+    @patch('sys.argv', ['hansard-import-mps', '--file', 'test_mps.json', '--term-id', '1'])
+    def test_main_with_term_id(self, mock_json_load, mock_path_open, mock_importer_class, mock_exists):
+        """Test main() with explicit term ID."""
+        from hansard_tales.database.import_mps import main
+        
+        # Mock file exists
+        mock_exists.return_value = True
+        
+        # Mock JSON data
+        mock_json_load.return_value = [
+            {'name': 'Test MP', 'term_start_year': 2022}
+        ]
+        
+        # Mock importer instance
+        mock_importer = Mock()
+        mock_importer.import_from_json.return_value = {
+            'total': 10,
+            'new_mps': 10,
+            'existing_mps': 0,
+            'new_links': 10,
+            'existing_links': 0,
+            'errors': 0
+        }
+        mock_importer.verify_import.return_value = {
+            'total_mps': 10,
+            'elected': 8,
+            'nominated': 2,
+            'top_parties': {'Party A': 5, 'Party B': 3}
+        }
+        mock_importer_class.return_value = mock_importer
+        
+        # Run main - returns 0 on success
+        result = main()
+        
+        # Should return 0 (success)
+        assert result == 0
+        
+        # Verify import was successful
+        mock_importer.import_from_json.assert_called_once()

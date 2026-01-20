@@ -8,6 +8,7 @@ inserted and validated.
 import sqlite3
 import tempfile
 from pathlib import Path
+from unittest.mock import patch
 
 import pytest
 
@@ -356,3 +357,46 @@ class TestParliamentaryTermDates:
         
         assert result[0] == "2017-08-31"
         assert result[1] == "2022-09-07"
+
+
+
+class TestCLI:
+    """Test suite for CLI argument parsing and main() function."""
+    
+    @patch('hansard_tales.database.init_parliament_data.initialize_parliament_data')
+    @patch('sys.argv', ['hansard-init-parliament', '--db-path', 'test.db'])
+    def test_main_with_arguments(self, mock_init_parliament):
+        """Test main() with custom arguments."""
+        from hansard_tales.database.init_parliament_data import main
+        
+        # Mock successful initialization
+        mock_init_parliament.return_value = True
+        
+        # Run main
+        with pytest.raises(SystemExit) as exc_info:
+            main()
+        
+        # Should exit with 0 (success)
+        assert exc_info.value.code == 0
+        
+        # Verify initialize_parliament_data was called
+        mock_init_parliament.assert_called_once_with('test.db', False)
+    
+    @patch('hansard_tales.database.init_parliament_data.initialize_parliament_data')
+    @patch('sys.argv', ['hansard-init-parliament'])
+    def test_main_default_path(self, mock_init_parliament):
+        """Test main() with default database path."""
+        from hansard_tales.database.init_parliament_data import main
+        
+        # Mock successful initialization
+        mock_init_parliament.return_value = True
+        
+        # Run main
+        with pytest.raises(SystemExit) as exc_info:
+            main()
+        
+        # Should exit with 0 (success)
+        assert exc_info.value.code == 0
+        
+        # Verify initialize_parliament_data was called with default path
+        mock_init_parliament.assert_called_once_with('data/hansard.db', False)

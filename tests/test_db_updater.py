@@ -485,3 +485,150 @@ class TestSessionStatistics:
         stats = updater.get_session_statistics(99999)
         
         assert 'error' in stats
+
+
+
+class TestEdgeCases:
+    """Test suite for edge cases and error handling."""
+    
+    @patch('hansard_tales.database.db_updater.PDFProcessor')
+    @patch('hansard_tales.database.db_updater.MPIdentifier')
+    @patch('hansard_tales.database.db_updater.BillExtractor')
+    def test_process_hansard_no_current_term(
+        self,
+        mock_bill_extractor,
+        mock_mp_identifier,
+        mock_pdf_processor,
+        updater
+    ):
+        """Test processing Hansard when no current term exists."""
+        conn = updater.get_connection()
+        cursor = conn.cursor()
+        
+        # Remove current term marker
+        cursor.execute("UPDATE parliamentary_terms SET is_current = 0")
+        conn.commit()
+        conn.close()
+        
+        # Mock PDF processor
+        mock_pdf = Mock()
+        mock_pdf.extract_text_from_pdf.return_value = {
+            'pages': [{'page_number': 1, 'text': 'Test content'}]
+        }
+        mock_pdf_processor.return_value = mock_pdf
+        
+        # Mock MP identifier
+        mock_mp = Mock()
+        mock_statements = [Statement("John Doe", "Test statement", 0, 100, page_number=1)]
+        mock_mp.extract_statements_from_pages.return_value = mock_statements
+        mock_mp.get_unique_mp_names.return_value = ["John Doe"]
+        mock_mp_identifier.return_value = mock_mp
+        
+        # Mock bill extractor
+        mock_bill = Mock()
+        mock_bill.extract_bill_references.return_value = []
+        mock_bill_extractor.return_value = mock_bill
+        
+        # Recreate updater with mocked dependencies
+        updater.pdf_processor = mock_pdf
+        updater.mp_identifier = mock_mp
+        updater.bill_extractor = mock_bill
+        
+        # Process should handle gracefully (will fail due to no current term)
+        result = updater.process_hansard_pdf(
+            "/path/to/test.pdf",
+            "https://example.com/test.pdf",
+            "2024-12-04",
+            "Test Session"
+        )
+        
+        # Should return error due to no current term
+        assert result['status'] == 'error'
+    
+    def test_get_or_create_mp_with_special_characters(self, updater):
+        """Test MP creation with special characters in name."""
+        conn = updater.get_connection()
+        cursor = conn.cursor()
+        
+        # Create MP with special characters
+        mp_id = updater.get_or_create_mp(cursor, "O'Brien-Smith")
+        
+        assert mp_id is not None
+        
+        # Verify MP was created
+        cursor.execute("SELECT name FROM mps WHERE id = ?", (mp_id,))
+        row = cursor.fetchone()
+        assert row[0] == "O'Brien-Smith"
+        
+        conn.close()
+    
+    def test_insert_statement_with_empty_text(self, updater):
+        """Test inserting statement with empty text."""
+        conn = updater.get_connection()
+        cursor = conn.cursor()
+        
+        mp_id = updater.get_or_create_mp(cursor, "John Doe")
+        session_id = updater.get_or_create_session(
+            cursor, "2024-12-04", "Test Session", "https://example.com/test.pdf"
+        )
+        
+        # Create statement with empty text
+        statement = Statement("John Doe", "", 0, 0)
+        
+        # Should handle gracefully
+        result = updater.insert_statement(cursor, mp_id, session_id, statement)
+        
+        conn.commit()
+        conn.close()
+        
+        # Should still create statement
+        assert result is not None
+    
+    @patch('hansard_tales.database.db_updater.PDFProcessor')
+    @patch('hansard_tales.database.db_updater.MPIdentifier')
+    @patch('hansard_tales.database.db_updater.BillExtractor')
+    def test_process_hansard_with_duplicate_statements(
+        self,
+        mock_bill_extractor,
+        mock_mp_identifier,
+        mock_pdf_processor,
+        updater
+    ):
+        """Test processing Hansard with duplicate statements."""
+        # Mock PDF processor
+        mock_pdf = Mock()
+        mock_pdf.extract_text_from_pdf.return_value = {
+            'pages': [{'page_number': 1, 'text': 'Test content'}]
+        }
+        mock_pdf_processor.return_value = mock_pdf
+        
+        # Mock MP identifier with duplicate statements
+        mock_mp = Mock()
+        mock_statements = [
+            Statement("John Doe", "Same statement", 0, 100, page_number=1),
+            Statement("John Doe", "Same statement", 0, 100, page_number=1),  # Duplicate
+        ]
+        mock_mp.extract_statements_from_pages.return_value = mock_statements
+        mock_mp.get_unique_mp_names.return_value = ["John Doe"]
+        mock_mp_identifier.return_value = mock_mp
+        
+        # Mock bill extractor
+        mock_bill = Mock()
+        mock_bill.extract_bill_references.return_value = []
+        mock_bill_extractor.return_value = mock_bill
+        
+        # Recreate updater with mocked dependencies
+        updater.pdf_processor = mock_pdf
+        updater.mp_identifier = mock_mp
+        updater.bill_extractor = mock_bill
+        
+        result = updater.process_hansard_pdf(
+            "/path/to/test.pdf",
+            "https://example.com/test.pdf",
+            "2024-12-04",
+            "Test Session"
+        )
+        
+        assert result['status'] == 'success'
+        # Should handle duplicates gracefully - both statements get inserted
+        assert result['statements'] == 2

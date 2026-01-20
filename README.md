@@ -94,7 +94,9 @@ hansard-tales/
 │   └── data/              # Search index JSON
 ├── .github/
 │   └── workflows/
-│       └── weekly-update.yml  # GitHub Actions workflow (future)
+│       ├── ci.yml         # Continuous Integration (tests, coverage)
+│       ├── auto-merge.yml # Auto-merge feature branches
+│       └── weekly-update.yml  # Weekly data processing (future)
 ├── pyproject.toml          # Package configuration
 ├── requirements.txt        # Python dependencies
 ├── pytest.ini             # Test configuration
@@ -153,6 +155,24 @@ See [Quick Start Guide](docs/QUICK_START.md) for a 5-minute setup.
 ## Development Workflow
 
 See [Development Guide](docs/DEVELOPMENT.md) for detailed development workflow, testing, and troubleshooting.
+
+### CI/CD Pipeline
+
+The project uses GitHub Actions for automated testing and deployment:
+
+- **CI Workflow** (`ci.yml`): Runs on every push and PR
+  - Tests on Python 3.11 and 3.12
+  - Parallel test execution with pytest-xdist
+  - Coverage reporting (85% minimum threshold)
+  - Automatic coverage upload to Codecov
+
+- **Auto-Merge Workflow** (`auto-merge.yml`): Automatically merges feature branches
+  - Triggers on PRs from `feat/` branches
+  - Waits for CI checks to pass
+  - Auto-merges with squash strategy
+  - Automatically deletes merged branches
+
+See [GitHub Actions README](.github/workflows/README.md) for setup instructions.
 
 ### Weekly Processing (Automated via GitHub Actions)
 

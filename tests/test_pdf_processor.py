@@ -503,3 +503,70 @@ class TestRealPDFIntegration:
         # Try to get a page that doesn't exist
         invalid_page = processor.get_page_text(result, 99999)
         assert invalid_page is None
+
+
+
+class TestCLI:
+    """Test suite for CLI argument parsing and main() function."""
+    
+    @patch('pathlib.Path.is_file')
+    @patch('hansard_tales.processors.pdf_processor.PDFProcessor')
+    @patch('sys.argv', ['hansard-pdf-processor', 'test.pdf'])
+    def test_main_with_pdf_argument(self, mock_processor_class, mock_is_file):
+        """Test main() with PDF file argument."""
+        from hansard_tales.processors.pdf_processor import main
+        
+        # Mock that path is a file
+        mock_is_file.return_value = True
+        
+        # Mock processor instance
+        mock_processor = Mock()
+        mock_processor.process_pdf.return_value = {
+            'text': 'Test content',
+            'pages': 10,
+            'metadata': {}
+        }
+        mock_processor_class.return_value = mock_processor
+        
+        # Run main
+        with pytest.raises(SystemExit) as exc_info:
+            main()
+        
+        # Should exit with 0 (success)
+        assert exc_info.value.code == 0
+        
+        # Verify processor was initialized
+        mock_processor_class.assert_called_once()
+        
+        # Verify process_pdf was called
+        mock_processor.process_pdf.assert_called_once()
+    
+    @patch('pathlib.Path.is_file')
+    @patch('hansard_tales.processors.pdf_processor.PDFProcessor')
+    @patch('sys.argv', ['hansard-pdf-processor', 'test.pdf', '--print-text'])
+    def test_main_with_print_flag(self, mock_processor_class, mock_is_file):
+        """Test main() with --print-text flag."""
+        from hansard_tales.processors.pdf_processor import main
+        
+        # Mock that path is a file
+        mock_is_file.return_value = True
+        
+        # Mock processor instance
+        mock_processor = Mock()
+        mock_processor.process_pdf.return_value = {
+            'text': 'Test content',
+            'pages': 10,
+            'metadata': {}
+        }
+        mock_processor.get_full_text.return_value = 'Test content'
+        mock_processor_class.return_value = mock_processor
+        
+        # Run main
+        with pytest.raises(SystemExit) as exc_info:
+            main()
+        
+        # Should exit with 0 (success)
+        assert exc_info.value.code == 0
+        
+        # Verify get_full_text was called
+        mock_processor.get_full_text.assert_called_once()
