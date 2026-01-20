@@ -147,7 +147,7 @@
   - Add source links to Hansard PDFs
   - Implement term filter dropdown
 
-- [ ] 4.3 Create homepage template
+- [-] 4.3 Create homepage template
   - Design homepage with search prominently featured
   - Add introduction to the platform
   - Show current parliamentary term info
