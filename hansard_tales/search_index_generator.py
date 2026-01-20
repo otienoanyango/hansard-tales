@@ -148,6 +148,7 @@ def generate_search_index(db_path=None, output_dir=None):
             'constituency': mp_row['constituency'],
             'party': mp_row['party'],
             'photo_url': mp_row['photo_url'],
+            'url': f'/mp/{mp_row["id"]}/',  # URL to MP profile page
             'current_term': {
                 'term_number': mp_row['current_term'],
                 'statement_count': mp_row['statement_count'] if mp_row['statement_count'] else 0,
