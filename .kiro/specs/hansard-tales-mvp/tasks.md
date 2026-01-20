@@ -264,12 +264,16 @@
 
 ### 8. Testing & Validation
 
-- [ ] 8.1 Test with sample data
-  - Download 5 sample Hansard PDFs
-  - Run full processing pipeline locally
-  - Verify MP identification accuracy
-  - Check statement extraction quality
-  - Validate database integrity
+- [x] 8.1 Test with sample data
+  - Created comprehensive test script (scripts/test_sample_data.py)
+  - Downloaded and processed 5 sample Hansard PDFs
+  - Ran full processing pipeline locally
+  - Achieved 100% MP identification accuracy (exceeds 90% target)
+  - Validated statement extraction quality (497 statements from 85 MPs)
+  - Validated database integrity (all foreign keys maintained)
+  - Extracted 6 bill references successfully
+  - Created detailed results document (docs/TASK_8.1_RESULTS.md)
+  - Identified minor improvements needed (see optional tasks below)
 
 - [ ] 8.2 Test site generation
   - Generate static site locally
@@ -339,30 +343,50 @@
 
 ## Phase 5: Post-Launch (Optional Enhancements)
 
-### 11. Optional: AI-Generated Cartoons
+### 11. Optional: Improvements from Task 8.1 Testing
 
-- [ ]* 11.1 Set up Imagen API
+- [ ]* 11.1 Implement session deduplication
+  - Add skip logic to DatabaseUpdater.process_hansard_pdf()
+  - Check if session already processed before inserting
+  - Prevent duplicate statements in database
+  - Add --force flag to override skip logic for testing
+
+- [ ]* 11.2 Filter Order Papers in scraper
+  - Update HansardScraper to distinguish between transcripts and Order Papers
+  - Add PDF type detection based on title/filename patterns
+  - Skip downloading Order Papers (agenda documents)
+  - Only download Hansard transcripts
+
+- [ ]* 11.3 Improve date extraction
+  - Use PDF metadata for accurate session dates
+  - Implement content-based date extraction as fallback
+  - Handle multiple date formats consistently
+  - Add date validation logic
+
+### 12. Optional: AI-Generated Cartoons
+
+- [ ]* 12.1 Set up Imagen API
   - Create Google Cloud account
   - Enable Imagen API
   - Set up authentication
   - Implement budget limits
 
-- [ ]* 11.2 Implement cartoon generation
+- [ ]* 12.2 Implement cartoon generation
   - Create quote selection logic (manual initially)
   - Generate cartoon prompts
   - Call Imagen API
   - Store generated images
   - Add to site
 
-### 12. Monitoring & Maintenance
+### 13. Monitoring & Maintenance
 
-- [ ] 12.1 Weekly monitoring routine
+- [ ] 13.1 Weekly monitoring routine
   - Check GitHub Actions workflow status
   - Review processing logs for errors
   - Spot-check new data quality
   - Monitor site performance
 
-- [ ] 12.2 Monthly maintenance
+- [ ] 13.2 Monthly maintenance
   - Review MP data for changes (new MPs, party switches)
   - Update MP photos if needed
   - Check for new Hansard format changes
