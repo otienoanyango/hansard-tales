@@ -138,7 +138,7 @@
   - Created GitHub Actions workflow (.github/workflows/deploy-pages.yml) for auto-deployment
   - All 261 tests passing with 87% coverage maintained
 
-- [ ] 4.2 Create MP profile template
+- [x] 4.2 Create MP profile template
   - Design MP profile page layout (mp_profile.html)
   - Display current term information (constituency, party, term number)
   - Show current term performance metrics (statements, sessions, bills)
