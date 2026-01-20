@@ -282,7 +282,7 @@
   - Test on mobile devices
   - Check page load times
 
-- [ ] 8.3 Test parliamentary term tracking
+- [x] 8.3 Test parliamentary term tracking
   - Verify current term data displays correctly
   - Test historical term display (if data available)
   - Test term filtering on MP profiles
