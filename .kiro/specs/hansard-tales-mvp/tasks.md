@@ -109,6 +109,7 @@
   - Save data to JSON format (data/mps_13th_parliament.json, data/mps_12th_parliament.json)
   - Create comprehensive test suite
   - Document scraping process and data format
+  - Note: No CI workflow update needed - JSON files are committed to repo and imported via hansard-import-mps
 
 - [x] 3.2 Populate MPs database
   - Created import module (hansard_tales/database/import_mps.py) with comprehensive functionality
@@ -180,13 +181,15 @@
 
 ### 5. Client-Side Search
 
-- [ ] 5.1 Generate search index JSON
-  - Create generate_search_index.py
+- [x] 5.1 Generate search index JSON
+  - Create search index generator module (hansard_tales/search_index_generator.py)
+  - Add console entry point (hansard-generate-search-index) in pyproject.toml
   - Query current MPs with performance data
   - Query historical terms for each MP
   - Format data for Fuse.js (name, constituency, party, keywords)
   - Include current_term metadata
   - Export to output/data/mp-search-index.json
+  - Update .github/workflows/deploy-pages.yml to run hansard-generate-search-index after site generation
 
 - [ ] 5.2 Implement Fuse.js search
   - Create js/search.js
@@ -218,9 +221,10 @@
   - Run scraper to download new PDFs
   - Process PDFs (extract, parse, identify)
   - Update SQLite database
-  - Generate search index
-  - Generate static site
+  - Generate search index (hansard-generate-search-index)
+  - Generate static site (hansard-generate-site)
   - Commit and push changes to Git
+  - Note: Search index generation already included in this pipeline
 
 - [ ] 6.3 Add error handling and notifications
   - Implement try-catch blocks
