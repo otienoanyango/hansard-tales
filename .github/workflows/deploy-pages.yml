@@ -29,11 +29,11 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install jinja2 flask
+          pip install -e .
 
       - name: Generate static site
         run: |
-          python scripts/generate_static_site.py
+          hansard-generate-site --base-path /hansard-tales
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
@@ -41,7 +41,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: './dist'
+          path: './output'
 
   deploy:
     environment:

@@ -19,31 +19,46 @@ def get_db_connection(db_path):
     return conn
 
 
-def url_for(endpoint, **kwargs):
-    """Mock Flask's url_for for static site generation."""
-    if endpoint == 'static':
-        filename = kwargs.get('filename', '')
-        return f'/static/{filename}'
-    elif endpoint == 'index':
-        return '/index.html'
-    elif endpoint == 'mps_list':
-        return '/mps/index.html'
-    elif endpoint == 'mp_profile':
-        mp_id = kwargs.get('mp_id')
-        return f'/mp/{mp_id}/index.html'
-    elif endpoint == 'parties':
-        return '/parties/index.html'
-    elif endpoint == 'party_detail':
-        party_slug = kwargs.get('party_slug')
-        return f'/party/{party_slug}/index.html'
-    elif endpoint == 'about':
-        return '/about.html'
-    elif endpoint == 'disclaimer':
-        return '/disclaimer.html'
-    elif endpoint == 'privacy':
-        return '/privacy.html'
-    else:
-        return f'/{endpoint}.html'
+def create_url_for(base_path=''):
+    """
+    Create a url_for function with a specific base path.
+    
+    Args:
+        base_path: Base path for URLs (e.g., '/hansard-tales' for GitHub Pages)
+    
+    Returns:
+        A url_for function that generates URLs with the base path
+    """
+    # Ensure base_path doesn't end with /
+    base_path = base_path.rstrip('/')
+    
+    def url_for(endpoint, **kwargs):
+        """Mock Flask's url_for for static site generation."""
+        if endpoint == 'static':
+            filename = kwargs.get('filename', '')
+            return f'{base_path}/static/{filename}'
+        elif endpoint == 'index':
+            return f'{base_path}/index.html' if base_path else '/index.html'
+        elif endpoint == 'mps_list':
+            return f'{base_path}/mps/index.html'
+        elif endpoint == 'mp_profile':
+            mp_id = kwargs.get('mp_id')
+            return f'{base_path}/mp/{mp_id}/index.html'
+        elif endpoint == 'parties':
+            return f'{base_path}/parties/index.html'
+        elif endpoint == 'party_detail':
+            party_slug = kwargs.get('party_slug')
+            return f'{base_path}/party/{party_slug}/index.html'
+        elif endpoint == 'about':
+            return f'{base_path}/about.html'
+        elif endpoint == 'disclaimer':
+            return f'{base_path}/disclaimer.html'
+        elif endpoint == 'privacy':
+            return f'{base_path}/privacy.html'
+        else:
+            return f'{base_path}/{endpoint}.html'
+    
+    return url_for
 
 
 def get_logo_filename(party_name):
@@ -63,8 +78,15 @@ def get_logo_filename(party_name):
     return normalized.replace(' ', '-').replace('.', '') + '.svg'
 
 
-def generate_static_site(db_path=None, output_dir=None):
-    """Generate complete static HTML site."""
+def generate_static_site(db_path=None, output_dir=None, base_path=''):
+    """
+    Generate complete static HTML site.
+    
+    Args:
+        db_path: Path to SQLite database (default: data/hansard.db)
+        output_dir: Output directory (default: output/)
+        base_path: Base path for URLs (default: '' for local dev, '/hansard-tales' for GitHub Pages)
+    """
     # Setup paths
     base_dir = Path(__file__).parent.parent
     template_dir = base_dir / 'templates'
@@ -105,7 +127,7 @@ def generate_static_site(db_path=None, output_dir=None):
     )
     
     # Add global functions and variables
-    env.globals['url_for'] = url_for
+    env.globals['url_for'] = create_url_for(base_path)
     env.globals['current_year'] = datetime.now().year
     env.globals['last_updated'] = datetime.now().strftime('%B %d, %Y')
     
@@ -456,10 +478,12 @@ def main():
     parser = argparse.ArgumentParser(description='Generate static HTML site from templates and database')
     parser.add_argument('--db', help='Path to SQLite database (default: data/hansard.db)')
     parser.add_argument('--output', help='Output directory (default: output/)')
+    parser.add_argument('--base-path', default='', 
+                        help='Base path for URLs (default: "" for local dev, use "/hansard-tales" for GitHub Pages)')
     
     args = parser.parse_args()
     
-    generate_static_site(db_path=args.db, output_dir=args.output)
+    generate_static_site(db_path=args.db, output_dir=args.output, base_path=args.base_path)
 
 
 if __name__ == '__main__':
