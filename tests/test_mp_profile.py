@@ -5,6 +5,145 @@ import pytest
 import sqlite3
 from pathlib import Path
 from app import app, get_db_connection
+import tempfile
+import os
+
+
+@pytest.fixture
+def test_db():
+    """Create test database with sample data for integration tests."""
+    # Create a temporary database file
+    db_fd, db_path = tempfile.mkstemp(suffix='.db')
+    
+    # Initialize database schema
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    
+    # Create tables
+    cursor.execute('''
+        CREATE TABLE parliamentary_terms (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            term_number INTEGER NOT NULL,
+            start_date DATE NOT NULL,
+            end_date DATE,
+            is_current BOOLEAN DEFAULT 0,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    ''')
+    
+    cursor.execute('''
+        CREATE TABLE mps (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            constituency TEXT NOT NULL,
+            party TEXT,
+            photo_url TEXT,
+            first_elected_year INTEGER,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    ''')
+    
+    cursor.execute('''
+        CREATE TABLE mp_terms (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            mp_id INTEGER NOT NULL,
+            term_id INTEGER NOT NULL,
+            constituency TEXT NOT NULL,
+            party TEXT,
+            elected_date DATE,
+            left_date DATE,
+            is_current BOOLEAN DEFAULT 0,
+            FOREIGN KEY (mp_id) REFERENCES mps(id),
+            FOREIGN KEY (term_id) REFERENCES parliamentary_terms(id),
+            UNIQUE(mp_id, term_id)
+        )
+    ''')
+    
+    cursor.execute('''
+        CREATE TABLE hansard_sessions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            term_id INTEGER NOT NULL,
+            date DATE NOT NULL,
+            title TEXT,
+            pdf_url TEXT NOT NULL,
+            pdf_path TEXT,
+            processed BOOLEAN DEFAULT 0,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (term_id) REFERENCES parliamentary_terms(id)
+        )
+    ''')
+    
+    cursor.execute('''
+        CREATE TABLE statements (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            mp_id INTEGER NOT NULL,
+            session_id INTEGER NOT NULL,
+            text TEXT NOT NULL,
+            page_number INTEGER,
+            bill_reference TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (mp_id) REFERENCES mps(id),
+            FOREIGN KEY (session_id) REFERENCES hansard_sessions(id)
+        )
+    ''')
+    
+    # Insert test data
+    # Parliamentary term
+    cursor.execute('''
+        INSERT INTO parliamentary_terms (term_number, start_date, end_date, is_current)
+        VALUES (13, '2022-09-08', '2027-09-07', 1)
+    ''')
+    term_id = cursor.lastrowid
+    
+    # Test MP
+    cursor.execute('''
+        INSERT INTO mps (name, constituency, party, first_elected_year)
+        VALUES ('John Doe', 'Nairobi West', 'ODM', 2017)
+    ''')
+    mp_id = cursor.lastrowid
+    
+    # Link MP to term
+    cursor.execute('''
+        INSERT INTO mp_terms (mp_id, term_id, constituency, party, elected_date, is_current)
+        VALUES (?, ?, 'Nairobi West', 'ODM', '2022-09-08', 1)
+    ''', (mp_id, term_id))
+    
+    # Test session
+    cursor.execute('''
+        INSERT INTO hansard_sessions (term_id, date, title, pdf_url, processed)
+        VALUES (?, '2024-01-15', 'Test Session', 'http://example.com/test.pdf', 1)
+    ''', (term_id,))
+    session_id = cursor.lastrowid
+    
+    # Test statements
+    cursor.execute('''
+        INSERT INTO statements (mp_id, session_id, text, page_number, bill_reference)
+        VALUES (?, ?, 'This is a test statement about education reform.', 5, 'Bill No. 123')
+    ''', (mp_id, session_id))
+    
+    cursor.execute('''
+        INSERT INTO statements (mp_id, session_id, text, page_number)
+        VALUES (?, ?, 'Another statement about healthcare.', 7)
+    ''', (mp_id, session_id))
+    
+    conn.commit()
+    conn.close()
+    
+    # Temporarily replace the database path in app.py
+    original_db = os.environ.get('TEST_DB_PATH')
+    os.environ['TEST_DB_PATH'] = db_path
+    
+    yield mp_id
+    
+    # Cleanup
+    if original_db:
+        os.environ['TEST_DB_PATH'] = original_db
+    else:
+        os.environ.pop('TEST_DB_PATH', None)
+    
+    os.close(db_fd)
+    os.unlink(db_path)
 
 
 @pytest.fixture
@@ -13,42 +152,6 @@ def client():
     app.config['TESTING'] = True
     with app.test_client() as client:
         yield client
-
-
-@pytest.fixture
-def test_db():
-    """Create test database with sample data."""
-    # Ensure database exists
-    db_path = Path('data/hansard.db')
-    if not db_path.exists():
-        pytest.skip("Database not found - skipping integration tests")
-    
-    conn = sqlite3.connect(str(db_path))
-    conn.row_factory = sqlite3.Row
-    
-    # Check if tables exist
-    cursor = conn.cursor()
-    try:
-        cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='mps'")
-        if not cursor.fetchone():
-            conn.close()
-            pytest.skip("Database tables not initialized - skipping integration tests")
-    except sqlite3.Error:
-        conn.close()
-        pytest.skip("Database error - skipping integration tests")
-    
-    # Get a real MP ID for testing
-    cursor.execute("SELECT id FROM mps LIMIT 1")
-    result = cursor.fetchone()
-    
-    if not result:
-        conn.close()
-        pytest.skip("No MPs in database - skipping integration tests")
-    
-    mp_id = result[0]
-    conn.close()
-    
-    return mp_id
 
 
 class TestMPProfileRoute:

@@ -11,9 +11,14 @@ app = Flask(__name__)
 
 def get_db_connection():
     """Get database connection."""
-    # Use absolute path to database file
-    db_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data', 'hansard.db')
-    conn = sqlite3.connect(db_path)
+    # Use test database if available (for testing)
+    test_db_path = os.environ.get('TEST_DB_PATH')
+    if test_db_path:
+        conn = sqlite3.connect(test_db_path)
+    else:
+        # Use absolute path to database file
+        db_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data', 'hansard.db')
+        conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
     return conn
 
