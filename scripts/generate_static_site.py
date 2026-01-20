@@ -63,9 +63,9 @@ def generate_static_site():
     
     # Pages to generate
     pages = [
-        ('pages/test.html', 'index.html', 'home'),
+        ('pages/homepage.html', 'index.html', 'home'),
         ('pages/test.html', 'mps.html', 'mps'),
-        ('pages/test.html', 'parties.html', 'parties'),
+        ('pages/parties.html', 'parties.html', 'parties'),
         ('pages/test.html', 'about.html', 'about'),
         ('pages/test.html', 'disclaimer.html', 'home'),
         ('pages/test.html', 'privacy.html', 'home'),
