@@ -118,8 +118,102 @@ def mp_profile(mp_id):
 
 @app.route('/parties/')
 def parties():
-    """Parties page (placeholder)."""
-    return render_template('pages/test.html', active_page='parties')
+    """Parties page."""
+    conn = get_db_connection()
+    
+    # Get all parties with MP counts and statistics
+    parties_data = conn.execute('''
+        SELECT 
+            mt.party,
+            COUNT(DISTINCT mt.mp_id) as mp_count,
+            COUNT(DISTINCT s.id) as statement_count,
+            CAST(COUNT(DISTINCT s.id) AS FLOAT) / COUNT(DISTINCT mt.mp_id) as avg_statements_per_mp
+        FROM mp_terms mt
+        LEFT JOIN statements s ON s.mp_id = mt.mp_id
+        LEFT JOIN hansard_sessions hs ON s.session_id = hs.id
+        LEFT JOIN parliamentary_terms pt ON hs.term_id = pt.id AND pt.is_current = 1
+        WHERE mt.is_current = 1 AND mt.party IS NOT NULL AND mt.party != ''
+        GROUP BY mt.party
+        ORDER BY mp_count DESC, mt.party ASC
+    ''').fetchall()
+    
+    # Format party data
+    parties = []
+    for party in parties_data:
+        # Create slug from party name
+        slug = party['party'].lower().replace(' ', '-').replace('.', '')
+        parties.append({
+            'name': party['party'],
+            'full_name': party['party'],  # Could be expanded with full names
+            'slug': slug,
+            'mp_count': party['mp_count'],
+            'statement_count': party['statement_count'] if party['statement_count'] else 0,
+            'avg_statements_per_mp': party['avg_statements_per_mp'] if party['avg_statements_per_mp'] else 0
+        })
+    
+    conn.close()
+    
+    return render_template('pages/parties.html', parties=parties, active_page='parties')
+
+
+@app.route('/party/<party_slug>/')
+def party_detail(party_slug):
+    """Individual party page."""
+    conn = get_db_connection()
+    
+    # Convert slug back to party name (simple approach)
+    # In production, you'd want a proper slug-to-party mapping
+    party_name = party_slug.upper().replace('-', ' ').replace('_', '-')
+    
+    # Get party statistics
+    party_stats = conn.execute('''
+        SELECT 
+            mt.party,
+            COUNT(DISTINCT mt.mp_id) as mp_count,
+            COUNT(DISTINCT s.id) as total_statements,
+            CAST(COUNT(DISTINCT s.id) AS FLOAT) / COUNT(DISTINCT mt.mp_id) as avg_statements,
+            COUNT(DISTINCT s.session_id) as total_sessions
+        FROM mp_terms mt
+        LEFT JOIN statements s ON s.mp_id = mt.mp_id
+        LEFT JOIN hansard_sessions hs ON s.session_id = hs.id
+        LEFT JOIN parliamentary_terms pt ON hs.term_id = pt.id AND pt.is_current = 1
+        WHERE mt.is_current = 1 AND UPPER(mt.party) = ?
+        GROUP BY mt.party
+    ''', (party_name,)).fetchone()
+    
+    if not party_stats:
+        return "Party not found", 404
+    
+    # Get all MPs for this party
+    mps = conn.execute('''
+        SELECT 
+            m.id,
+            m.name,
+            mt.constituency,
+            m.photo_url,
+            COUNT(DISTINCT s.id) as statement_count,
+            COUNT(DISTINCT s.session_id) as sessions_attended
+        FROM mps m
+        JOIN mp_terms mt ON m.id = mt.mp_id
+        LEFT JOIN statements s ON s.mp_id = m.id
+        LEFT JOIN hansard_sessions hs ON s.session_id = hs.id
+        LEFT JOIN parliamentary_terms pt ON hs.term_id = pt.id AND pt.is_current = 1
+        WHERE mt.is_current = 1 AND UPPER(mt.party) = ?
+        GROUP BY m.id
+        ORDER BY statement_count DESC, m.name ASC
+    ''', (party_name,)).fetchall()
+    
+    conn.close()
+    
+    return render_template('pages/party.html',
+                         party_name=party_stats['party'],
+                         party_full_name=party_stats['party'],
+                         mp_count=party_stats['mp_count'],
+                         total_statements=party_stats['total_statements'],
+                         avg_statements=party_stats['avg_statements'],
+                         total_sessions=party_stats['total_sessions'],
+                         mps=mps,
+                         active_page='parties')
 
 
 @app.route('/about/')
