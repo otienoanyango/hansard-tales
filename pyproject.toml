@@ -47,6 +47,7 @@ hansard-init-parliament-data = "hansard_tales.database.init_parliament_data:main
 hansard-import-mps = "hansard_tales.database.import_mps:main"
 hansard-db-updater = "hansard_tales.database.db_updater:main"
 hansard-generate-site = "hansard_tales.site_generator:main"
+hansard-generate-search-index = "hansard_tales.search_index_generator:main"
 
 [tool.setuptools]
 packages = ["hansard_tales", "hansard_tales.scrapers", "hansard_tales.processors", "hansard_tales.database"]
