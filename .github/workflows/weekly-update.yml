@@ -12,6 +12,7 @@ permissions:
   contents: write
   pages: write
   id-token: write
+  pull-requests: write
 
 jobs:
   update:
@@ -97,61 +98,43 @@ jobs:
           sleep 10
           hansard-db-updater
       
-      - name: Generate search index
-        run: |
-          echo "Generating search index..."
-          hansard-generate-search-index || {
-            echo "::error::Search index generation failed"
-            exit 1
-          }
-      
-      - name: Generate static site
-        run: |
-          echo "Generating static site..."
-          hansard-generate-site --base-path /hansard-tales || {
-            echo "::error::Static site generation failed"
-            exit 1
-          }
-      
-      - name: Commit and push changes
-        id: commit
-        continue-on-error: true
-        run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-          
-          # Add database and PDFs
-          git add data/hansard.db data/pdfs/*.pdf
-          
-          # Check if there are changes to commit
-          if git diff --staged --quiet; then
-            echo "No changes to commit"
-          else
-            git commit -m "chore: weekly Hansard update - $(date +'%Y-%m-%d')"
-            git push || {
-              echo "::error::Git push failed"
-              exit 1
-            }
-          fi
-      
-      - name: Retry commit and push (if failed)
-        if: steps.commit.outcome == 'failure'
-        run: |
-          echo "Retrying git push after failure..."
-          sleep 10
-          git push
-      
-      - name: Setup Pages
-        uses: actions/configure-pages@v4
-      
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+      - name: Create Pull Request with changes
+        id: create_pr
+        if: success()
+        uses: peter-evans/create-pull-request@v6
         with:
-          path: './output'
-      
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore: weekly Hansard update - $(date +'%Y-%m-%d')"
+          branch: automated/weekly-update-${{ github.run_number }}
+          delete-branch: true
+          title: "Weekly Hansard Update - $(date +'%Y-%m-%d')"
+          body: |
+            ## Weekly Hansard Update
+            
+            **Date:** $(date +'%Y-%m-%d %H:%M:%S UTC')
+            **Workflow Run:** [#${{ github.run_number }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+            
+            ### Changes
+            - Updated database with new Hansard statements
+            - Downloaded new PDF files
+            - Regenerated search index
+            - Regenerated static site
+            
+            ### Review Checklist
+            - [ ] Check database file size is reasonable
+            - [ ] Verify new PDFs downloaded
+            - [ ] Test site generation locally (optional)
+            
+            ---
+            *This PR was automatically created by the Weekly Hansard Update workflow.*
+            *Merge this PR to deploy the updates to production.*
+          labels: |
+            automation
+            weekly-update
+          assignees: ${{ github.repository_owner }}
+          add-paths: |
+            data/hansard.db
+            data/pdfs/*.pdf
       
       - name: Create workflow summary
         if: always()
@@ -164,8 +147,12 @@ jobs:
           echo "- Scraper: ${{ steps.scraper.outcome || 'skipped' }}" >> $GITHUB_STEP_SUMMARY
           echo "- PDF Processor: ${{ steps.processor.outcome || 'skipped' }}" >> $GITHUB_STEP_SUMMARY
           echo "- Database Update: ${{ steps.db_updater.outcome || 'skipped' }}" >> $GITHUB_STEP_SUMMARY
-          echo "- Commit & Push: ${{ steps.commit.outcome || 'skipped' }}" >> $GITHUB_STEP_SUMMARY
-          echo "- Deployment: ${{ steps.deployment.outcome || 'skipped' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Pull Request: ${{ steps.create_pr.outcome || 'skipped' }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ steps.create_pr.outputs.pull-request-number }}" != "" ]; then
+            echo "**Pull Request Created:** #${{ steps.create_pr.outputs.pull-request-number }}" >> $GITHUB_STEP_SUMMARY
+            echo "**PR URL:** ${{ steps.create_pr.outputs.pull-request-url }}" >> $GITHUB_STEP_SUMMARY
+          fi
       
       - name: Send failure notification
         if: failure()
@@ -181,8 +168,7 @@ jobs:
             - Scraper: ${{ steps.scraper.outcome }}
             - PDF Processor: ${{ steps.processor.outcome }}
             - Database Update: ${{ steps.db_updater.outcome }}
-            - Commit & Push: ${{ steps.commit.outcome }}
-            - Deployment: ${{ steps.deployment.outcome }}
+            - Pull Request Creation: ${{ steps.create_pr.outcome }}
             
             Please check the [workflow logs](${context.payload.repository.html_url}/actions/runs/${context.runId}) for details.
             
