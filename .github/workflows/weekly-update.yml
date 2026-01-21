@@ -47,56 +47,22 @@ jobs:
             echo "Database exists, skipping initialization"
           fi
       
-      - name: Run Hansard scraper
-        id: scraper
-        continue-on-error: true
-        run: |
-          echo "Scraping new Hansard PDFs..."
-          hansard-scraper || {
-            echo "::error::Hansard scraper failed"
-            exit 1
-          }
-      
-      - name: Retry Hansard scraper (if failed)
-        if: steps.scraper.outcome == 'failure'
-        run: |
-          echo "Retrying Hansard scraper after failure..."
-          sleep 30
-          hansard-scraper
-      
-      - name: Process PDFs
+      - name: Process new Hansard data
         id: processor
         continue-on-error: true
         run: |
-          echo "Processing downloaded PDFs..."
-          hansard-pdf-processor || {
-            echo "::error::PDF processor failed"
+          echo "Processing Hansard data from the past week..."
+          hansard-process-historical --start-date "1 week ago" --force || {
+            echo "::error::Historical processor failed"
             exit 1
           }
       
-      - name: Retry PDF processor (if failed)
+      - name: Retry historical processor (if failed)
         if: steps.processor.outcome == 'failure'
         run: |
-          echo "Retrying PDF processor after failure..."
-          sleep 10
-          hansard-pdf-processor
-      
-      - name: Update database
-        id: db_updater
-        continue-on-error: true
-        run: |
-          echo "Updating database with new statements..."
-          hansard-db-updater || {
-            echo "::error::Database updater failed"
-            exit 1
-          }
-      
-      - name: Retry database update (if failed)
-        if: steps.db_updater.outcome == 'failure'
-        run: |
-          echo "Retrying database update after failure..."
-          sleep 10
-          hansard-db-updater
+          echo "Retrying historical processor after failure..."
+          sleep 30
+          hansard-process-historical --start-date "1 week ago" --force
       
       - name: Create Pull Request with changes
         id: create_pr
@@ -113,20 +79,23 @@ jobs:
             
             **Date:** $(date +'%Y-%m-%d %H:%M:%S UTC')
             **Workflow Run:** [#${{ github.run_number }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+            **Date Range:** Past week (using `hansard-process-historical --start-date "1 week ago"`)
             
             ### Changes
-            - Updated database with new Hansard statements
-            - Downloaded new PDF files
+            - Downloaded new Hansard PDFs from the past week
+            - Processed PDFs and extracted statements
+            - Updated database with new statements and bill references
             - Regenerated search index
             - Regenerated static site
             
             ### Review Checklist
             - [ ] Check database file size is reasonable
             - [ ] Verify new PDFs downloaded
-            - [ ] Test site generation locally (optional)
+            - [ ] Review processing statistics in workflow logs
             
             ---
             *This PR was automatically created by the Weekly Hansard Update workflow.*
+            *The workflow now uses `hansard-process-historical` for unified processing.*
             *Merge this PR to deploy the updates to production.*
           labels: |
             automation
@@ -144,9 +113,7 @@ jobs:
           echo "**Date:** $(date +'%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### Step Results" >> $GITHUB_STEP_SUMMARY
-          echo "- Scraper: ${{ steps.scraper.outcome || 'skipped' }}" >> $GITHUB_STEP_SUMMARY
-          echo "- PDF Processor: ${{ steps.processor.outcome || 'skipped' }}" >> $GITHUB_STEP_SUMMARY
-          echo "- Database Update: ${{ steps.db_updater.outcome || 'skipped' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Historical Processor: ${{ steps.processor.outcome || 'skipped' }}" >> $GITHUB_STEP_SUMMARY
           echo "- Pull Request: ${{ steps.create_pr.outcome || 'skipped' }}" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           if [ "${{ steps.create_pr.outputs.pull-request-number }}" != "" ]; then
@@ -165,9 +132,7 @@ jobs:
             **Date:** ${new Date().toISOString()}
             
             ### Failed Steps
-            - Scraper: ${{ steps.scraper.outcome }}
-            - PDF Processor: ${{ steps.processor.outcome }}
-            - Database Update: ${{ steps.db_updater.outcome }}
+            - Historical Processor: ${{ steps.processor.outcome }}
             - Pull Request Creation: ${{ steps.create_pr.outcome }}
             
             Please check the [workflow logs](${context.payload.repository.html_url}/actions/runs/${context.runId}) for details.
