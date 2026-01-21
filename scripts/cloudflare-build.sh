@@ -14,7 +14,7 @@ pip install -e .
 
 echo ""
 echo "Step 2/6: Downloading spaCy language model..."
-python -m spacy download en_core_web_sm
+pip install https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.7.1/en_core_web_sm-3.7.1-py3-none-any.whl
 
 echo ""
 echo "Step 3/6: Initializing database..."
