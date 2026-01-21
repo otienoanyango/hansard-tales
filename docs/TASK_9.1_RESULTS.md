@@ -2,11 +2,13 @@
 
 **Date**: January 21, 2026  
 **Task**: Process all available 2024-2025 Hansard data  
-**Status**: ✅ Complete
+**Status**: ✅ Complete (Enhanced with date range filtering)
 
 ## Executive Summary
 
 Successfully processed all available Hansard data from 2024-2025 period. The historical data processing script was created and executed locally, generating a complete static site with search functionality.
+
+**Enhancement**: Added date range filtering capability to process PDFs between specific dates, enabling more granular control over historical data processing.
 
 ## Processing Statistics
 
@@ -50,25 +52,42 @@ Successfully processed all available Hansard data from 2024-2025 period. The his
 **File**: `scripts/process_historical_data.py`
 
 **Features**:
-- Downloads all available Hansard PDFs for specified year
+- Downloads all available Hansard PDFs for specified year or date range
+- **Date range filtering**: Process PDFs between specific dates (--start-date, --end-date)
 - Processes PDFs in batches with error handling
 - Skips already-processed PDFs (unless `--force` flag used)
 - Updates SQLite database with statements, MPs, and bill references
 - Generates search index and static site
 - Provides comprehensive quality assurance reports
 - Tracks processing statistics and errors
+- Extracts dates from PDF filenames (supports multiple formats)
 
 **Usage**:
 ```bash
-# Process 2024-2025 data
+# Process all 2024 data
 python scripts/process_historical_data.py --year 2024
 
+# Process specific date range
+python scripts/process_historical_data.py --start-date 2024-01-01 --end-date 2024-12-31
+
+# Process from date onwards
+python scripts/process_historical_data.py --start-date 2024-06-01
+
+# Process up to date
+python scripts/process_historical_data.py --end-date 2024-12-31
+
 # Dry run (simulate without changes)
-python scripts/process_historical_data.py --year 2024 --dry-run
+python scripts/process_historical_data.py --start-date 2024-01-01 --end-date 2024-12-31 --dry-run
 
 # Force reprocess already-processed PDFs
 python scripts/process_historical_data.py --year 2024 --force
 ```
+
+**Date Extraction**:
+The script automatically extracts dates from PDF filenames in multiple formats:
+- ISO format: `Hansard_Report_2025-12-04.pdf`
+- Long format: `Hansard Report - Wednesday, 3rd December 2025 (P).pdf`
+- Handles both morning (P) and evening (E) sessions
 
 ### Quality Assurance Checks
 
