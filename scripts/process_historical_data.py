@@ -46,7 +46,6 @@ except ImportError:
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from hansard_tales.scrapers.hansard_scraper import HansardScraper
-from hansard_tales.processors.pdf_processor import PDFProcessor
 from hansard_tales.database.db_updater import DatabaseUpdater
 import hansard_tales.search_index_generator as search_index_gen
 import hansard_tales.site_generator as site_gen
@@ -263,7 +262,6 @@ class HistoricalDataProcessor:
     
     def _process_pdfs(self):
         """Process all PDFs in the data directory (filtered by date range if specified)"""
-        pdf_processor = PDFProcessor()
         db_updater = DatabaseUpdater(str(self.db_path))
         
         # Get all PDFs
@@ -310,21 +308,21 @@ class HistoricalDataProcessor:
                     self.stats['pdfs_processed'] += 1
                     continue
                 
-                # Extract text from PDF
-                print(f"    Extracting text...")
-                extracted_data = pdf_processor.process_pdf(str(pdf_path))
+                # Extract date from filename for database
+                pdf_date_obj = self._extract_date_from_filename(pdf_path)
+                if pdf_date_obj:
+                    date_str = pdf_date_obj.strftime('%Y-%m-%d')
+                else:
+                    # Fallback to current date if cannot extract
+                    date_str = datetime.now().strftime('%Y-%m-%d')
                 
-                if not extracted_data or not extracted_data.get('text'):
-                    print(f"    ⚠️  No text extracted")
-                    self.stats['pdfs_failed'] += 1
-                    self.stats['errors'].append(f"{pdf_path.name}: No text extracted")
-                    continue
-                
-                # Update database
+                # Update database (db_updater will extract text internally)
                 print(f"    Updating database...")
                 result = db_updater.process_hansard_pdf(
                     pdf_path=str(pdf_path),
-                    extracted_data=extracted_data
+                    pdf_url=f"file://{pdf_path.absolute()}",
+                    date=date_str,
+                    skip_if_processed=False  # Force reprocess since we're using --force flag
                 )
                 
                 # Update statistics
