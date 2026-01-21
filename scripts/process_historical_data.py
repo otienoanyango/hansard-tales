@@ -33,6 +33,7 @@ from pathlib import Path
 from datetime import datetime, date
 import sqlite3
 import re
+from urllib.parse import unquote
 
 try:
     import dateparser
@@ -175,7 +176,8 @@ class HistoricalDataProcessor:
         Returns:
             date object or None if date cannot be extracted
         """
-        filename = pdf_path.name
+        # URL-decode the filename first
+        filename = unquote(pdf_path.name)
         
         # Try ISO format first: YYYY-MM-DD
         iso_match = re.search(r'(\d{4})-(\d{2})-(\d{2})', filename)
@@ -313,11 +315,14 @@ class HistoricalDataProcessor:
                 if pdf_date_obj:
                     date_str = pdf_date_obj.strftime('%Y-%m-%d')
                 else:
-                    # Fallback to current date if cannot extract
-                    date_str = datetime.now().strftime('%Y-%m-%d')
+                    # Cannot extract date - log warning and skip
+                    print(f"    ⚠️  Cannot extract date from filename")
+                    self.stats['pdfs_failed'] += 1
+                    self.stats['errors'].append(f"{pdf_path.name}: Cannot extract date from filename")
+                    continue
                 
                 # Update database (db_updater will extract text internally)
-                print(f"    Updating database...")
+                print(f"    Updating database (date: {date_str})...")
                 result = db_updater.process_hansard_pdf(
                     pdf_path=str(pdf_path),
                     pdf_url=f"file://{pdf_path.absolute()}",
