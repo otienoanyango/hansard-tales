@@ -54,6 +54,7 @@ Successfully processed all available Hansard data from 2024-2025 period. The his
 **Features**:
 - Downloads all available Hansard PDFs for specified year or date range
 - **Date range filtering**: Process PDFs between specific dates (--start-date, --end-date)
+- **Natural language date support**: Use phrases like "last week", "2 weeks ago", "last month"
 - Processes PDFs in batches with error handling
 - Skips already-processed PDFs (unless `--force` flag used)
 - Updates SQLite database with statements, MPs, and bill references
@@ -67,8 +68,14 @@ Successfully processed all available Hansard data from 2024-2025 period. The his
 # Process all 2024 data
 python scripts/process_historical_data.py --year 2024
 
-# Process specific date range
+# Process specific date range (ISO format)
 python scripts/process_historical_data.py --start-date 2024-01-01 --end-date 2024-12-31
+
+# Natural language dates (requires dateparser package)
+python scripts/process_historical_data.py --start-date "last week"
+python scripts/process_historical_data.py --start-date "2 weeks ago" --end-date "yesterday"
+python scripts/process_historical_data.py --start-date "last month"
+python scripts/process_historical_data.py --start-date "3 months ago" --end-date "1 month ago"
 
 # Process from date onwards
 python scripts/process_historical_data.py --start-date 2024-06-01
@@ -77,7 +84,7 @@ python scripts/process_historical_data.py --start-date 2024-06-01
 python scripts/process_historical_data.py --end-date 2024-12-31
 
 # Dry run (simulate without changes)
-python scripts/process_historical_data.py --start-date 2024-01-01 --end-date 2024-12-31 --dry-run
+python scripts/process_historical_data.py --start-date "last week" --dry-run
 
 # Force reprocess already-processed PDFs
 python scripts/process_historical_data.py --year 2024 --force

@@ -34,6 +34,14 @@ from datetime import datetime, date
 import sqlite3
 import re
 
+try:
+    import dateparser
+    DATEPARSER_AVAILABLE = True
+except ImportError:
+    DATEPARSER_AVAILABLE = False
+    print("Warning: dateparser not installed. Natural language dates not supported.")
+    print("Install with: pip install dateparser")
+
 # Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
@@ -42,6 +50,45 @@ from hansard_tales.processors.pdf_processor import PDFProcessor
 from hansard_tales.database.db_updater import DatabaseUpdater
 import hansard_tales.search_index_generator as search_index_gen
 import hansard_tales.site_generator as site_gen
+
+
+def parse_date_string(date_str):
+    """
+    Parse date string - supports both ISO format and natural language.
+    
+    Supports:
+    - ISO format: 2024-01-01
+    - Natural language: "last week", "2 weeks ago", "last month", "yesterday"
+    
+    Args:
+        date_str: Date string to parse
+        
+    Returns:
+        Date string in YYYY-MM-DD format or None if parsing fails
+    """
+    if not date_str:
+        return None
+    
+    # Try ISO format first (YYYY-MM-DD)
+    try:
+        parsed = datetime.strptime(date_str, '%Y-%m-%d')
+        return parsed.strftime('%Y-%m-%d')
+    except ValueError:
+        pass
+    
+    # Try natural language parsing if dateparser is available
+    if DATEPARSER_AVAILABLE:
+        parsed = dateparser.parse(
+            date_str,
+            settings={
+                'PREFER_DATES_FROM': 'past',  # Assume past dates for historical data
+                'RETURN_AS_TIMEZONE_AWARE': False
+            }
+        )
+        if parsed:
+            return parsed.strftime('%Y-%m-%d')
+    
+    return None
 
 
 class HistoricalDataProcessor:
@@ -446,15 +493,21 @@ class HistoricalDataProcessor:
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Process historical Hansard data with date range filtering",
+        description="Process historical Hansard data with date range filtering (supports natural language dates)",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
   # Process all 2024 data
   python scripts/process_historical_data.py --year 2024
   
-  # Process specific date range
+  # Process specific date range (ISO format)
   python scripts/process_historical_data.py --start-date 2024-01-01 --end-date 2024-12-31
+  
+  # Natural language dates (requires dateparser)
+  python scripts/process_historical_data.py --start-date "last week"
+  python scripts/process_historical_data.py --start-date "2 weeks ago" --end-date "yesterday"
+  python scripts/process_historical_data.py --start-date "last month"
+  python scripts/process_historical_data.py --start-date "3 months ago" --end-date "1 month ago"
   
   # Process from date onwards
   python scripts/process_historical_data.py --start-date 2024-06-01
@@ -463,7 +516,7 @@ Examples:
   python scripts/process_historical_data.py --end-date 2024-12-31
   
   # Dry run to see what would be processed
-  python scripts/process_historical_data.py --start-date 2024-01-01 --end-date 2024-12-31 --dry-run
+  python scripts/process_historical_data.py --start-date "last week" --dry-run
   
   # Force reprocess already-processed PDFs
   python scripts/process_historical_data.py --year 2024 --force
@@ -477,12 +530,12 @@ Examples:
     parser.add_argument(
         '--start-date',
         type=str,
-        help='Start date (YYYY-MM-DD format, inclusive)'
+        help='Start date (YYYY-MM-DD or natural language like "last week", "2 weeks ago")'
     )
     parser.add_argument(
         '--end-date',
         type=str,
-        help='End date (YYYY-MM-DD format, inclusive)'
+        help='End date (YYYY-MM-DD or natural language like "yesterday", "last month")'
     )
     parser.add_argument(
         '--dry-run',
@@ -497,34 +550,51 @@ Examples:
     
     args = parser.parse_args()
     
-    # Validate date format if provided
+    # Parse dates (supports both ISO format and natural language)
+    start_date = None
+    end_date = None
+    
     if args.start_date:
-        try:
-            datetime.strptime(args.start_date, '%Y-%m-%d')
-        except ValueError:
-            print("Error: start-date must be in YYYY-MM-DD format")
+        start_date = parse_date_string(args.start_date)
+        if not start_date:
+            print(f"Error: Could not parse start date '{args.start_date}'")
+            print("Supported formats:")
+            print("  - ISO: 2024-01-01")
+            if DATEPARSER_AVAILABLE:
+                print("  - Natural language: 'last week', '2 weeks ago', 'last month'")
+            else:
+                print("  - Install dateparser for natural language support: pip install dateparser")
             sys.exit(1)
+        print(f"Parsed start date: '{args.start_date}' → {start_date}")
     
     if args.end_date:
-        try:
-            datetime.strptime(args.end_date, '%Y-%m-%d')
-        except ValueError:
-            print("Error: end-date must be in YYYY-MM-DD format")
+        end_date = parse_date_string(args.end_date)
+        if not end_date:
+            print(f"Error: Could not parse end date '{args.end_date}'")
+            print("Supported formats:")
+            print("  - ISO: 2024-12-31")
+            if DATEPARSER_AVAILABLE:
+                print("  - Natural language: 'yesterday', 'last month', '1 week ago'")
+            else:
+                print("  - Install dateparser for natural language support: pip install dateparser")
             sys.exit(1)
+        print(f"Parsed end date: '{args.end_date}' → {end_date}")
     
     # Validate that start date is before end date
-    if args.start_date and args.end_date:
-        start = datetime.strptime(args.start_date, '%Y-%m-%d')
-        end = datetime.strptime(args.end_date, '%Y-%m-%d')
+    if start_date and end_date:
+        start = datetime.strptime(start_date, '%Y-%m-%d')
+        end = datetime.strptime(end_date, '%Y-%m-%d')
         if start > end:
-            print("Error: start-date must be before end-date")
+            print(f"Error: start date ({start_date}) must be before end date ({end_date})")
             sys.exit(1)
+    
+    print()  # Blank line before processing starts
     
     # Run processor
     processor = HistoricalDataProcessor(
         year=args.year,
-        start_date=args.start_date,
-        end_date=args.end_date,
+        start_date=start_date,
+        end_date=end_date,
         dry_run=args.dry_run,
         force=args.force
     )
