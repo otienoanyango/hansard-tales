@@ -298,7 +298,7 @@
 
 ### 9. Historical Data Processing
 
-- [ ] 9.1 Process 2024-2025 Hansard data
+- [-] 9.1 Process 2024-2025 Hansard data
   - Download all available 2024-2025 PDFs
   - Run batch processing script
   - Monitor for errors and edge cases
