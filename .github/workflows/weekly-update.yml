@@ -98,22 +98,6 @@ jobs:
           sleep 10
           hansard-db-updater
       
-      - name: Generate search index
-        run: |
-          echo "Generating search index..."
-          hansard-generate-search-index || {
-            echo "::error::Search index generation failed"
-            exit 1
-          }
-      
-      - name: Generate static site
-        run: |
-          echo "Generating static site..."
-          hansard-generate-site --base-path /hansard-tales || {
-            echo "::error::Static site generation failed"
-            exit 1
-          }
-      
       - name: Create Pull Request with changes
         id: create_pr
         if: success()
@@ -152,18 +136,6 @@ jobs:
             data/hansard.db
             data/pdfs/*.pdf
       
-      - name: Setup Pages
-        uses: actions/configure-pages@v4
-      
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: './output'
-      
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
-      
       - name: Create workflow summary
         if: always()
         run: |
@@ -176,7 +148,6 @@ jobs:
           echo "- PDF Processor: ${{ steps.processor.outcome || 'skipped' }}" >> $GITHUB_STEP_SUMMARY
           echo "- Database Update: ${{ steps.db_updater.outcome || 'skipped' }}" >> $GITHUB_STEP_SUMMARY
           echo "- Pull Request: ${{ steps.create_pr.outcome || 'skipped' }}" >> $GITHUB_STEP_SUMMARY
-          echo "- Deployment: ${{ steps.deployment.outcome || 'skipped' }}" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           if [ "${{ steps.create_pr.outputs.pull-request-number }}" != "" ]; then
             echo "**Pull Request Created:** #${{ steps.create_pr.outputs.pull-request-number }}" >> $GITHUB_STEP_SUMMARY
@@ -198,7 +169,6 @@ jobs:
             - PDF Processor: ${{ steps.processor.outcome }}
             - Database Update: ${{ steps.db_updater.outcome }}
             - Pull Request Creation: ${{ steps.create_pr.outcome }}
-            - Deployment: ${{ steps.deployment.outcome }}
             
             Please check the [workflow logs](${context.payload.repository.html_url}/actions/runs/${context.runId}) for details.
             

@@ -73,3 +73,4 @@ coverage.xml
 *.tmp
 *.bak
 *.swp
+cloudflare/

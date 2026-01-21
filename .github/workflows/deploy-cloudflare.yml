@@ -1,0 +1,74 @@
+name: Deploy to Cloudflare Pages
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+          pip install https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.7.1/en_core_web_sm-3.7.1-py3-none-any.whl
+      
+      - name: Verify database exists
+        run: |
+          if [ ! -f data/hansard.db ]; then
+            echo "::error::Database not found! Run weekly update workflow first."
+            exit 1
+          fi
+          echo "Database found: $(du -h data/hansard.db | cut -f1)"
+      
+      - name: Generate search index
+        run: |
+          echo "Generating search index..."
+          hansard-generate-search-index
+          echo "Search index size: $(du -h output/search-index.json | cut -f1)"
+      
+      - name: Generate static site
+        run: |
+          echo "Generating static site..."
+          hansard-generate-site --base-path /
+          echo "Total files generated: $(find output -type f | wc -l)"
+          echo "Total size: $(du -sh output | cut -f1)"
+      
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy output --project-name=hansard-tales --branch=main
+      
+      - name: Create deployment summary
+        if: always()
+        run: |
+          echo "## Cloudflare Pages Deployment" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Date:** $(date +'%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_STEP_SUMMARY
+          echo "**Branch:** main" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Build Statistics" >> $GITHUB_STEP_SUMMARY
+          echo "- Database: $(du -h data/hansard.db | cut -f1)" >> $GITHUB_STEP_SUMMARY
+          echo "- Search Index: $(du -h output/search-index.json | cut -f1)" >> $GITHUB_STEP_SUMMARY
+          echo "- Total Files: $(find output -type f | wc -l)" >> $GITHUB_STEP_SUMMARY
+          echo "- Total Size: $(du -sh output | cut -f1)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "🚀 **Deployment URL:** https://hansard-tales.pages.dev" >> $GITHUB_STEP_SUMMARY
