@@ -43,7 +43,7 @@ jobs:
 
       - name: Generate static site
         run: |
-          hansard-generate-site --base-path /hansard-tales
+          hansard-generate-site --base-path /
 
       - name: Setup Pages
         uses: actions/configure-pages@v4

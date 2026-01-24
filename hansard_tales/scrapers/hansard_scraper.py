@@ -15,11 +15,25 @@ import re
 import sys
 import time
 from pathlib import Path
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Tuple
 from urllib.parse import urljoin, urlparse
 
 import requests
 from bs4 import BeautifulSoup
+
+from hansard_tales.storage.base import StorageBackend
+from hansard_tales.storage.filesystem import FilesystemStorage
+from hansard_tales.processors.period_extractor import PeriodOfDayExtractor
+from hansard_tales.utils.filename_generator import FilenameGenerator
+
+# Try to import dateparser for robust date parsing
+try:
+    import dateparser
+    DATEPARSER_AVAILABLE = True
+except ImportError:
+    DATEPARSER_AVAILABLE = False
+    logger.warning("dateparser not installed. Date parsing will use regex patterns only.")
+    logger.warning("Install with: pip install dateparser")
 
 
 # Configure logging
@@ -38,23 +52,38 @@ class HansardScraper:
     
     def __init__(
         self,
-        output_dir: str = "data/pdfs",
+        storage: Optional[StorageBackend] = None,
+        db_path: Optional[str] = None,
         rate_limit_delay: float = 1.0,
-        max_retries: int = 3
+        max_retries: int = 3,
+        start_date: Optional[str] = None,
+        end_date: Optional[str] = None
     ):
         """
         Initialize the scraper.
         
         Args:
-            output_dir: Directory to save downloaded PDFs
+            storage: Storage backend for PDFs (default: FilesystemStorage("data/pdfs/hansard"))
+            db_path: Path to database for tracking downloads
             rate_limit_delay: Delay between requests in seconds
             max_retries: Maximum number of retry attempts
+            start_date: Start date for filtering (YYYY-MM-DD format)
+            end_date: End date for filtering (YYYY-MM-DD format)
         """
-        self.output_dir = Path(output_dir)
-        self.output_dir.mkdir(parents=True, exist_ok=True)
+        # Initialize storage backend
+        if storage is None:
+            storage = FilesystemStorage("data/pdfs/hansard")
+        self.storage = storage
         
+        self.db_path = db_path
         self.rate_limit_delay = rate_limit_delay
         self.max_retries = max_retries
+        self.start_date = start_date
+        self.end_date = end_date
+        
+        # Initialize period extractor and filename generator
+        self.period_extractor = PeriodOfDayExtractor()
+        self.filename_generator = FilenameGenerator()
         
         # Session for connection pooling
         self.session = requests.Session()
@@ -142,7 +171,7 @@ class HansardScraper:
     
     def extract_date(self, text: str) -> Optional[str]:
         """
-        Extract date from text using regex patterns.
+        Extract date from text using dateparser (preferred) or regex patterns (fallback).
         
         Args:
             text: Text to search for dates
@@ -150,6 +179,34 @@ class HansardScraper:
         Returns:
             Date string in YYYY-MM-DD format or None
         """
+        if not text:
+            return None
+        
+        # Try dateparser first (handles many formats including British dates)
+        if DATEPARSER_AVAILABLE:
+            try:
+                # Use search_dates to find dates within text
+                from dateparser.search import search_dates
+                
+                results = search_dates(
+                    text,
+                    settings={
+                        'PREFER_DATES_FROM': 'past',
+                        'STRICT_PARSING': False,
+                        'DATE_ORDER': 'DMY'  # British/Kenyan format: day-month-year
+                    },
+                    languages=['en']
+                )
+                
+                if results:
+                    # Get the first date found
+                    date_str, date_obj = results[0]
+                    return date_obj.strftime('%Y-%m-%d')
+            except Exception as e:
+                logger.debug(f"dateparser failed: {e}, falling back to regex")
+        
+        # Fallback to regex patterns
+        
         # Pattern: DD/MM/YYYY or DD-MM-YYYY
         pattern1 = r'(\d{1,2})[/-](\d{1,2})[/-](\d{4})'
         match = re.search(pattern1, text)
@@ -164,7 +221,7 @@ class HansardScraper:
             year, month, day = match.groups()
             return f"{year}-{month.zfill(2)}-{day.zfill(2)}"
         
-        # Pattern: Month DD, YYYY
+        # Pattern: Month DD, YYYY (American format)
         pattern3 = r'(January|February|March|April|May|June|July|August|September|October|November|December)\s+(\d{1,2}),?\s+(\d{4})'
         match = re.search(pattern3, text, re.IGNORECASE)
         if match:
@@ -178,37 +235,228 @@ class HansardScraper:
             month = month_map.get(month_name.lower(), '01')
             return f"{year}-{month}-{day.zfill(2)}"
         
+        # Pattern: DD Month YYYY (British/Kenyan format)
+        pattern4 = r'(\d{1,2})(?:st|nd|rd|th)?\s+(January|February|March|April|May|June|July|August|September|October|November|December),?\s+(\d{4})'
+        match = re.search(pattern4, text, re.IGNORECASE)
+        if match:
+            day, month_name, year = match.groups()
+            month_map = {
+                'january': '01', 'february': '02', 'march': '03',
+                'april': '04', 'may': '05', 'june': '06',
+                'july': '07', 'august': '08', 'september': '09',
+                'october': '10', 'november': '11', 'december': '12'
+            }
+            month = month_map.get(month_name.lower(), '01')
+            return f"{year}-{month}-{day.zfill(2)}"
+        
         return None
     
-    def download_pdf(self, url: str, filename: str) -> bool:
+    def _check_existing_download(
+        self,
+        url: str,
+        filename: str,
+        date: str,
+        period_of_day: str
+    ) -> Tuple[bool, str]:
         """
-        Download a PDF file.
+        Check if download should be skipped.
+        
+        Implements 4-case logic:
+        1. File exists in storage AND in database: skip (file_exists_with_record)
+        2. File exists in storage but NOT in database: insert record, skip (file_exists_without_record)
+        3. File NOT in storage but in database: download (file_missing_redownload)
+        4. File NOT in storage AND NOT in database: download (new_download)
         
         Args:
             url: PDF URL
-            filename: Local filename to save
+            filename: Standardized filename
+            date: PDF date (YYYY-MM-DD format)
+            period_of_day: Period code ('A', 'P', or 'E')
             
         Returns:
-            True if successful, False otherwise
+            Tuple of (should_skip, reason)
+            
+        Example:
+            >>> scraper = HansardScraper()
+            >>> should_skip, reason = scraper._check_existing_download(url, filename, "2024-01-15", "P")
+            >>> if should_skip:
+            ...     logger.info(f"Skipping: {reason}")
         """
-        output_path = self.output_dir / filename
+        # Check if file exists in storage
+        file_exists = self.storage.exists(filename)
         
-        # Skip if already downloaded
-        if output_path.exists():
-            logger.info(f"Already exists: {filename}")
-            return True
+        # Check if URL exists in database
+        db_record = None
+        if self.db_path:
+            try:
+                conn = sqlite3.connect(self.db_path)
+                cursor = conn.cursor()
+                cursor.execute(
+                    "SELECT id, file_path FROM downloaded_pdfs WHERE original_url = ?",
+                    (url,)
+                )
+                db_record = cursor.fetchone()
+                conn.close()
+            except sqlite3.Error as e:
+                logger.warning(f"Database query failed: {e}")
+        
+        # Case 1: File exists in storage AND in database
+        if file_exists and db_record:
+            return (True, "file_exists_with_record")
+        
+        # Case 2: File exists in storage but NOT in database
+        elif file_exists and not db_record:
+            # Insert tracking record for existing file
+            self._track_download(url, filename, date, period_of_day, None)
+            return (True, "file_exists_without_record")
+        
+        # Case 3: File NOT in storage but in database
+        elif not file_exists and db_record:
+            # File missing but tracked - need to re-download
+            return (False, "file_missing_redownload")
+        
+        # Case 4: Neither exists - download needed
+        else:
+            return (False, "new_download")
+    
+    def _track_download(
+        self,
+        url: str,
+        file_path: str,
+        date: Optional[str],
+        period_of_day: Optional[str],
+        session_id: Optional[int]
+    ) -> None:
+        """
+        Track download in database with enhanced metadata.
+        
+        Uses INSERT OR REPLACE to handle duplicate URL entries.
+        
+        Args:
+            url: PDF URL
+            file_path: Storage path (relative to storage backend)
+            date: PDF date (YYYY-MM-DD format)
+            period_of_day: Period code ('A', 'P', or 'E')
+            session_id: Session ID (if known, otherwise None)
+            
+        Example:
+            >>> scraper._track_download(
+            ...     "http://example.com/pdf",
+            ...     "hansard_20240101_A.pdf",
+            ...     "2024-01-01",
+            ...     "A",
+            ...     None
+            ... )
+        """
+        if not self.db_path:
+            return
         
         try:
-            logger.info(f"Downloading: {filename}")
+            conn = sqlite3.connect(self.db_path)
+            cursor = conn.cursor()
+            
+            # Get file size if file exists
+            file_size = None
+            if self.storage.exists(file_path):
+                try:
+                    file_size = self.storage.get_size(file_path)
+                except Exception as e:
+                    logger.warning(f"Could not get file size for {file_path}: {e}")
+            
+            # Insert or replace record
+            cursor.execute("""
+                INSERT OR REPLACE INTO downloaded_pdfs 
+                (original_url, file_path, date, period_of_day, session_id, file_size, downloaded_at)
+                VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+            """, (url, file_path, date, period_of_day, session_id, file_size))
+            
+            conn.commit()
+            conn.close()
+            logger.debug(f"Tracked download in database: {file_path}")
+        
+        except sqlite3.Error as e:
+            logger.warning(f"Could not track download in database: {e}")
+    
+    def download_pdf(
+        self,
+        url: str,
+        title: str,
+        date: str
+    ) -> bool:
+        """
+        Download PDF with enhanced metadata tracking.
+        
+        Steps:
+        1. Extract period-of-day from title
+        2. Generate standardized filename
+        3. Check for existing download
+        4. Download if needed
+        5. Track in database with metadata
+        
+        Args:
+            url: PDF URL
+            title: PDF title
+            date: PDF date (YYYY-MM-DD format)
+            
+        Returns:
+            True if successful (downloaded or skipped), False if failed
+            
+        Example:
+            >>> scraper = HansardScraper()
+            >>> success = scraper.download_pdf(
+            ...     "http://example.com/hansard.pdf",
+            ...     "Afternoon Session",
+            ...     "2024-01-01"
+            ... )
+        """
+        # Log download attempt
+        logger.info(f"Download attempt: URL={url}, title={title}, date={date}")
+        
+        # Handle None or empty date
+        if not date:
+            logger.warning(f"No date provided for {url}, cannot generate standardized filename")
+            return False
+        
+        # Extract period-of-day from title
+        period_of_day = self.period_extractor.extract_from_title(title)
+        if not period_of_day:
+            # Default to 'P' if not found in title
+            period_of_day = 'P'
+            logger.debug(f"No period-of-day found in title, defaulting to 'P'")
+        
+        # Generate standardized filename (base filename without suffix)
+        # We don't pass existing_files here because duplicate detection
+        # is handled by _check_existing_download based on URL
+        date_compact = date.replace('-', '')
+        filename = self.filename_generator.generate(
+            date, period_of_day, []
+        )
+        
+        # Check for existing download
+        should_skip, reason = self._check_existing_download(url, filename, date, period_of_day)
+        
+        if should_skip:
+            logger.info(f"Download skipped: URL={url}, filename={filename}, reason={reason}, result=skipped")
+            return True
+        
+        # Download the file
+        logger.info(f"Downloading: filename={filename}, reason={reason}")
+        
+        try:
             response = self.session.get(url, timeout=60, stream=True)
             response.raise_for_status()
             
-            # Write to file
-            with open(output_path, 'wb') as f:
-                for chunk in response.iter_content(chunk_size=8192):
-                    f.write(chunk)
+            # Collect content
+            content = b''.join(response.iter_content(chunk_size=8192))
             
-            logger.info(f"✓ Downloaded: {filename} ({output_path.stat().st_size} bytes)")
+            # Write to storage
+            self.storage.write(filename, content)
+            
+            file_size = len(content)
+            logger.info(f"Download successful: URL={url}, filename={filename}, size={file_size}, result=success")
+            
+            # Track in database
+            self._track_download(url, filename, date, period_of_day, None)
             
             # Rate limiting
             time.sleep(self.rate_limit_delay)
@@ -216,10 +464,14 @@ class HansardScraper:
             return True
             
         except requests.RequestException as e:
-            logger.error(f"Download failed: {e}")
-            # Clean up partial download
-            if output_path.exists():
-                output_path.unlink()
+            logger.error(f"Download failed: URL={url}, filename={filename}, error={str(e)}, result=failed", exc_info=True)
+            # Clean up partial download if it exists
+            try:
+                if self.storage.exists(filename):
+                    self.storage.delete(filename)
+                    logger.debug(f"Cleaned up partial download: {filename}")
+            except Exception as cleanup_error:
+                logger.warning(f"Could not clean up partial download: {cleanup_error}")
             return False
     
     def scrape_hansard_page(self, page_num: int = 1) -> List[Dict[str, str]]:
@@ -290,9 +542,22 @@ class HansardScraper:
         for i, hansard in enumerate(hansards, 1):
             logger.info(f"Processing {i}/{stats['total']}: {hansard['title']}")
             
-            if self.download_pdf(hansard['url'], hansard['filename']):
-                if (self.output_dir / hansard['filename']).stat().st_size > 0:
-                    stats['downloaded'] += 1
+            # Use new download_pdf signature with title and date
+            if self.download_pdf(
+                hansard['url'],
+                hansard['title'],
+                hansard.get('date', '')
+            ):
+                # Check if file was actually downloaded or skipped
+                # Extract filename from title and date
+                date = hansard.get('date', '')
+                if date:
+                    date_compact = date.replace('-', '')
+                    existing_files = self.storage.list_files(f"hansard_{date_compact}")
+                    if existing_files:
+                        stats['downloaded'] += 1
+                    else:
+                        stats['skipped'] += 1
                 else:
                     stats['skipped'] += 1
             else:
@@ -313,9 +578,9 @@ def main():
         help="Maximum number of pages to scrape (default: 5)"
     )
     parser.add_argument(
-        "--output-dir",
-        default="data/pdfs",
-        help="Output directory for PDFs (default: data/pdfs)"
+        "--storage-dir",
+        default="data/pdfs/hansard",
+        help="Storage directory for PDFs (default: data/pdfs/hansard)"
     )
     parser.add_argument(
         "--rate-limit",
@@ -331,10 +596,16 @@ def main():
     
     args = parser.parse_args()
     
+    # Initialize storage backend
+    storage = FilesystemStorage(args.storage_dir)
+    
     # Initialize scraper
     scraper = HansardScraper(
-        output_dir=args.output_dir,
-        rate_limit_delay=args.rate_limit
+        storage=storage,
+        db_path=args.db_path if not args.dry_run else None,
+        rate_limit_delay=args.rate_limit,
+        start_date=args.start_date,
+        end_date=args.end_date
     )
     
     # Scrape Hansard listings

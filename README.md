@@ -86,7 +86,10 @@ hansard-tales/
 │   ├── DEVELOPMENT.md     # Development guide
 │   ├── MP_DATA_SCRAPING.md  # MP scraping guide
 │   ├── PROJECT_SETUP.md   # Setup instructions
-│   └── QUICK_START.md     # Quick start guide
+│   ├── QUICK_START.md     # Quick start guide
+│   ├── WORKFLOW_ORCHESTRATION.md  # Workflow automation guide
+│   ├── STORAGE_ABSTRACTION.md     # Storage backend guide
+│   └── FILENAME_FORMAT.md         # Filename format and migration
 ├── templates/              # Jinja2 HTML templates (future)
 │   ├── base.html          # Base template
 │   ├── mp_profile.html    # MP profile page
@@ -181,6 +184,31 @@ The project uses GitHub Actions for automated testing and deployment:
 
 See [GitHub Actions README](.github/workflows/README.md) for setup instructions.
 
+### Workflow Orchestration
+
+The system provides an end-to-end workflow orchestrator that automates the complete pipeline:
+
+```bash
+# Run complete workflow (scrape → process → index → generate)
+python scripts/run_workflow.py
+
+# Run with date range filtering
+python scripts/run_workflow.py --start-date 2024-01-01 --end-date 2024-12-31
+
+# Run with custom workers for faster processing
+python scripts/run_workflow.py --workers 8
+
+# Run with custom paths
+python scripts/run_workflow.py --db-path data/hansard.db --output-dir output/
+```
+
+The workflow orchestrator executes these steps in sequence:
+1. **Scrape MPs**: Download MP data from parliament website
+2. **Scrape Hansards**: Download Hansard PDFs with duplicate detection
+3. **Process PDFs**: Extract text and identify MP statements
+4. **Generate Search Index**: Create searchable MP index
+5. **Generate Static Site**: Build HTML pages for all MPs
+
 ### Weekly Processing (Automated via GitHub Actions)
 
 The system automatically runs every Sunday at 2 AM EAT:
@@ -194,7 +222,9 @@ The system automatically runs every Sunday at 2 AM EAT:
 
 ### Manual Processing
 
-To process new data manually:
+#### Individual Components
+
+To process components manually:
 
 ```bash
 # Activate virtual environment
@@ -206,14 +236,112 @@ hansard-mp-scraper --term 2022 --output data/mps_13th_parliament.json
 # Import MP data
 hansard-import-mps --file data/mps_13th_parliament.json --current
 
-# Scrape Hansard PDFs
-hansard-scraper --output data/pdfs --max-pages 5
+# Scrape Hansard PDFs (with enhanced duplicate detection)
+hansard-scraper --output data/pdfs/hansard --max-pages 5
 
 # Process a specific PDF
-hansard-pdf-processor --pdf data/pdfs/Hansard_Report_2025-12-04.pdf
+hansard-pdf-processor --pdf data/pdfs/hansard/hansard_20240101_P.pdf
 ```
 
+#### Database Management
+
+The system provides utilities for database backup and maintenance:
+
+```bash
+# Create a timestamped backup
+python scripts/db_manager.py backup --db-path data/hansard.db
+
+# Clean database (preserves downloaded_pdfs table)
+python scripts/db_manager.py clean --db-path data/hansard.db
+
+# Clean without confirmation prompt
+python scripts/db_manager.py clean --db-path data/hansard.db --no-confirm
+
+# Preserve additional tables during clean
+python scripts/db_manager.py clean --db-path data/hansard.db --preserve-tables downloaded_pdfs mps
+```
+
+Backups are stored in `data/backups/` with format: `hansard_YYYYMMDD_HHMMSS.db`
+
 ## Data Model
+
+### Storage Abstraction
+
+The system uses a storage abstraction layer to support multiple storage backends:
+
+**Current Backend**: Filesystem storage (local directory)
+**Future Support**: S3, cloud storage, etc.
+
+#### Storage Configuration
+
+```python
+from hansard_tales.storage.filesystem import FilesystemStorage
+from hansard_tales.storage.config import get_storage_backend
+
+# Use default filesystem storage
+storage = get_storage_backend()
+
+# Use custom directory
+storage = get_storage_backend(
+    backend_type="filesystem",
+    config={"base_dir": "custom/path"}
+)
+
+# Use storage in scraper
+from hansard_tales.scrapers.hansard_scraper import HansardScraper
+scraper = HansardScraper(storage=storage, db_path="data/hansard.db")
+```
+
+#### Standardized Filename Format
+
+All Hansard PDFs use a standardized naming convention:
+
+**Format**: `hansard_YYYYMMDD_{A|P|E}.pdf`
+
+Where:
+- `YYYYMMDD`: Date in compact format (e.g., 20240101)
+- `A`: Afternoon sitting
+- `P`: Morning/Plenary sitting (default)
+- `E`: Evening sitting
+
+**Examples**:
+- `hansard_20240101_P.pdf` - Morning sitting on January 1, 2024
+- `hansard_20240101_A.pdf` - Afternoon sitting on January 1, 2024
+- `hansard_20240101_A_2.pdf` - Second afternoon sitting (duplicate handling)
+
+**Period-of-Day Extraction**:
+The system automatically extracts the period-of-day from PDF metadata:
+- Searches PDF title and first page for keywords
+- Keywords: "afternoon" → A, "morning" → P, "evening" → E
+- Defaults to P (Morning) if not found
+- Case-insensitive matching
+
+**Duplicate Handling**:
+When multiple PDFs exist for the same date and period, a numeric suffix is appended:
+- First file: `hansard_20240101_A.pdf`
+- Second file: `hansard_20240101_A_2.pdf`
+- Third file: `hansard_20240101_A_3.pdf`
+
+### Download Tracking
+
+All downloaded PDFs are tracked in the `downloaded_pdfs` database table with comprehensive metadata:
+
+**Tracked Information**:
+- Original URL from parliament website
+- File path in storage
+- Date and period-of-day
+- Session ID (linked after processing)
+- File size
+- Download timestamp
+
+**Duplicate Prevention**:
+The scraper checks both storage and database before downloading:
+1. **File exists + DB record**: Skip download
+2. **File exists, no DB record**: Create record, skip download
+3. **No file, DB record exists**: Re-download file
+4. **Neither exists**: Download and create record
+
+This ensures efficient bandwidth usage and maintains accurate download history.
 
 ### Parliamentary Terms
 
@@ -229,6 +357,7 @@ The system tracks MPs across multiple parliamentary terms:
 - **MP Terms**: Junction table linking MPs to terms (handles constituency/party changes)
 - **Hansard Sessions**: Daily parliamentary sittings
 - **Statements**: Individual MP statements in sessions
+- **Downloaded PDFs**: Tracking table for all downloaded Hansard files
 
 ### Performance Metrics
 
@@ -284,11 +413,272 @@ This is a solo-maintainer project optimized for simplicity. Contributions welcom
 4. **No Vendor Lock-in**: Can run anywhere
 5. **Ship Fast**: Focus on core value, defer complexity
 
+## Common Operations
+
+### Complete Workflow
+
+Run the entire pipeline from scraping to site generation:
+
+```bash
+# Full workflow with defaults
+python scripts/run_workflow.py
+
+# With date filtering (process only specific date range)
+python scripts/run_workflow.py --start-date 2024-01-01 --end-date 2024-12-31
+
+# With more workers for faster processing
+python scripts/run_workflow.py --workers 8
+
+# With custom database and output paths
+python scripts/run_workflow.py \
+  --db-path data/hansard.db \
+  --output-dir output/ \
+  --storage-dir data/pdfs/hansard
+```
+
+### Database Operations
+
+#### Backup Before Major Operations
+
+Always create a backup before processing new data:
+
+```bash
+# Create timestamped backup
+python scripts/db_manager.py backup --db-path data/hansard.db
+
+# Backup to custom directory
+python scripts/db_manager.py backup \
+  --db-path data/hansard.db \
+  --backup-dir backups/
+```
+
+Backups are stored with format: `hansard_YYYYMMDD_HHMMSS.db`
+
+#### Clean Database
+
+Remove all data except download tracking (useful for reprocessing):
+
+```bash
+# Clean with confirmation prompt
+python scripts/db_manager.py clean --db-path data/hansard.db
+
+# Clean without confirmation (use with caution!)
+python scripts/db_manager.py clean --db-path data/hansard.db --no-confirm
+
+# Preserve additional tables
+python scripts/db_manager.py clean \
+  --db-path data/hansard.db \
+  --preserve-tables downloaded_pdfs mps parliamentary_terms
+```
+
+The clean operation:
+- Deletes all data from most tables
+- Preserves `downloaded_pdfs` table (maintains download history)
+- Preserves any additional tables specified with `--preserve-tables`
+- Requires confirmation unless `--no-confirm` is used
+
+### Scraping Operations
+
+#### Scrape New Hansard PDFs
+
+```bash
+# Scrape with date range
+hansard-scraper \
+  --output data/pdfs/hansard \
+  --start-date 2024-01-01 \
+  --end-date 2024-12-31 \
+  --max-pages 10
+
+# Scrape all available (use with caution - may take hours)
+hansard-scraper --output data/pdfs/hansard --max-pages 100
+```
+
+The scraper:
+- Automatically detects and skips existing files
+- Extracts period-of-day from PDF metadata
+- Generates standardized filenames
+- Tracks all downloads in database
+- Logs skip reasons for transparency
+
+#### Scrape MP Data
+
+```bash
+# Scrape current parliament (13th Parliament, 2022-2027)
+hansard-mp-scraper --term 2022 --output data/mps_13th_parliament.json
+
+# Import scraped MP data
+hansard-import-mps --file data/mps_13th_parliament.json --current
+```
+
+### Processing Operations
+
+#### Process Historical PDFs
+
+```bash
+# Process all PDFs in directory
+python -m hansard_tales.process_historical_data \
+  --pdf-dir data/pdfs/hansard \
+  --db-path data/hansard.db \
+  --workers 4
+
+# Process with date filtering
+python -m hansard_tales.process_historical_data \
+  --pdf-dir data/pdfs/hansard \
+  --db-path data/hansard.db \
+  --start-date 2024-01-01 \
+  --end-date 2024-12-31 \
+  --workers 8
+
+# Dry run (preview without making changes)
+python -m hansard_tales.process_historical_data \
+  --pdf-dir data/pdfs/hansard \
+  --db-path data/hansard.db \
+  --dry-run
+
+# Force reprocess (ignore already processed PDFs)
+python -m hansard_tales.process_historical_data \
+  --pdf-dir data/pdfs/hansard \
+  --db-path data/hansard.db \
+  --force
+```
+
+#### Process Single PDF
+
+```bash
+# Process specific PDF
+hansard-pdf-processor --pdf data/pdfs/hansard/hansard_20240101_P.pdf
+
+# Process with custom database
+hansard-pdf-processor \
+  --pdf data/pdfs/hansard/hansard_20240101_P.pdf \
+  --db-path data/hansard.db
+```
+
+### Site Generation
+
+#### Generate Static Site
+
+```bash
+# Generate complete site
+python -m hansard_tales.site_generator \
+  --db-path data/hansard.db \
+  --output-dir output/
+
+# Generate search index only
+python -m hansard_tales.search_index_generator \
+  --db-path data/hansard.db \
+  --output-dir output/data/
+```
+
+### Troubleshooting
+
+#### Check Download Status
+
+```bash
+# Query database for download statistics
+sqlite3 data/hansard.db "
+  SELECT 
+    period_of_day,
+    COUNT(*) as count,
+    SUM(file_size) / 1024 / 1024 as total_mb
+  FROM downloaded_pdfs
+  GROUP BY period_of_day;
+"
+```
+
+#### Verify File Integrity
+
+```bash
+# Check for missing files
+sqlite3 data/hansard.db "
+  SELECT file_path 
+  FROM downloaded_pdfs 
+  WHERE file_path NOT IN (
+    SELECT file_path FROM downloaded_pdfs 
+    WHERE file_size > 0
+  );
+"
+```
+
+#### Re-download Missing Files
+
+If files are tracked in database but missing from storage:
+
+```bash
+# The scraper will automatically detect and re-download
+hansard-scraper --output data/pdfs/hansard --max-pages 10
+```
+
+### Development Workflow
+
+#### Run Tests
+
+```bash
+# Run all tests
+pytest
+
+# Run with coverage
+pytest --cov=hansard_tales --cov-report=html
+
+# Run specific test file
+pytest tests/test_scraper.py
+
+# Run with parallel execution
+pytest -n auto
+```
+
+#### Check Code Quality
+
+```bash
+# Run linter
+flake8 hansard_tales/
+
+# Run type checker
+mypy hansard_tales/
+
+# Format code
+black hansard_tales/
+```
+
 ## Data Sources
 
 - **Hansard Transcripts**: parliament.go.ke/hansard
 - **MP Database**: Manually compiled from official sources
 - **Parliamentary Terms**: Official parliamentary records
+
+## Documentation
+
+### Core Documentation
+
+- **[Quick Start Guide](docs/QUICK_START.md)**: Get started in 5 minutes
+- **[Development Guide](docs/DEVELOPMENT.md)**: Development workflow and testing
+- **[Architecture](docs/ARCHITECTURE.md)**: System architecture overview
+- **[Project Setup](docs/PROJECT_SETUP.md)**: Detailed setup instructions
+
+### Feature Documentation
+
+- **[Workflow Orchestration](docs/WORKFLOW_ORCHESTRATION.md)**: End-to-end workflow automation
+  - Complete pipeline execution
+  - Individual step control
+  - Performance optimization
+  - Error handling and recovery
+
+- **[Storage Abstraction](docs/STORAGE_ABSTRACTION.md)**: Storage backend system
+  - Filesystem storage (current)
+  - Future cloud storage support
+  - Custom backend implementation
+  - Migration between backends
+
+- **[Filename Format](docs/FILENAME_FORMAT.md)**: Standardized PDF naming
+  - Format specification
+  - Period-of-day extraction
+  - Duplicate handling
+  - Migration from old formats
+
+### Specialized Guides
+
+- **[MP Data Scraping](docs/MP_DATA_SCRAPING.md)**: Scraping MP information
+- **[GitHub Actions](docs/.github/workflows/README.md)**: CI/CD setup
 
 ## Legal & Compliance
 

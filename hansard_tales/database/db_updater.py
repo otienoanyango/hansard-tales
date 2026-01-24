@@ -72,6 +72,7 @@ class DatabaseUpdater:
             MP ID
         """
         # Try to find existing MP by name
+        logger.debug(f"Database operation: SELECT on table=mps, condition=name={mp_name}")
         cursor.execute(
             "SELECT id FROM mps WHERE name = ?",
             (mp_name,)
@@ -79,9 +80,11 @@ class DatabaseUpdater:
         row = cursor.fetchone()
         
         if row:
+            logger.debug(f"Database operation: Found existing MP, id={row['id']}")
             return row['id']
         
         # Create new MP
+        logger.info(f"Database operation: INSERT into table=mps, name={mp_name}")
         cursor.execute("""
             INSERT INTO mps (name, constituency, party)
             VALUES (?, ?, ?)
@@ -109,6 +112,7 @@ class DatabaseUpdater:
             party: MP party affiliation
         """
         # Get current term
+        logger.debug(f"Database operation: SELECT on table=parliamentary_terms, condition=is_current=1")
         cursor.execute(
             "SELECT id FROM parliamentary_terms WHERE is_current = 1"
         )
@@ -121,6 +125,7 @@ class DatabaseUpdater:
         term_id = term_row['id']
         
         # Check if link already exists
+        logger.debug(f"Database operation: SELECT on table=mp_terms, condition=mp_id={mp_id}, term_id={term_id}")
         cursor.execute("""
             SELECT id FROM mp_terms 
             WHERE mp_id = ? AND term_id = ?
@@ -130,6 +135,7 @@ class DatabaseUpdater:
             return  # Link already exists
         
         # Create link
+        logger.info(f"Database operation: INSERT into table=mp_terms, mp_id={mp_id}, term_id={term_id}")
         cursor.execute("""
             INSERT INTO mp_terms (mp_id, term_id, constituency, party, is_current)
             VALUES (?, ?, ?, ?, 1)
@@ -159,6 +165,7 @@ class DatabaseUpdater:
             Session ID
         """
         # Get current term
+        logger.debug(f"Database operation: SELECT on table=parliamentary_terms, condition=is_current=1")
         cursor.execute(
             "SELECT id FROM parliamentary_terms WHERE is_current = 1"
         )
@@ -170,6 +177,7 @@ class DatabaseUpdater:
         term_id = term_row['id']
         
         # Try to find existing session
+        logger.debug(f"Database operation: SELECT on table=hansard_sessions, condition=date={date}, title={title}")
         cursor.execute("""
             SELECT id FROM hansard_sessions 
             WHERE date = ? AND title = ?
@@ -178,9 +186,11 @@ class DatabaseUpdater:
         row = cursor.fetchone()
         
         if row:
+            logger.debug(f"Database operation: Found existing session, id={row['id']}")
             return row['id']
         
         # Create new session
+        logger.info(f"Database operation: INSERT into table=hansard_sessions, date={date}, title={title}")
         cursor.execute("""
             INSERT INTO hansard_sessions (term_id, date, title, pdf_url, pdf_path, processed)
             VALUES (?, ?, ?, ?, ?, 0)
@@ -223,8 +233,18 @@ class DatabaseUpdater:
             VALUES (?, ?, ?, ?, ?)
         """, (mp_id, session_id, statement.text, statement.page_number, bill_ref_str))
         
-        statement_id = cursor.lastrowid
-        logger.debug(f"Inserted statement for MP {mp_id}: {len(statement.text)} chars")
+        # Try to insert statement with unique constraint on content_hash
+        try:
+            logger.debug(f"Database operation: INSERT into table=statements, mp_id={mp_id}, session_id={session_id}")
+            cursor.execute("""
+                INSERT INTO statements (mp_id, session_id, text, page_number, bill_reference, content_hash)
+                VALUES (?, ?, ?, ?, ?, ?)
+            """, (mp_id, session_id, statement.text, statement.page_number, bill_ref_str, content_hash))
+            
+            statement_id = cursor.lastrowid
+            logger.debug(f"Inserted statement for MP {mp_id}: {len(statement.text)} chars")
+            
+            return statement_id
         
         return statement_id
     
@@ -269,11 +289,49 @@ class DatabaseUpdater:
             cursor: Database cursor
             session_id: Session ID
         """
+        logger.info(f"Database operation: UPDATE table=hansard_sessions, session_id={session_id}, processed=1")
         cursor.execute("""
             UPDATE hansard_sessions 
             SET processed = 1 
             WHERE id = ?
         """, (session_id,))
+    
+    def _link_pdf_to_session(
+        self,
+        cursor: sqlite3.Cursor,
+        pdf_url: str,
+        session_id: int
+    ) -> None:
+        """
+        Link PDF to session in downloaded_pdfs table.
+        
+        Updates the session_id column in downloaded_pdfs table to link
+        the PDF download record to the hansard_session record.
+        
+        Args:
+            cursor: Database cursor
+            pdf_url: Original PDF URL (used as unique key)
+            session_id: Session ID to link to
+            
+        Example:
+            >>> cursor = conn.cursor()
+            >>> updater._link_pdf_to_session(cursor, "http://example.com/pdf", 123)
+        """
+        try:
+            logger.info(f"Database operation: UPDATE table=downloaded_pdfs, session_id={session_id}, url={pdf_url}")
+            cursor.execute("""
+                UPDATE downloaded_pdfs 
+                SET session_id = ? 
+                WHERE original_url = ?
+            """, (session_id, pdf_url))
+            
+            if cursor.rowcount > 0:
+                logger.debug(f"Linked PDF to session {session_id}")
+            else:
+                logger.debug(f"No PDF record found for URL: {pdf_url}")
+        
+        except sqlite3.Error as e:
+            logger.warning(f"Could not link PDF to session: {e}")
     
     def process_hansard_pdf(
         self,
@@ -344,6 +402,9 @@ class DatabaseUpdater:
                 cursor, date, title, pdf_url, pdf_path
             )
             
+            # Link PDF to session in downloaded_pdfs table
+            self._link_pdf_to_session(cursor, pdf_url, session_id)
+            
             # Process each statement
             mp_count = 0
             statement_count = 0
@@ -393,7 +454,7 @@ class DatabaseUpdater:
         
         except Exception as e:
             conn.rollback()
-            logger.error(f"Error processing Hansard: {e}")
+            logger.error(f"Error processing Hansard: {e}", exc_info=True)
             return {
                 'status': 'error',
                 'reason': str(e)

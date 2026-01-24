@@ -98,6 +98,21 @@ def create_tables(conn: sqlite3.Connection) -> None:
         )
     """)
     
+    # Downloaded PDFs tracking table (NOT affected by --clean flag)
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS downloaded_pdfs (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            original_url TEXT UNIQUE NOT NULL,
+            file_path TEXT UNIQUE NOT NULL,
+            date DATE NOT NULL,
+            period_of_day TEXT CHECK(period_of_day IN ('A', 'P', 'E')),
+            session_id INTEGER REFERENCES hansard_sessions(id),
+            downloaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            file_size INTEGER,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+    
     conn.commit()
     print("✓ Created all tables")
 

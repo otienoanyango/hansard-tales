@@ -53,6 +53,7 @@ hansard-generate-search-index = "hansard_tales.search_index_generator:main"
 packages = ["hansard_tales", "hansard_tales.scrapers", "hansard_tales.processors", "hansard_tales.database"]
 
 [tool.pytest.ini_options]
+timeout = 10
 testpaths = ["tests"]
 python_files = ["test_*.py"]
 python_classes = ["Test*"]
@@ -64,7 +65,11 @@ markers = [
 
 [tool.coverage.run]
 source = ["hansard_tales"]
-omit = ["*/tests/*", "*/test_*.py"]
+omit = [
+    "*/tests/*",
+    "*/test_*.py",
+    "*/migrate_pdf_tracking.py",  # One-time migration script
+]
 
 [tool.coverage.report]
 exclude_lines = [

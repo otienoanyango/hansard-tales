@@ -74,3 +74,4 @@ coverage.xml
 *.bak
 *.swp
 cloudflare/
+.hypothesis/
