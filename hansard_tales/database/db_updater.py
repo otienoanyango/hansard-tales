@@ -220,7 +220,7 @@ class DatabaseUpdater:
             bill_references: List of bill reference strings
             
         Returns:
-            Statement ID
+            Statement ID or None if duplicate
         """
         # Format bill references
         bill_ref_str = None
@@ -228,23 +228,14 @@ class DatabaseUpdater:
             bill_ref_str = ", ".join(bill_references)
         
         # Insert statement
+        logger.debug(f"Database operation: INSERT into table=statements, mp_id={mp_id}, session_id={session_id}")
         cursor.execute("""
             INSERT INTO statements (mp_id, session_id, text, page_number, bill_reference)
             VALUES (?, ?, ?, ?, ?)
         """, (mp_id, session_id, statement.text, statement.page_number, bill_ref_str))
         
-        # Try to insert statement with unique constraint on content_hash
-        try:
-            logger.debug(f"Database operation: INSERT into table=statements, mp_id={mp_id}, session_id={session_id}")
-            cursor.execute("""
-                INSERT INTO statements (mp_id, session_id, text, page_number, bill_reference, content_hash)
-                VALUES (?, ?, ?, ?, ?, ?)
-            """, (mp_id, session_id, statement.text, statement.page_number, bill_ref_str, content_hash))
-            
-            statement_id = cursor.lastrowid
-            logger.debug(f"Inserted statement for MP {mp_id}: {len(statement.text)} chars")
-            
-            return statement_id
+        statement_id = cursor.lastrowid
+        logger.debug(f"Inserted statement for MP {mp_id}: {len(statement.text)} chars")
         
         return statement_id
     
@@ -443,6 +434,115 @@ class DatabaseUpdater:
             logger.info(f"✓ Processed {statement_count} statements from {unique_mps} MPs")
             if bill_count > 0:
                 logger.info(f"✓ Extracted {bill_count} bill references")
+            
+            return {
+                'status': 'success',
+                'session_id': session_id,
+                'statements': statement_count,
+                'unique_mps': unique_mps,
+                'bills': bill_count
+            }
+        
+        except Exception as e:
+            conn.rollback()
+            logger.error(f"Error processing Hansard: {e}", exc_info=True)
+            return {
+                'status': 'error',
+                'reason': str(e)
+            }
+        
+        finally:
+            conn.close()
+    
+    def process_hansard_pdf_with_data(
+        self,
+        pdf_path: str,
+        pdf_url: str,
+        date: str,
+        statements: List,
+        title: str = None,
+        skip_if_processed: bool = True
+    ) -> Dict:
+        """
+        Process a Hansard PDF with pre-extracted statements (optimized for parallel processing).
+        
+        This method accepts already-extracted statements to avoid re-processing the PDF.
+        Use this when you've already extracted data in parallel and just need to write to DB.
+        
+        Args:
+            pdf_path: Path to PDF file
+            pdf_url: URL to PDF
+            date: Session date (YYYY-MM-DD)
+            statements: Pre-extracted statement objects
+            title: Session title (optional, derived from filename if not provided)
+            skip_if_processed: Skip if session already processed
+            
+        Returns:
+            Dictionary with processing statistics
+        """
+        # Derive title from filename if not provided
+        if not title:
+            title = Path(pdf_path).stem
+        
+        # Start transaction
+        conn = self.get_connection()
+        cursor = conn.cursor()
+        
+        try:
+            # Check for duplicates
+            if skip_if_processed and self.check_duplicate_session(cursor, date, title):
+                return {
+                    'status': 'skipped',
+                    'reason': 'already_processed'
+                }
+            
+            if not statements:
+                return {
+                    'status': 'warning',
+                    'reason': 'no_statements_found'
+                }
+            
+            # Create or get session
+            session_id = self.get_or_create_session(
+                cursor, date, title, pdf_url, pdf_path
+            )
+            
+            # Link PDF to session in downloaded_pdfs table
+            self._link_pdf_to_session(cursor, pdf_url, session_id)
+            
+            # Process each statement
+            statement_count = 0
+            bill_count = 0
+            
+            for statement in statements:
+                # Get or create MP
+                mp_id = self.get_or_create_mp(cursor, statement.mp_name)
+                
+                # Link MP to current term
+                self.link_mp_to_current_term(cursor, mp_id)
+                
+                # Extract bill references from statement
+                bills = self.bill_extractor.extract_bill_references(statement.text)
+                bill_refs = [self.bill_extractor.format_bill_reference(b) for b in bills]
+                
+                if bill_refs:
+                    bill_count += len(bill_refs)
+                
+                # Insert statement
+                self.insert_statement(
+                    cursor, mp_id, session_id, statement, bill_refs
+                )
+                
+                statement_count += 1
+            
+            # Mark session as processed
+            self.mark_session_processed(cursor, session_id)
+            
+            # Commit transaction
+            conn.commit()
+            
+            # Get unique MP count
+            unique_mps = len(self.mp_identifier.get_unique_mp_names(statements))
             
             return {
                 'status': 'success',

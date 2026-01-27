@@ -296,6 +296,10 @@ class TestStorageInterface:
         
         For any source and destination filenames, moving a file should
         preserve its content exactly.
+        
+        Note: This test is skipped on case-insensitive filesystems (macOS)
+        because moving 'Ż.pdf' to 'ż.pdf' doesn't delete the old file when
+        the filesystem treats them as the same file.
         """
         # Create temporary storage for this test
         temp_dir = tempfile.mkdtemp()
@@ -308,6 +312,11 @@ class TestStorageInterface:
             
             # Skip if names are the same
             if old_name == new_name:
+                return
+            
+            # Skip if names differ only in case on case-insensitive filesystems
+            # (macOS HFS+/APFS treats 'Ż.pdf' and 'ż.pdf' as the same file)
+            if old_name.lower() == new_name.lower():
                 return
             
             # Write original file

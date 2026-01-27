@@ -115,6 +115,8 @@ class ProcessedPDF:
     bills: int = 0
     processing_time: float = 0.0
     error_message: Optional[str] = None
+    extracted_data: Optional[Dict] = None  # Store extracted data to avoid re-extraction
+    statement_objects: Optional[List] = None  # Store statement objects
 
 
 def process_single_pdf(
@@ -214,7 +216,9 @@ def process_single_pdf(
             statements=len(statements),
             unique_mps=unique_mps,
             bills=bill_count,
-            processing_time=time.time() - start_time
+            processing_time=time.time() - start_time,
+            extracted_data=extracted_data,  # Store for database writing
+            statement_objects=statements  # Store for database writing
         )
     
     except Exception as e:
@@ -667,18 +671,21 @@ class HistoricalDataProcessor:
     
     def _batch_write_to_database(self, results: List[ProcessedPDF]):
         """
-        Batch write processed results to database.
+        Batch write processed results to database (optimized - no re-extraction).
         
-        This reduces SQLite lock contention by writing all results
-        in a single transaction per PDF (but sequentially to avoid locks).
+        This uses pre-extracted data from parallel processing to avoid
+        re-extracting PDFs, which would double the processing time.
         
         Args:
-            results: List of ProcessedPDF results
+            results: List of ProcessedPDF results with extracted data
         """
         db_updater = DatabaseUpdater(str(self.db_path))
         
-        # Filter to only successful results
-        successful_results = [r for r in results if r.status == 'success']
+        # Filter to only successful results with extracted data
+        successful_results = [
+            r for r in results 
+            if r.status == 'success' and r.statement_objects
+        ]
         
         if not successful_results:
             print("  No successful results to write")
@@ -693,22 +700,17 @@ class HistoricalDataProcessor:
         # Write each PDF's data to database (must be sequential due to SQLite)
         for result in successful_results:
             try:
-                # Use db_updater to write to database
-                # Note: We already extracted the data, but db_updater needs to re-extract
-                # This is a trade-off for simplicity - in Phase 2 we can optimize this
-                db_result = db_updater.process_hansard_pdf(
+                # Use optimized method that accepts pre-extracted statements
+                db_result = db_updater.process_hansard_pdf_with_data(
                     pdf_path=result.pdf_path,
                     pdf_url=f"file://{Path(result.pdf_path).absolute()}",
                     date=result.pdf_date,
+                    statements=result.statement_objects,  # Use pre-extracted data
                     skip_if_processed=False  # We already checked this
                 )
                 
                 if db_result.get('status') == 'error':
                     print(f"\n  ⚠️  Database write failed for {Path(result.pdf_path).name}: {db_result.get('reason')}")
-                
-                # Track duplicates skipped
-                if db_result.get('duplicates_skipped', 0) > 0:
-                    self.stats['duplicates_skipped'] += db_result['duplicates_skipped']
                 
                 if progress:
                     progress.update(1)

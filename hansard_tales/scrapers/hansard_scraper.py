@@ -12,14 +12,16 @@ Usage:
 import argparse
 import logging
 import re
+import sqlite3
 import sys
 import time
 from pathlib import Path
 from typing import List, Dict, Optional, Tuple
-from urllib.parse import urljoin, urlparse
+from urllib.parse import urljoin, urlparse, parse_qs
 
 import requests
 from bs4 import BeautifulSoup
+from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
 
 from hansard_tales.storage.base import StorageBackend
 from hansard_tales.storage.filesystem import FilesystemStorage
@@ -81,6 +83,10 @@ class HansardScraper:
         self.start_date = start_date
         self.end_date = end_date
         
+        # Initialize database if path provided
+        if self.db_path:
+            self._ensure_database_initialized()
+        
         # Initialize period extractor and filename generator
         self.period_extractor = PeriodOfDayExtractor()
         self.filename_generator = FilenameGenerator()
@@ -91,55 +97,189 @@ class HansardScraper:
             'User-Agent': 'HansardTales/1.0 (Educational Project)'
         })
     
-    def fetch_page(self, url: str, retry_count: int = 0) -> Optional[str]:
+    def _ensure_database_initialized(self) -> None:
         """
-        Fetch a web page with retry logic.
+        Ensure database exists and has required tables with correct schema.
+        
+        Logic:
+        1. If database doesn't exist: Create it with full schema
+        2. If database exists but table missing: Create the table
+        3. If database exists with table: Verify schema is correct
+        
+        Raises:
+            RuntimeError: If database cannot be initialized or has wrong schema
+        """
+        from hansard_tales.database.init_db import initialize_database
+        
+        db_file = Path(self.db_path)
+        
+        # If database doesn't exist, create it with full schema
+        if not db_file.exists():
+            logger.info(f"Database not found, initializing: {self.db_path}")
+            if not initialize_database(self.db_path):
+                raise RuntimeError(f"Failed to initialize database: {self.db_path}")
+            logger.info(f"Database created successfully: {self.db_path}")
+            return
+        
+        # Database exists - verify and fix if needed
+        try:
+            conn = sqlite3.connect(self.db_path)
+            cursor = conn.cursor()
+            
+            # Check if downloaded_pdfs table exists
+            cursor.execute("""
+                SELECT name FROM sqlite_master 
+                WHERE type='table' AND name='downloaded_pdfs'
+            """)
+            
+            table_exists = cursor.fetchone() is not None
+            
+            if not table_exists:
+                # Table missing - create it with correct schema
+                logger.info(f"Table 'downloaded_pdfs' missing, creating it...")
+                cursor.execute("""
+                    CREATE TABLE IF NOT EXISTS downloaded_pdfs (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        original_url TEXT UNIQUE NOT NULL,
+                        file_path TEXT UNIQUE NOT NULL,
+                        date DATE NOT NULL,
+                        period_of_day TEXT CHECK(period_of_day IN ('A', 'P', 'E')),
+                        session_id INTEGER REFERENCES hansard_sessions(id),
+                        downloaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        file_size INTEGER,
+                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                    )
+                """)
+                conn.commit()
+                logger.info(f"Table 'downloaded_pdfs' created successfully")
+            else:
+                # Table exists - verify schema
+                cursor.execute("PRAGMA table_info(downloaded_pdfs)")
+                columns = {row[1]: row[2] for row in cursor.fetchall()}
+                
+                # Check for required columns (use original_url as per init_db.py schema)
+                required_columns = {
+                    'id': 'INTEGER',
+                    'original_url': 'TEXT',
+                    'file_path': 'TEXT',
+                    'date': 'DATE',
+                    'period_of_day': 'TEXT'
+                }
+                
+                # Check for missing columns
+                missing_columns = set(required_columns.keys()) - set(columns.keys())
+                if missing_columns:
+                    conn.close()
+                    raise RuntimeError(
+                        f"Table 'downloaded_pdfs' has incorrect schema. "
+                        f"Missing columns: {', '.join(missing_columns)}. "
+                        f"Please backup and recreate the database."
+                    )
+                
+                logger.debug(f"Database schema verified: {self.db_path}")
+            
+            conn.close()
+            logger.info(f"Database ready: {self.db_path}")
+            
+        except sqlite3.Error as e:
+            raise RuntimeError(f"Database verification/initialization failed: {e}")
+    
+    @retry(
+        stop=stop_after_attempt(3),
+        wait=wait_exponential(multiplier=1, min=1, max=3),
+        retry=retry_if_exception_type(requests.RequestException),
+        reraise=True
+    )
+    def fetch_page(self, url: str) -> Optional[str]:
+        """
+        Fetch a web page with automatic retry logic using tenacity.
+        
+        Retries up to 3 times with exponential backoff (1s, 2s, 3s max).
         
         Args:
             url: URL to fetch
-            retry_count: Current retry attempt
             
         Returns:
             HTML content or None if failed
+            
+        Raises:
+            requests.RequestException: If all retries fail
         """
-        try:
-            logger.info(f"Fetching: {url}")
-            response = self.session.get(url, timeout=30)
-            response.raise_for_status()
-            
-            # Rate limiting
-            time.sleep(self.rate_limit_delay)
-            
-            return response.text
-            
-        except requests.RequestException as e:
-            logger.warning(f"Request failed: {e}")
-            
-            if retry_count < self.max_retries:
-                wait_time = 2 ** retry_count  # Exponential backoff
-                logger.info(f"Retrying in {wait_time} seconds...")
-                time.sleep(wait_time)
-                return self.fetch_page(url, retry_count + 1)
-            
-            logger.error(f"Failed after {self.max_retries} retries")
-            return None
+        logger.info(f"Fetching: {url}")
+        response = self.session.get(url, timeout=30)
+        response.raise_for_status()
+        
+        # Rate limiting
+        time.sleep(self.rate_limit_delay)
+        
+        return response.text
     
-    def extract_hansard_links(self, html: str) -> List[Dict[str, str]]:
+    def extract_max_page(self, html: str) -> Optional[int]:
         """
-        Extract Hansard PDF links and metadata from HTML.
+        Extract maximum page number from pagination HTML.
+        
+        Looks for the "Last page" link in pagination:
+        <li class="pager__item pager__item--last">
+            <a href="?title=%20&field_parliament_value=2022&page=18">
         
         Args:
             html: HTML content
             
         Returns:
-            List of dictionaries with PDF metadata
+            Maximum page number or None if not found
+        """
+        soup = BeautifulSoup(html, 'html.parser')
+        
+        # Find the last page link
+        last_page_link = soup.find('li', class_='pager__item--last')
+        if not last_page_link:
+            logger.debug("No pagination found, assuming single page")
+            return 1
+        
+        # Extract href
+        link = last_page_link.find('a')
+        if not link or not link.get('href'):
+            logger.debug("No href in last page link")
+            return 1
+        
+        href = link.get('href')
+        
+        # Parse query parameters
+        try:
+            # Extract page parameter from URL
+            match = re.search(r'[?&]page=(\d+)', href)
+            if match:
+                max_page = int(match.group(1)) + 1  # Page numbers are 0-indexed in URL
+                logger.info(f"Detected max page: {max_page}")
+                return max_page
+        except (ValueError, AttributeError) as e:
+            logger.warning(f"Could not parse max page from {href}: {e}")
+        
+        return None
+    
+    def extract_hansard_links(self, html: str) -> List[Dict[str, str]]:
+        """
+        Extract Hansard PDF links and metadata from HTML.
+        
+        Uses CSS selectors to target PDF links within the visible table (col-2)
+        to avoid duplicate links from hidden tables (col-0) or other page elements.
+        
+        Args:
+            html: HTML content
+            
+        Returns:
+            List of dictionaries with PDF metadata (deduplicated by URL)
+            
+        Raises:
+            RuntimeError: If no PDF links found with CSS selector (indicates page structure changed)
         """
         soup = BeautifulSoup(html, 'html.parser')
         hansard_items = []
+        seen_urls = set()  # Track URLs to avoid duplicates
         
-        # Find all PDF links (adjust selectors based on actual site structure)
-        # This is a generic implementation - may need adjustment
-        pdf_links = soup.find_all('a', href=re.compile(r'\.pdf$', re.IGNORECASE))
+        # Use CSS selector to find all PDF links within the visible table
+        # Selector: table.cols-2 td.views-field-field-pdf a[href$=".pdf"]
+        pdf_links = soup.select('table.cols-2 td.views-field-field-pdf a[href$=".pdf"]')
         
         for link in pdf_links:
             href = link.get('href', '')
@@ -149,13 +289,20 @@ class HansardScraper:
             # Make absolute URL
             pdf_url = urljoin(self.BASE_URL, href)
             
-            # Extract title from link text or parent elements
+            # Skip if we've already seen this URL
+            if pdf_url in seen_urls:
+                logger.debug(f"Skipping duplicate URL: {pdf_url}")
+                continue
+            
+            seen_urls.add(pdf_url)
+            
+            # Extract title from the <a> element text
             title = link.get_text(strip=True)
-            if not title:
-                # Try to get title from parent
-                parent = link.find_parent(['div', 'li', 'td'])
-                if parent:
-                    title = parent.get_text(strip=True)
+            
+            # Skip non-Hansard documents (Order Papers, etc.)
+            if 'order paper' in title.lower():
+                logger.debug(f"Skipping non-Hansard document: {title}")
+                continue
             
             # Try to extract date from title or URL
             date = self.extract_date(title) or self.extract_date(href)
@@ -167,11 +314,21 @@ class HansardScraper:
                 'filename': Path(urlparse(pdf_url).path).name
             })
         
+        # Fail if no links found - indicates page structure changed
+        if not pdf_links:
+            raise RuntimeError(
+                "No PDF links found with CSS selector 'table.cols-2 td.views-field-field-pdf a[href$=\".pdf\"]'. "
+                "The parliament.go.ke page structure may have changed."
+            )
+        
         return hansard_items
     
     def extract_date(self, text: str) -> Optional[str]:
         """
-        Extract date from text using dateparser (preferred) or regex patterns (fallback).
+        Extract date from text using dateparser with British locale.
+        
+        Uses dateparser with British/Kenyan date format (DMY) as primary method,
+        with regex patterns as fallback for edge cases.
         
         Args:
             text: Text to search for dates
@@ -182,7 +339,7 @@ class HansardScraper:
         if not text:
             return None
         
-        # Try dateparser first (handles many formats including British dates)
+        # Try dateparser first with British locale settings
         if DATEPARSER_AVAILABLE:
             try:
                 # Use search_dates to find dates within text
@@ -193,9 +350,12 @@ class HansardScraper:
                     settings={
                         'PREFER_DATES_FROM': 'past',
                         'STRICT_PARSING': False,
-                        'DATE_ORDER': 'DMY'  # British/Kenyan format: day-month-year
+                        'DATE_ORDER': 'DMY',  # British/Kenyan format: day-month-year
+                        'PREFER_DAY_OF_MONTH': 'first',  # Interpret ambiguous dates as DMY
+                        'PREFER_LOCALE_DATE_ORDER': True,  # Use locale date order
+                        'RETURN_AS_TIMEZONE_AWARE': False,
                     },
-                    languages=['en']
+                    languages=['en-GB', 'en']  # British English first, then general English
                 )
                 
                 if results:
@@ -205,27 +365,27 @@ class HansardScraper:
             except Exception as e:
                 logger.debug(f"dateparser failed: {e}, falling back to regex")
         
-        # Fallback to regex patterns
+        # Fallback to regex patterns for edge cases
         
-        # Pattern: DD/MM/YYYY or DD-MM-YYYY
-        pattern1 = r'(\d{1,2})[/-](\d{1,2})[/-](\d{4})'
-        match = re.search(pattern1, text)
-        if match:
-            day, month, year = match.groups()
-            return f"{year}-{month.zfill(2)}-{day.zfill(2)}"
-        
-        # Pattern: YYYY-MM-DD
-        pattern2 = r'(\d{4})-(\d{1,2})-(\d{1,2})'
-        match = re.search(pattern2, text)
+        # Pattern: YYYY-MM-DD (ISO format - unambiguous)
+        pattern_iso = r'(\d{4})-(\d{1,2})-(\d{1,2})'
+        match = re.search(pattern_iso, text)
         if match:
             year, month, day = match.groups()
             return f"{year}-{month.zfill(2)}-{day.zfill(2)}"
         
-        # Pattern: Month DD, YYYY (American format)
-        pattern3 = r'(January|February|March|April|May|June|July|August|September|October|November|December)\s+(\d{1,2}),?\s+(\d{4})'
-        match = re.search(pattern3, text, re.IGNORECASE)
+        # Pattern: DD/MM/YYYY or DD-MM-YYYY (British format)
+        pattern_dmy = r'(\d{1,2})[/-](\d{1,2})[/-](\d{4})'
+        match = re.search(pattern_dmy, text)
         if match:
-            month_name, day, year = match.groups()
+            day, month, year = match.groups()
+            return f"{year}-{month.zfill(2)}-{day.zfill(2)}"
+        
+        # Pattern: DD Month YYYY (British/Kenyan format with month name)
+        pattern_british = r'(\d{1,2})(?:st|nd|rd|th)?\s+(January|February|March|April|May|June|July|August|September|October|November|December),?\s+(\d{4})'
+        match = re.search(pattern_british, text, re.IGNORECASE)
+        if match:
+            day, month_name, year = match.groups()
             month_map = {
                 'january': '01', 'february': '02', 'march': '03',
                 'april': '04', 'may': '05', 'june': '06',
@@ -235,11 +395,11 @@ class HansardScraper:
             month = month_map.get(month_name.lower(), '01')
             return f"{year}-{month}-{day.zfill(2)}"
         
-        # Pattern: DD Month YYYY (British/Kenyan format)
-        pattern4 = r'(\d{1,2})(?:st|nd|rd|th)?\s+(January|February|March|April|May|June|July|August|September|October|November|December),?\s+(\d{4})'
-        match = re.search(pattern4, text, re.IGNORECASE)
+        # Pattern: Month DD, YYYY (American format - less common but supported)
+        pattern_american = r'(January|February|March|April|May|June|July|August|September|October|November|December)\s+(\d{1,2}),?\s+(\d{4})'
+        match = re.search(pattern_american, text, re.IGNORECASE)
         if match:
-            day, month_name, year = match.groups()
+            month_name, day, year = match.groups()
             month_map = {
                 'january': '01', 'february': '02', 'march': '03',
                 'april': '04', 'may': '05', 'june': '06',
@@ -276,6 +436,9 @@ class HansardScraper:
         Returns:
             Tuple of (should_skip, reason)
             
+        Raises:
+            RuntimeError: If database query fails
+            
         Example:
             >>> scraper = HansardScraper()
             >>> should_skip, reason = scraper._check_existing_download(url, filename, "2024-01-15", "P")
@@ -298,7 +461,7 @@ class HansardScraper:
                 db_record = cursor.fetchone()
                 conn.close()
             except sqlite3.Error as e:
-                logger.warning(f"Database query failed: {e}")
+                raise RuntimeError(f"Database query failed: {e}")
         
         # Case 1: File exists in storage AND in database
         if file_exists and db_record:
@@ -339,6 +502,9 @@ class HansardScraper:
             period_of_day: Period code ('A', 'P', or 'E')
             session_id: Session ID (if known, otherwise None)
             
+        Raises:
+            RuntimeError: If database operation fails
+            
         Example:
             >>> scraper._track_download(
             ...     "http://example.com/pdf",
@@ -375,23 +541,53 @@ class HansardScraper:
             logger.debug(f"Tracked download in database: {file_path}")
         
         except sqlite3.Error as e:
-            logger.warning(f"Could not track download in database: {e}")
+            raise RuntimeError(f"Failed to track download in database: {e}")
+    
+    @retry(
+        stop=stop_after_attempt(3),
+        wait=wait_exponential(multiplier=1, min=1, max=10),
+        retry=retry_if_exception_type(requests.RequestException),
+        reraise=True
+    )
+    def _download_pdf_with_retry(self, url: str, timeout: int = 60) -> bytes:
+        """
+        Download PDF content with automatic retry logic.
+        
+        Retries up to 3 times with exponential backoff (1s, 2s, 4s, max 10s).
+        
+        Args:
+            url: PDF URL
+            timeout: Request timeout in seconds
+            
+        Returns:
+            PDF content as bytes
+            
+        Raises:
+            requests.RequestException: If all retries fail
+        """
+        response = self.session.get(url, timeout=timeout, stream=True)
+        response.raise_for_status()
+        
+        # Collect content
+        content = b''.join(response.iter_content(chunk_size=8192))
+        return content
     
     def download_pdf(
         self,
         url: str,
         title: str,
         date: str
-    ) -> bool:
+    ) -> tuple[bool, str]:
         """
         Download PDF with enhanced metadata tracking.
         
         Steps:
-        1. Extract period-of-day from title
-        2. Generate standardized filename
-        3. Check for existing download
-        4. Download if needed
-        5. Track in database with metadata
+        1. Check if date is within specified range (if filters set)
+        2. Extract period-of-day from title
+        3. Generate standardized filename
+        4. Check for existing download
+        5. Download if needed (with retry logic)
+        6. Track in database with metadata
         
         Args:
             url: PDF URL
@@ -399,11 +595,15 @@ class HansardScraper:
             date: PDF date (YYYY-MM-DD format)
             
         Returns:
-            True if successful (downloaded or skipped), False if failed
+            Tuple of (success: bool, action: str) where action is one of:
+            - 'downloaded': File was downloaded
+            - 'skipped_exists': File already exists
+            - 'skipped_date': Date outside range
+            - 'failed': Download failed
             
         Example:
             >>> scraper = HansardScraper()
-            >>> success = scraper.download_pdf(
+            >>> success, action = scraper.download_pdf(
             ...     "http://example.com/hansard.pdf",
             ...     "Afternoon Session",
             ...     "2024-01-01"
@@ -415,7 +615,16 @@ class HansardScraper:
         # Handle None or empty date
         if not date:
             logger.warning(f"No date provided for {url}, cannot generate standardized filename")
-            return False
+            return (False, 'failed')
+        
+        # Check if date is within specified range
+        if self.start_date and date < self.start_date:
+            logger.info(f"Skipping {url}: date {date} is before start_date {self.start_date}")
+            return (True, 'skipped_date')
+        
+        if self.end_date and date > self.end_date:
+            logger.info(f"Skipping {url}: date {date} is after end_date {self.end_date}")
+            return (True, 'skipped_date')
         
         # Extract period-of-day from title
         period_of_day = self.period_extractor.extract_from_title(title)
@@ -437,17 +646,13 @@ class HansardScraper:
         
         if should_skip:
             logger.info(f"Download skipped: URL={url}, filename={filename}, reason={reason}, result=skipped")
-            return True
+            return (True, 'skipped_exists')
         
-        # Download the file
+        # Download the file with retry logic
         logger.info(f"Downloading: filename={filename}, reason={reason}")
         
         try:
-            response = self.session.get(url, timeout=60, stream=True)
-            response.raise_for_status()
-            
-            # Collect content
-            content = b''.join(response.iter_content(chunk_size=8192))
+            content = self._download_pdf_with_retry(url)
             
             # Write to storage
             self.storage.write(filename, content)
@@ -461,10 +666,10 @@ class HansardScraper:
             # Rate limiting
             time.sleep(self.rate_limit_delay)
             
-            return True
+            return (True, 'downloaded')
             
         except requests.RequestException as e:
-            logger.error(f"Download failed: URL={url}, filename={filename}, error={str(e)}, result=failed", exc_info=True)
+            logger.error(f"Download failed after retries: URL={url}, filename={filename}, error={str(e)}, result=failed")
             # Clean up partial download if it exists
             try:
                 if self.storage.exists(filename):
@@ -472,7 +677,7 @@ class HansardScraper:
                     logger.debug(f"Cleaned up partial download: {filename}")
             except Exception as cleanup_error:
                 logger.warning(f"Could not clean up partial download: {cleanup_error}")
-            return False
+            return (False, 'failed')
     
     def scrape_hansard_page(self, page_num: int = 1) -> List[Dict[str, str]]:
         """
@@ -496,30 +701,84 @@ class HansardScraper:
         
         return self.extract_hansard_links(html)
     
-    def scrape_all(self, max_pages: int = 5) -> List[Dict[str, str]]:
+    def scrape_all(self) -> List[Dict[str, str]]:
         """
-        Scrape multiple pages of Hansard listings.
+        Scrape all pages of Hansard listings with intelligent pagination.
         
-        Args:
-            max_pages: Maximum number of pages to scrape
-            
+        Strategy:
+        1. Fetch first page to determine max page from pagination
+        2. Iterate through all pages until:
+           - No more pages exist
+           - All dates on a page are outside the end_date range
+           - Network errors after retries
+        
         Returns:
             List of all Hansard metadata
         """
         all_hansards = []
         
-        for page_num in range(1, max_pages + 1):
+        # Fetch first page to determine max pages
+        logger.info("Fetching first page to determine pagination...")
+        try:
+            first_page_html = self.fetch_page(self.HANSARD_URL)
+            if not first_page_html:
+                logger.error("Could not fetch first page")
+                return []
+            
+            # Extract max page from pagination
+            max_pages = self.extract_max_page(first_page_html)
+            if max_pages:
+                logger.info(f"Detected {max_pages} total pages")
+            else:
+                logger.info("Could not detect max pages, will scrape until empty page")
+                max_pages = 999  # Large number as fallback
+            
+            # Extract hansards from first page
+            first_page_hansards = self.extract_hansard_links(first_page_html)
+            if first_page_hansards:
+                all_hansards.extend(first_page_hansards)
+                logger.info(f"Found {len(first_page_hansards)} Hansards on page 1")
+            
+        except requests.RequestException as e:
+            logger.error(f"Failed to fetch first page after retries: {e}")
+            return []
+        
+        # Iterate through remaining pages
+        for page_num in range(2, max_pages + 1):
             logger.info(f"Scraping page {page_num}/{max_pages}")
             
-            hansards = self.scrape_hansard_page(page_num)
-            
-            if not hansards:
-                logger.info(f"No more Hansards found on page {page_num}")
+            try:
+                hansards = self.scrape_hansard_page(page_num)
+                
+                if not hansards:
+                    logger.info(f"No Hansards found on page {page_num}, stopping")
+                    break
+                
+                # Check if any date on this page is before start_date
+                if self.start_date:
+                    dates_on_page = [h.get('date') for h in hansards if h.get('date')]
+                    if dates_on_page and any(date < self.start_date for date in dates_on_page):
+                        logger.info(f"Found date before start_date {self.start_date} on page {page_num}, stopping pagination")
+                        # Still add hansards from this page (will be filtered later)
+                        all_hansards.extend(hansards)
+                        break
+                
+                # Check if all dates on this page are after end_date
+                if self.end_date:
+                    dates_on_page = [h.get('date') for h in hansards if h.get('date')]
+                    if dates_on_page and all(date > self.end_date for date in dates_on_page):
+                        logger.info(f"All dates on page {page_num} are after end_date {self.end_date}, stopping")
+                        break
+                
+                all_hansards.extend(hansards)
+                logger.info(f"Found {len(hansards)} Hansards on page {page_num}")
+                
+            except requests.RequestException as e:
+                logger.error(f"Failed to fetch page {page_num} after retries: {e}")
+                logger.info("Stopping pagination due to network errors")
                 break
-            
-            all_hansards.extend(hansards)
-            logger.info(f"Found {len(hansards)} Hansards on page {page_num}")
         
+        logger.info(f"Total Hansards found across all pages: {len(all_hansards)}")
         return all_hansards
     
     def download_all(self, hansards: List[Dict[str, str]]) -> Dict[str, int]:
@@ -530,37 +789,52 @@ class HansardScraper:
             hansards: List of Hansard metadata
             
         Returns:
-            Statistics dictionary
+            Statistics dictionary with counts for:
+            - total: Total hansards to process
+            - downloaded: Successfully downloaded (new files)
+            - skipped: Already existed (not downloaded again)
+            - filtered: Filtered by date range
+            - failed: Download failures
         """
         stats = {
             'total': len(hansards),
             'downloaded': 0,
             'skipped': 0,
+            'filtered': 0,  # Filtered by date range
             'failed': 0
         }
         
         for i, hansard in enumerate(hansards, 1):
             logger.info(f"Processing {i}/{stats['total']}: {hansard['title']}")
             
-            # Use new download_pdf signature with title and date
-            if self.download_pdf(
+            # Check if date is within range before attempting download
+            date = hansard.get('date', '')
+            if date:
+                if self.start_date and date < self.start_date:
+                    logger.info(f"Filtered: date {date} is before start_date {self.start_date}")
+                    stats['filtered'] += 1
+                    continue
+                
+                if self.end_date and date > self.end_date:
+                    logger.info(f"Filtered: date {date} is after end_date {self.end_date}")
+                    stats['filtered'] += 1
+                    continue
+            
+            # Download PDF and get result
+            success, action = self.download_pdf(
                 hansard['url'],
                 hansard['title'],
-                hansard.get('date', '')
-            ):
-                # Check if file was actually downloaded or skipped
-                # Extract filename from title and date
-                date = hansard.get('date', '')
-                if date:
-                    date_compact = date.replace('-', '')
-                    existing_files = self.storage.list_files(f"hansard_{date_compact}")
-                    if existing_files:
-                        stats['downloaded'] += 1
-                    else:
-                        stats['skipped'] += 1
-                else:
-                    stats['skipped'] += 1
-            else:
+                date
+            )
+            
+            # Update stats based on action
+            if action == 'downloaded':
+                stats['downloaded'] += 1
+            elif action == 'skipped_exists':
+                stats['skipped'] += 1
+            elif action == 'skipped_date':
+                stats['filtered'] += 1
+            elif action == 'failed':
                 stats['failed'] += 1
         
         return stats
@@ -572,21 +846,28 @@ def main():
         description="Scrape Hansard PDFs from parliament.go.ke"
     )
     parser.add_argument(
-        "--max-pages",
-        type=int,
-        default=5,
-        help="Maximum number of pages to scrape (default: 5)"
-    )
-    parser.add_argument(
         "--storage-dir",
         default="data/pdfs/hansard",
         help="Storage directory for PDFs (default: data/pdfs/hansard)"
+    )
+    parser.add_argument(
+        "--db-path",
+        default="data/hansard.db",
+        help="Path to database for tracking downloads (default: data/hansard.db)"
     )
     parser.add_argument(
         "--rate-limit",
         type=float,
         default=1.0,
         help="Delay between requests in seconds (default: 1.0)"
+    )
+    parser.add_argument(
+        "--start-date",
+        help="Start date for filtering (YYYY-MM-DD format)"
+    )
+    parser.add_argument(
+        "--end-date",
+        help="End date for filtering (YYYY-MM-DD format)"
     )
     parser.add_argument(
         "--dry-run",
@@ -608,9 +889,12 @@ def main():
         end_date=args.end_date
     )
     
-    # Scrape Hansard listings
+    # Scrape Hansard listings (automatically detects max pages)
     logger.info("Starting Hansard scraper...")
-    hansards = scraper.scrape_all(max_pages=args.max_pages)
+    if args.start_date or args.end_date:
+        logger.info(f"Date range filter: {args.start_date or 'any'} to {args.end_date or 'any'}")
+    
+    hansards = scraper.scrape_all()
     
     if not hansards:
         logger.warning("No Hansards found")
@@ -633,13 +917,20 @@ def main():
     stats = scraper.download_all(hansards)
     
     # Print summary
+    # Calculate PDFs in date range (not filtered out)
+    in_date_range = stats['downloaded'] + stats['skipped'] + stats['failed']
+    
     logger.info("\n" + "="*50)
     logger.info("SCRAPING SUMMARY")
     logger.info("="*50)
-    logger.info(f"Total PDFs found:     {stats['total']}")
+    logger.info(f"Total URLs found:        {stats['total']}")
+    logger.info(f"In date range:           {in_date_range}")
     logger.info(f"Successfully downloaded: {stats['downloaded']}")
-    logger.info(f"Already existed:      {stats['skipped']}")
-    logger.info(f"Failed:               {stats['failed']}")
+    logger.info(f"Skipped (file exists):   {stats['skipped']}")
+    logger.info(f"Failed:                  {stats['failed']}")
+    logger.info("="*50)
+    logger.info("Note: 'Skipped' count may exceed actual files on disk")
+    logger.info("      due to duplicate URLs on parliament.go.ke")
     logger.info("="*50)
     
     sys.exit(0 if stats['failed'] == 0 else 1)

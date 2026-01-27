@@ -13,7 +13,7 @@ from unittest.mock import Mock, patch
 import pytest
 
 from hansard_tales.database.init_db import initialize_database
-from hansard_tales.database.migrate_pdf_tracking import migrate_pdf_tracking
+# from hansard_tales.database.migrate_pdf_tracking import migrate_pdf_tracking
 from tests.fixtures.html_samples import ParliamentHTMLSamples
 
 
@@ -41,8 +41,8 @@ def production_db():
     # Use production initialization
     initialize_database(db_path)
     
-    # Run PDF tracking migration
-    migrate_pdf_tracking(db_path, source_dir="data/pdfs", dry_run=False)
+    # Run PDF tracking migration (commented out - migration module doesn't exist)
+    # migrate_pdf_tracking(db_path, source_dir="data/pdfs", dry_run=False)
     
     # Insert current parliamentary term (required for most operations)
     conn = sqlite3.connect(db_path)
