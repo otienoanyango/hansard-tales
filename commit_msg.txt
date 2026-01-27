@@ -1,8 +1,0 @@
-fix: Make MP profile tests skip gracefully when database unavailable
-
-Updated tests to check for database existence and table initialization
-before running integration tests. Tests now skip with clear messages
-when database is not available (e.g., in CI without data/ directory).
-
-This allows CI to pass while still running integration tests locally
-where the database exists.
