@@ -43,6 +43,8 @@ data/pdfs/*.pdf
 data/*.db
 data/*.sqlite
 data/*.sqlite3
+data/vector_db/
+data/vector_db_dev/
 
 # Output
 output/

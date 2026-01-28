@@ -54,23 +54,8 @@ def temp_db():
     Path(db_path).unlink()
 ```
 
-**temp_pdf_dir**: Temporary directory with sample PDFs
-```python
-@pytest.fixture
-def temp_pdf_dir():
-    """Create temporary directory with sample PDFs."""
-    temp_dir = tempfile.mkdtemp()
-    pdf_dir = Path(temp_dir) / "pdfs"
-    pdf_dir.mkdir(parents=True)
-    
-    # Create sample files
-    for name in ["20240101_0_P.pdf", "20240115_0_A.pdf"]:
-        (pdf_dir / name).touch()
-    
-    yield pdf_dir
-    
-    shutil.rmtree(temp_dir)
-```
+**temp_pdf_dir**: Temporary directory with downloaded sample PDFs for realistic tests
+
 
 ## Mocking Strategy
 

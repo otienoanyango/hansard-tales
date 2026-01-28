@@ -1328,7 +1328,7 @@ class HansardScraper(BaseScraper):
         start_date: Optional[date] = None,
         end_date: Optional[date] = None
     ) -> List[str]:
-        """Get Hansard PDF URLs from parliament.go.ke"""
+        """Get Hansard PDF URLs from parliament.go.ke tables"""
         base_url = f"{self.config.base_url}/the-national-assembly/house-business/hansard"
         if chamber == Chamber.SENATE:
             base_url = f"{self.config.base_url}/the-senate/house-business/hansard"
@@ -1337,11 +1337,37 @@ class HansardScraper(BaseScraper):
         soup = BeautifulSoup(response.content, 'html.parser')
         
         urls = []
-        for link in soup.find_all('a', href=True):
-            href = link['href']
-            if href.endswith('.pdf') and 'hansard' in href.lower():
-                full_url = href if href.startswith('http') else f"{self.config.base_url}{href}"
-                urls.append(full_url)
+        
+        # Find the specific table containing Hansard documents
+        # Look for tables with class 'views-table' or similar structure
+        tables = soup.find_all('table', class_='views-table')
+        
+        if not tables:
+            # Fallback: look for any table containing PDF links
+            tables = soup.find_all('table')
+        
+        for table in tables:
+            # Extract PDF links only from table rows
+            for row in table.find_all('tr'):
+                for link in row.find_all('a', href=True):
+                    href = link['href']
+                    
+                    # Validate it's a PDF link
+                    if href.endswith('.pdf'):
+                        # Additional validation: check if it's a Hansard document
+                        # by looking at the link text or URL pattern
+                        link_text = link.get_text().lower()
+                        if 'hansard' in link_text or 'hansard' in href.lower():
+                            full_url = href if href.startswith('http') else f"{self.config.base_url}{href}"
+                            urls.append(full_url)
+        
+        # Fail fast if no documents found - likely indicates HTML/CSS changes
+        if not urls:
+            raise DataCollectionError(
+                f"No Hansard documents found at {base_url}. "
+                "This may indicate that the website structure has changed. "
+                "Please verify the page HTML and update the scraper accordingly."
+            )
         
         return urls
     
@@ -1372,7 +1398,7 @@ class VotesScraper(BaseScraper):
         start_date: Optional[date] = None,
         end_date: Optional[date] = None
     ) -> List[str]:
-        """Get Votes & Proceedings PDF URLs"""
+        """Get Votes & Proceedings PDF URLs from parliament.go.ke tables"""
         base_url = f"{self.config.base_url}/the-national-assembly/house-business/votes-and-proceedings"
         if chamber == Chamber.SENATE:
             base_url = f"{self.config.base_url}/the-senate/house-business/votes-and-proceedings"
@@ -1381,11 +1407,35 @@ class VotesScraper(BaseScraper):
         soup = BeautifulSoup(response.content, 'html.parser')
         
         urls = []
-        for link in soup.find_all('a', href=True):
-            href = link['href']
-            if href.endswith('.pdf') and 'vote' in href.lower():
-                full_url = href if href.startswith('http') else f"{self.config.base_url}{href}"
-                urls.append(full_url)
+        
+        # Find the specific table containing Votes & Proceedings documents
+        tables = soup.find_all('table', class_='views-table')
+        
+        if not tables:
+            # Fallback: look for any table containing PDF links
+            tables = soup.find_all('table')
+        
+        for table in tables:
+            # Extract PDF links only from table rows
+            for row in table.find_all('tr'):
+                for link in row.find_all('a', href=True):
+                    href = link['href']
+                    
+                    # Validate it's a PDF link
+                    if href.endswith('.pdf'):
+                        # Additional validation: check if it's a Votes document
+                        link_text = link.get_text().lower()
+                        if 'vote' in link_text or 'vote' in href.lower() or 'proceeding' in link_text:
+                            full_url = href if href.startswith('http') else f"{self.config.base_url}{href}"
+                            urls.append(full_url)
+        
+        # Fail fast if no documents found - likely indicates HTML/CSS changes
+        if not urls:
+            raise DataCollectionError(
+                f"No Votes & Proceedings documents found at {base_url}. "
+                "This may indicate that the website structure has changed. "
+                "Please verify the page HTML and update the scraper accordingly."
+            )
         
         return urls
     
@@ -1424,19 +1474,24 @@ def create_scraper(document_type: DocumentType, config: ScraperConfig) -> BaseSc
 ### Correctness Properties
 
 **Property 5.1**: Hash uniqueness
-- **Validates**: Requirements 4.5
+- **Validates**: Requirements 4.8
 - **Property**: Same PDF content must always generate same hash
 - **Test Strategy**: Download same PDF multiple times, verify hash consistency
 
 **Property 5.2**: Duplicate detection
-- **Validates**: Requirements 4.6
+- **Validates**: Requirements 4.9
 - **Property**: Already-downloaded documents must be skipped
 - **Test Strategy**: Download document, attempt to download again, verify skip
 
 **Property 5.3**: Error resilience
-- **Validates**: Requirements 4.7
+- **Validates**: Requirements 4.10
 - **Property**: Single document failure must not stop entire scrape
 - **Test Strategy**: Mock failing downloads, verify scraper continues
+
+**Property 5.4**: Fail-fast on empty results
+- **Validates**: Requirements 4.5
+- **Property**: Scraper must raise DataCollectionError when no documents found on first page
+- **Test Strategy**: Mock HTML response with no tables/PDFs, verify error is raised with descriptive message
 
 
 

@@ -1,0 +1,29 @@
+# Development environment configuration
+environment: development
+
+database:
+  engine: sqlite
+  database: data/hansard_dev
+
+vector_db:
+  engine: chromadb
+  persist_directory: data/vector_db_dev
+
+embedding:
+  device: cpu
+  batch_size: 32
+
+scraper:
+  download_dir: data/pdfs
+  max_retries: 3
+  timeout: 30
+
+logging:
+  level: DEBUG
+  format: text
+  output: stdout
+  log_dir: logs
+
+monitoring:
+  prometheus_enabled: false
+  sentry_enabled: false

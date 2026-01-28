@@ -1,0 +1,35 @@
+# Staging environment configuration
+environment: staging
+
+database:
+  engine: postgresql
+  host: ${DB_HOST}
+  port: 5432
+  database: hansard_tales_staging
+  user: hansard
+
+vector_db:
+  engine: qdrant
+  host: ${QDRANT_HOST}
+  port: 6333
+  persist_directory: /data/vector_db
+
+embedding:
+  device: cpu
+  batch_size: 64
+
+scraper:
+  download_dir: /data/pdfs
+  max_retries: 5
+  timeout: 60
+
+logging:
+  level: INFO
+  format: json
+  output: both
+  log_dir: /var/log/hansard_tales
+
+monitoring:
+  prometheus_enabled: true
+  prometheus_port: 9090
+  sentry_enabled: true

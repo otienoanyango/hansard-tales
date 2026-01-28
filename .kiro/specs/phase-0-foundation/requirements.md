@@ -72,12 +72,16 @@ This document specifies requirements for Phase 0 of the Hansard Tales system: es
 
 1. THE System SHALL implement a scraper for National Assembly Hansard
 2. THE System SHALL implement a scraper for National Assembly Votes & Proceedings
-3. EACH scraper SHALL download PDFs to local storage
-4. EACH scraper SHALL extract metadata (date, session, title) from PDF filename or content
-5. EACH scraper SHALL compute SHA256 hash of downloaded PDF
-6. EACH scraper SHALL skip already-downloaded documents (based on hash)
-7. WHEN a scraper fails, THE System SHALL log the error and continue with remaining documents
-8. THE System SHALL support date range filtering for scrapers
+3. EACH scraper SHALL extract PDF links ONLY from specific HTML tables on parliament.go.ke pages
+4. EACH scraper SHALL identify the correct table by HTML structure (class, id, or table headers)
+5. WHEN no documents are found on the first page, THE System SHALL raise an error indicating potential HTML/CSS changes
+6. EACH scraper SHALL download PDFs to either local storage (for testing and adhoc runs) or to cloud storage (S3)
+7. EACH scraper SHALL extract metadata (date, session, title) from PDF filename or content
+8. EACH scraper SHALL compute SHA256 hash of downloaded PDF
+9. EACH scraper SHALL skip already-downloaded documents (based on hash)
+10. WHEN a scraper fails during document processing, THE System SHALL log the error and continue with remaining documents
+11. THE System SHALL support date range filtering for scrapers
+12. EACH scraper SHALL validate that extracted links are PDF files before downloading
 
 ### Requirement 5: PDF Processing Pipeline
 

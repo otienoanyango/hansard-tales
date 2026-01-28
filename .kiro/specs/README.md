@@ -15,7 +15,7 @@ This directory contains the complete product specification for Hansard Tales, a 
 ## Document Structure
 
 ```
-hansard-tales-complete-system/
+./
 ├── README.md (this file)
 ├── MASTER_ARCHITECTURE.md (complete system architecture)
 │
