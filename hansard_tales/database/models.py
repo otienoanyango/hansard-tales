@@ -400,3 +400,45 @@ class PetitionORM(Base):
         Index("idx_petitions_sponsor_id", "sponsor_id"),
         Index("idx_petitions_date", "submission_date"),
     )
+
+
+
+class DownloadedFileORM(Base):
+    """
+    Downloaded files tracking table for duplicate prevention.
+    
+    This table tracks all downloaded PDFs to prevent redownloading
+    the same files. Uses SHA256 hash for deduplication.
+    """
+    
+    __tablename__ = "downloaded_files"
+    
+    id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
+    
+    # Source tracking
+    source_url = Column(Text, nullable=False)
+    source_hash = Column(String(64), nullable=False, unique=True)
+    
+    # File information
+    standardized_filename = Column(String(255), nullable=False)
+    original_filename = Column(String(500), nullable=False)
+    file_size = Column(Integer, nullable=False)
+    document_type = Column(String(50), nullable=False)
+    
+    # Download tracking
+    download_date = Column(DateTime, nullable=False)
+    file_path = Column(Text, nullable=False)
+    
+    # Metadata
+    chamber = Column(String(50))
+    parliament_term = Column(Integer)
+    
+    # Timestamps
+    created_at = Column(DateTime, nullable=False)
+    
+    # Indexes
+    __table_args__ = (
+        Index("idx_downloaded_files_hash", "source_hash"),
+        Index("idx_downloaded_files_type", "document_type"),
+        Index("idx_downloaded_files_date", "download_date"),
+    )

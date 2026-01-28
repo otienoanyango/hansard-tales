@@ -29,13 +29,17 @@ This document specifies requirements for Phase 0 of the Hansard Tales system: es
 #### Acceptance Criteria
 
 1. THE System SHALL use PostgreSQL for production and SQLite for development
-2. THE System SHALL define tables for: documents, statements, mps, senators, sessions, chambers, parliament_terms
+2. THE System SHALL define tables for: documents, statements, mps, senators, sessions, chambers, parliament_terms, downloaded_files
 3. THE System SHALL use SQLAlchemy ORM for all database operations
 4. THE System SHALL use Alembic for schema migrations
 5. WHEN a migration is applied, THE System SHALL preserve all existing data
 6. THE System SHALL enforce foreign key constraints
 7. THE System SHALL create indexes on frequently queried columns
 8. THE System SHALL support both National Assembly and Senate data in the same schema
+9. THE System SHALL maintain a downloaded_files table to track all downloaded PDFs by source_hash
+10. THE downloaded_files table SHALL store: source_url, source_hash, standardized_filename, download_date, file_size, document_type
+11. WHEN checking for duplicates, THE System SHALL query downloaded_files table by source_hash
+12. THE System SHALL prevent redownloading files that already exist in downloaded_files table
 
 ### Requirement 2: Vector Database Setup
 
@@ -82,6 +86,31 @@ This document specifies requirements for Phase 0 of the Hansard Tales system: es
 10. WHEN a scraper fails during document processing, THE System SHALL log the error and continue with remaining documents
 11. THE System SHALL support date range filtering for scrapers
 12. EACH scraper SHALL validate that extracted links are PDF files before downloading
+13. THE System SHALL support pagination to fetch all available documents across multiple pages
+14. THE System SHALL use parliament term parameter in URLs for proper document filtering
+15. THE System SHALL add rate limiting delays between page requests to avoid server issues
+16. THE System SHALL generate standardized filenames for downloaded documents based on extracted metadata
+17. HANSARD documents SHALL be renamed to format: hansard_YYYYMMDD_<P|A|E>.pdf where P=Morning, A=Afternoon, E=Evening
+18. VOTES documents SHALL be renamed to format: votes_YYYYMMDDTHHMMSSZ.pdf in ISO 8601 datetime format with UTC timezone
+19. WHEN filename parsing fails, THE System SHALL fallback to original filename
+
+#### Implementation Notes
+
+**Hansard Scraper Specifics:**
+- URL Format: `https://parliament.go.ke/the-national-assembly/house-business/hansard?field_parliament_value=2022&page=0`
+- CSS Selector: `table.cols-2 td.views-field-field-pdf a[href$=".pdf"]`
+- Pagination: Automatically detects total pages from `nav.pager` element
+- Parliament Term: Default 2022 (13th Parliament)
+- Rate Limiting: Uses `retry_delay` config between page requests
+- Filename Format: `hansard_YYYYMMDD_<P|A|E>.pdf`
+- Verified: Successfully fetches 452 PDFs from 19 pages
+
+**Votes Scraper Specifics:**
+- URL Format: `https://parliament.go.ke/the-national-assembly/house-business/votes-proceedings?field_parliament_value=2022&page=0`
+- CSS Selector: `table.cols-2 td.views-field-field-pdf a[href$=".pdf"]`
+- Pagination: Same as Hansard scraper
+- Filename Format: `votes_YYYYMMDDTHHMMSSZ.pdf`
+- Time Parsing: Extracts time from title (e.g., "at 2.30pm") and converts to 24-hour format
 
 ### Requirement 5: PDF Processing Pipeline
 

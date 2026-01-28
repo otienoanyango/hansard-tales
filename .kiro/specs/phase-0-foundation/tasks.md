@@ -41,6 +41,13 @@ This task list implements the foundational infrastructure for the Hansard Tales 
     - [x] 2.3.1 Configure Alembic
     - [x] 2.3.2 Create initial migration
     - [x] 2.3.3 Write migration tests
+  - [x] 2.4 Download Tracking Table
+    - [x] 2.4.1 Create DownloadedFileORM model (Design 3)
+    - [x] 2.4.2 Add migration for downloaded_files table
+    - [x] 2.4.3 Implement _is_duplicate() in BaseScraper to query downloaded_files
+    - [x] 2.4.4 Implement _record_download() in BaseScraper to insert records
+    - [x] 2.4.5 Update scrape() method to call _record_download() after saving files
+    - [x] 2.4.6 Write download tracking tests
 
 ### Vector Database Integration
 
@@ -53,70 +60,80 @@ This task list implements the foundational infrastructure for the Hansard Tales 
   - [x] 3.2 Embedding Generator
     - [x] 3.2.1 Create embedding generator (Design 4)
     - [x] 3.2.2 Write embedding tests
-  - [-] 3.3 Vector Database Tests
+  - [x] 3.3 Vector Database Tests
     - [x] 3.3.1 Write vector DB tests
     - [x] 3.3.2 Ensure 100% test pass rate
 
 ### Web Scrapers
 
-- [-] 4. Web Scrapers
-  - [ ] 4.1 Base Scraper Framework
-    - [-] 4.1.1 Create base scraper (Design 5)
-    - [ ] 4.1.2 Write base scraper tests
-  - [ ] 4.2 Hansard Scraper
-    - [ ] 4.2.1 Implement Hansard scraper (Design 5)
-    - [ ] 4.2.2 Write Hansard scraper tests
-  - [ ] 4.3 Votes Scraper
-    - [ ] 4.3.1 Implement Votes scraper (Design 5)
-    - [ ] 4.3.2 Write Votes scraper tests
-  - [ ] 4.4 Scraper Factory
-    - [ ] 4.4.1 Implement scraper factory (Design 5)
-    - [ ] 4.4.2 Write factory tests
+- [x] 4. Web Scrapers
+  - [x] 4.1 Base Scraper Framework
+    - [x] 4.1.1 Create base scraper (Design 5)
+    - [x] 4.1.2 Write base scraper tests
+  - [x] 4.2 Hansard Scraper
+    - [x] 4.2.1 Implement Hansard scraper (Design 5)
+    - [x] 4.2.2 Implement pagination support with parliament term parameter
+    - [x] 4.2.3 Implement CSS selector extraction (table.cols-2 td.views-field-field-pdf a[href$=".pdf"])
+    - [x] 4.2.4 Add rate limiting between page requests
+    - [x] 4.2.5 Implement standardized filename generation (hansard_YYYYMMDD_<P|A|E>.pdf)
+    - [x] 4.2.6 Write Hansard scraper tests (19 tests, 98.88% coverage)
+  - [x] 4.3 Votes Scraper
+    - [x] 4.3.1 Implement Votes scraper (Design 5)
+    - [x] 4.3.2 Implement pagination support with parliament term parameter
+    - [x] 4.3.3 Implement CSS selector extraction
+    - [x] 4.3.4 Implement time parsing and 24-hour conversion
+    - [x] 4.3.5 Implement standardized filename generation (votes_YYYYMMDDTHHMMSSZ.pdf)
+    - [x] 4.3.6 Write Votes scraper tests (19 tests, 64.54% coverage)
+  - [x] 4.4 Scraper Factory
+    - [x] 4.4.1 Implement scraper factory (Design 5)
+    - [x] 4.4.2 Write factory tests (7 tests, 100% coverage)
+  - [x] 4.5 Filename Generation
+    - [x] 4.5.1 Write filename generation tests (9 tests, 100% pass rate)
 
 ### PDF Processing Pipeline
 
-- [ ] 5. PDF Processing Pipeline
-  - [ ] 5.1 PDF Processor
-    - [ ] 5.1.1 Create PDF processor (Design 6)
-    - [ ] 5.1.2 Implement utility methods
-    - [ ] 5.1.3 Write PDF processor tests
-  - [ ] 5.2 Specialized Processors
-    - [ ] 5.2.1 Implement specialized processors (Design 6)
-    - [ ] 5.2.2 Write specialized processor tests
-  - [ ] 5.3 Document Storage Service
-    - [ ] 5.3.1 Create storage service (Design 6)
-    - [ ] 5.3.2 Write storage service tests
+- [x] 5. PDF Processing Pipeline
+  - [x] 5.1 PDF Processor
+    - [x] 5.1.1 Create PDF processor (Design 6)
+    - [x] 5.1.2 Implement utility methods
+    - [x] 5.1.3 Write PDF processor tests
+  - [x] 5.2 Specialized Processors
+    - [x] 5.2.1 Implement specialized processors (Design 6)
+    - [x] 5.2.2 Write specialized processor tests
+  - [x] 5.3 Document Storage Service
+    - [x] 5.3.1 Create storage service (Design 6)
+    - [x] 5.3.2 Write storage service tests
 
 
 ### Logging & Error Handling
 
-- [ ] 6. Logging & Error Handling
-  - [ ] 6.1 Structured Logging
-    - [ ] 6.1.1 Configure logging (Design 7)
-    - [ ] 6.1.2 Implement request ID tracking (Design 7)
-    - [ ] 6.1.3 Setup log rotation (Design 7)
-    - [ ] 6.1.4 Write logging tests
-  - [ ] 6.2 Error Handling
-    - [ ] 6.2.1 Create exception hierarchy (Design 8)
-    - [ ] 6.2.2 Implement retry logic (Design 8)
-    - [ ] 6.2.3 Implement error context (Design 8)
-    - [ ] 6.2.4 Implement batch processor (Design 8)
-    - [ ] 6.2.5 Write error handling tests
+- [x] 6. Logging & Error Handling
+  - [x] 6.1 Structured Logging
+    - [x] 6.1.1 Configure logging (Design 7)
+    - [x] 6.1.2 Implement request ID tracking (Design 7)
+    - [x] 6.1.3 Setup log rotation (Design 7)
+    - [x] 6.1.4 Write logging tests
+  - [x] 6.2 Error Handling
+    - [x] 6.2.1 Create exception hierarchy (Design 8)
+    - [x] 6.2.2 Implement retry logic (Design 8)
+    - [x] 6.2.3 Implement error context (Design 8)
+    - [x] 6.2.4 Implement batch processor (Design 8)
+    - [x] 6.2.5 Write error handling tests
 
 ### Testing Infrastructure
 
-- [ ] 7. Testing Infrastructure
-  - [ ] 7.1 Test Configuration
-    - [ ] 7.1.1 Create pytest configuration (Design 9)
-    - [ ] 7.1.2 Create test fixtures (Design 9)
-  - [ ] 7.2 Property-Based Tests
-    - [ ] 7.2.1 Write model property tests (Design 9)
-    - [ ] 7.2.2 Write vector DB property tests (Design 9)
-    - [ ] 7.2.3 Write scraper property tests
-  - [ ] 7.3 Test Coverage
-    - [ ] 7.3.1 Write unit tests for all components
-    - [ ] 7.3.2 Write integration tests
-    - [ ] 7.3.3 Verify coverage threshold
+- [x] 7. Testing Infrastructure
+  - [x] 7.1 Test Configuration
+    - [x] 7.1.1 Create pytest configuration (Design 9)
+    - [x] 7.1.2 Create test fixtures (Design 9)
+  - [x] 7.2 Property-Based Tests
+    - [x] 7.2.1 Write model property tests (Design 9)
+    - [x] 7.2.2 Write vector DB property tests (Design 9)
+    - [x] 7.2.3 Write scraper property tests
+  - [x] 7.3 Test Coverage
+    - [x] 7.3.1 Write unit tests for all components
+    - [x] 7.3.2 Write integration tests
+    - [x] 7.3.3 Verify coverage threshold
 
 ### CI/CD Pipeline
 

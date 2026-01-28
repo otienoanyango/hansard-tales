@@ -5,8 +5,20 @@ python-dotenv>=1.0.0
 sqlalchemy>=2.0.0
 alembic>=1.13.0
 
+# Logging
+structlog>=24.1.0
+
+# Web scraping
+requests>=2.31.0
+beautifulsoup4>=4.12.0
+
 # Vector DB
 chromadb>=1.4.0
 sentence-transformers>=5.2.0
 torch>=2.1.0
 numpy>=1.24.0
+pdfplumber>=0.11.9
+PyMuPDF>=1.26.7
+
+# Error handling
+tenacity>=8.2.0
