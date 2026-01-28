@@ -26,25 +26,25 @@ This task list implements the foundational infrastructure for the Hansard Tales 
 
 ### Data Models & Database Schema
 
-- [-] 2. Data Models & Database Schema
-  - [ ] 2.1 Pydantic Data Models
-    - [ ] 2.1.1 Create base models (Design 2)
-    - [ ] 2.1.2 Create bill-related models
-    - [ ] 2.1.3 Create question and petition models
-    - [ ] 2.1.4 Write data model tests
-  - [ ] 2.2 SQLAlchemy ORM Models
-    - [ ] 2.2.1 Create ORM base models (Design 3)
-    - [ ] 2.2.2 Create bill-related ORM models
-    - [ ] 2.2.3 Create question and petition ORM models
-    - [ ] 2.2.4 Write ORM tests
-  - [ ] 2.3 Database Migrations
-    - [ ] 2.3.1 Configure Alembic
-    - [ ] 2.3.2 Create initial migration
-    - [ ] 2.3.3 Write migration tests
+- [x] 2. Data Models & Database Schema
+  - [x] 2.1 Pydantic Data Models
+    - [x] 2.1.1 Create base models (Design 2)
+    - [x] 2.1.2 Create bill-related models
+    - [x] 2.1.3 Create question and petition models
+    - [x] 2.1.4 Write data model tests
+  - [x] 2.2 SQLAlchemy ORM Models
+    - [x] 2.2.1 Create ORM base models (Design 3)
+    - [x] 2.2.2 Create bill-related ORM models
+    - [x] 2.2.3 Create question and petition ORM models
+    - [x] 2.2.4 Write ORM tests
+  - [x] 2.3 Database Migrations
+    - [x] 2.3.1 Configure Alembic
+    - [x] 2.3.2 Create initial migration
+    - [x] 2.3.3 Write migration tests
 
 ### Vector Database Integration
 
-- [ ] 3. Vector Database Integration
+- [-] 3. Vector Database Integration
   - [ ] 3.1 Vector Database Interface
     - [ ] 3.1.1 Create vector DB interface (Design 4)
     - [ ] 3.1.2 Implement ChromaDB adapter
