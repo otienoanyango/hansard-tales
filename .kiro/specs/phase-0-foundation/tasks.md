@@ -44,23 +44,24 @@ This task list implements the foundational infrastructure for the Hansard Tales 
 
 ### Vector Database Integration
 
-- [-] 3. Vector Database Integration
-  - [ ] 3.1 Vector Database Interface
-    - [ ] 3.1.1 Create vector DB interface (Design 4)
-    - [ ] 3.1.2 Implement ChromaDB adapter
-    - [ ] 3.1.3 Implement Qdrant adapter
-    - [ ] 3.1.4 Create factory function
-  - [ ] 3.2 Embedding Generator
-    - [ ] 3.2.1 Create embedding generator (Design 4)
-    - [ ] 3.2.2 Write embedding tests
-  - [ ] 3.3 Vector Database Tests
-    - [ ] 3.3.1 Write vector DB tests
+- [x] 3. Vector Database Integration
+  - [x] 3.1 Vector Database Interface
+    - [x] 3.1.1 Create vector DB interface (Design 4)
+    - [x] 3.1.2 Implement ChromaDB adapter
+    - [x] 3.1.3 Implement Qdrant adapter
+    - [x] 3.1.4 Create factory function
+  - [x] 3.2 Embedding Generator
+    - [x] 3.2.1 Create embedding generator (Design 4)
+    - [x] 3.2.2 Write embedding tests
+  - [-] 3.3 Vector Database Tests
+    - [x] 3.3.1 Write vector DB tests
+    - [x] 3.3.2 Ensure 100% test pass rate
 
 ### Web Scrapers
 
-- [ ] 4. Web Scrapers
+- [-] 4. Web Scrapers
   - [ ] 4.1 Base Scraper Framework
-    - [ ] 4.1.1 Create base scraper (Design 5)
+    - [-] 4.1.1 Create base scraper (Design 5)
     - [ ] 4.1.2 Write base scraper tests
   - [ ] 4.2 Hansard Scraper
     - [ ] 4.2.1 Implement Hansard scraper (Design 5)
