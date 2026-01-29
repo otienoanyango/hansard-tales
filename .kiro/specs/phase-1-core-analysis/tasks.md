@@ -31,31 +31,54 @@ This document breaks down Phase 1 implementation into actionable tasks. Each tas
     - [ ] 0.3.3 Implement parallel page fetching with connection pooling
     - [ ] 0.3.4 Add progress reporting for long-running scrapes
 
-- [ ] 0.4 Historical Data Processing Scripts
-  - [ ] 0.4.1 Create `scripts/download_historical_data.py`
-    - [ ] 0.4.1.1 Implement parliament term iteration (2013-2024)
-    - [ ] 0.4.1.2 Implement date range support
-    - [ ] 0.4.1.3 Add progress tracking with tqdm
-    - [ ] 0.4.1.4 Add resume capability (skip already downloaded)
-    - [ ] 0.4.1.5 Add summary statistics reporting
-    - [ ] 0.4.1.6 Add error logging and recovery
-  - [ ] 0.4.2 Create `scripts/process_historical_data.py`
-    - [ ] 0.4.2.1 Implement batch PDF processing
-    - [ ] 0.4.2.2 Add parallel processing with worker pool
-    - [ ] 0.4.2.3 Add progress tracking
-    - [ ] 0.4.2.4 Add error recovery and retry logic
-    - [ ] 0.4.2.5 Add validation and quality checks
-    - [ ] 0.4.2.6 Generate processing report
-  - [ ] 0.4.3 Create `scripts/validate_historical_data.py`
-    - [ ] 0.4.3.1 Verify all PDFs are readable
-    - [ ] 0.4.3.2 Check database consistency
-    - [ ] 0.4.3.3 Validate vector DB entries
-    - [ ] 0.4.3.4 Generate validation report
-  - [ ] 0.4.4 Write tests for historical data scripts
-    - [ ] 0.4.4.1 Test download script with mock data
-    - [ ] 0.4.4.2 Test process script with sample PDFs
-    - [ ] 0.4.4.3 Test validation script
-    - [ ] 0.4.4.4 Test error recovery
+- [ ] 0.4 MP Scraper Implementation
+  - [ ] 0.4.1 Create MPScraper class
+    - [ ] 0.4.1.1 Implement CSS selector for MP table (table.cols-7 tr.mp)
+    - [ ] 0.4.1.2 Extract MP data: name, county, constituency, party, status
+    - [ ] 0.4.1.3 Handle honorifics (HON., DR., ENG., AMB., etc.)
+    - [ ] 0.4.1.4 Implement pagination support (35 pages total)
+    - [ ] 0.4.1.5 Add parliament term parameter support
+    - [ ] 0.4.1.6 Implement duplicate detection by name+constituency
+    - [ ] 0.4.1.7 Store MPs in database with proper relationships
+  - [ ] 0.4.2 Write MP scraper tests
+    - [ ] 0.4.2.1 Test MP data extraction from sample HTML (tests/sample_html.md)
+    - [ ] 0.4.2.2 Test honorific parsing (HON., DR., ENG., AMB.)
+    - [ ] 0.4.2.3 Test pagination detection (35 pages)
+    - [ ] 0.4.2.4 Test empty field handling (missing county/constituency)
+    - [ ] 0.4.2.5 Test status field (Elected vs Nominated)
+    - [ ] 0.4.2.6 Test duplicate detection
+    - [ ] 0.4.2.7 Test database storage
+  - [ ] 0.4.3 Create MP scraper fixtures
+    - [ ] 0.4.3.1 Create tests/fixtures/sample_mps.html from tests/sample_html.md
+    - [ ] 0.4.3.2 Add realistic test data with various honorifics
+    - [ ] 0.4.3.3 Add edge cases (missing fields, special characters)
+
+- [ ] 0.5 Historical Data Processing Scripts
+  - [ ] 0.5.1 Create `scripts/download_historical_data.py`
+    - [ ] 0.5.1.1 Implement parliament term iteration (2013-2024)
+    - [ ] 0.5.1.2 Implement date range support
+    - [ ] 0.5.1.3 Add progress tracking with tqdm
+    - [ ] 0.5.1.4 Add resume capability (skip already downloaded)
+    - [ ] 0.5.1.5 Add summary statistics reporting
+    - [ ] 0.5.1.6 Add error logging and recovery
+    - [ ] 0.5.1.7 Support all document types (Hansard, Votes, MPs)
+  - [ ] 0.5.2 Create `scripts/process_historical_data.py`
+    - [ ] 0.5.2.1 Implement batch PDF processing
+    - [ ] 0.5.2.2 Add parallel processing with worker pool
+    - [ ] 0.5.2.3 Add progress tracking
+    - [ ] 0.5.2.4 Add error recovery and retry logic
+    - [ ] 0.5.2.5 Add validation and quality checks
+    - [ ] 0.5.2.6 Generate processing report
+  - [ ] 0.5.3 Create `scripts/validate_historical_data.py`
+    - [ ] 0.5.3.1 Verify all PDFs are readable
+    - [ ] 0.5.3.2 Check database consistency
+    - [ ] 0.5.3.3 Validate vector DB entries
+    - [ ] 0.5.3.4 Generate validation report
+  - [ ] 0.5.4 Write tests for historical data scripts
+    - [ ] 0.5.4.1 Test download script with mock data
+    - [ ] 0.5.4.2 Test process script with sample PDFs
+    - [ ] 0.5.4.3 Test validation script
+    - [ ] 0.5.4.4 Test error recovery
 
 ### Week 1-2: Core NLP Components
 

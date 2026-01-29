@@ -15,9 +15,9 @@ import requests
 def download_sample_pdfs():
     """Download sample PDFs for testing."""
     # Read sample HTML
-    html_path = Path("tests/sample_html.txt")
+    html_path = Path("tests/sample_html.md")
     if not html_path.exists():
-        print("Error: tests/sample_html.txt not found")
+        print("Error: tests/sample_html.md not found")
         return
 
     html = html_path.read_text()

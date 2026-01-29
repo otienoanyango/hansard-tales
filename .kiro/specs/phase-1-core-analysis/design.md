@@ -17,6 +17,13 @@ This document provides detailed component designs for Phase 1 of the Hansard Tal
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
+│                    MP Data Collection (Phase 0 Debt)             │
+│                                                                  │
+│  parliament.go.ke/mps → MP Scraper → MP Database                │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
 │                    Hansard Processing Pipeline                   │
 │                                                                  │
 │  PDF → Text Extraction → MP Identification → Segmentation       │
@@ -47,6 +54,255 @@ This document provides detailed component designs for Phase 1 of the Hansard Tal
 │  Templates + Data → HTML Pages → Deploy to Cloudflare Pages     │
 └─────────────────────────────────────────────────────────────────┘
 ```
+
+## Design 0: MP Scraper (Phase 0 Technical Debt)
+
+### Component Design
+
+**Purpose**: Scrape MP data from parliament.go.ke to build complete MP database for identification and attribution
+
+**Technology**: BeautifulSoup4 with CSS selectors (consistent with Phase 0 scrapers)
+
+**Test Data**: Uses `tests/sample_html.md` and `tests/fixtures/sample_mps.html` for realistic testing
+
+### MP Data Structure
+
+```python
+from dataclasses import dataclass
+from typing import Optional
+from datetime import datetime
+
+@dataclass
+class MPData:
+    """MP data extracted from parliament.go.ke"""
+    name: str  # Full name with honorifics
+    clean_name: str  # Name without honorifics
+    honorifics: List[str]  # Extracted honorifics (HON., DR., etc.)
+    county: Optional[str]  # Empty for nominated MPs
+    constituency: Optional[str]  # Empty for nominated MPs
+    party: str
+    status: str  # "Elected" or "Nominated"
+    profile_url: str  # Link to MP profile page
+    parliament_term: int
+    photo_url: Optional[str]
+```
+
+### Implementation
+
+```python
+from typing import List, Optional
+from bs4 import BeautifulSoup
+import re
+from hansard_tales.scrapers.base import BaseScraper
+from hansard_tales.models.base import Chamber
+
+class MPScraper(BaseScraper):
+    """
+    Scraper for MP data from parliament.go.ke.
+
+    Extracts MP information including name, county, constituency, party,
+    and status from the MPs listing page.
+
+    URL Format: https://parliament.go.ke/the-national-assembly/mps?field_parliament_value=2022&page=0
+    CSS Selector: table.cols-7 tr.mp
+    Pagination: Extracts last page from nav.pager li.pager__item--last
+
+    Test Data: tests/sample_html.md, tests/fixtures/sample_mps.html
+    """
+
+    # Honorific patterns
+    HONORIFICS = [
+        "HON.",
+        "DR.",
+        "ENG.",
+        "AMB.",
+        "PROF.",
+        "MR.",
+        "MS.",
+        "MRS.",
+    ]
+
+    def __init__(self, chamber: Chamber = Chamber.NATIONAL_ASSEMBLY, **kwargs):
+        super().__init__(chamber=chamber, **kwargs)
+        self.base_url = "https://parliament.go.ke/the-national-assembly/mps"
+
+    def _build_url(self, page: int = 0, parliament_term: int = 2022) -> str:
+        """Build URL for MP listing page."""
+        return (
+            f"{self.base_url}?"
+            f"field_name_value=%20&"
+            f"field_parliament_value={parliament_term}&"
+            f"field_employment_history_value=&"
+            f"page={page}"
+        )
+
+    def _get_total_pages(self, soup: BeautifulSoup) -> int:
+        """
+        Extract total number of pages from pagination.
+
+        Looks for: nav.pager li.pager__item--last a[href]
+        Extracts page number from: page=34
+        """
+        last_page_link = soup.select_one('nav.pager li.pager__item--last a[href]')
+        if not last_page_link:
+            return 1
+
+        href = last_page_link.get('href', '')
+        match = re.search(r'page=(\d+)', href)
+        if match:
+            return int(match.group(1)) + 1  # Convert 0-indexed to count
+        return 1
+
+    def _extract_mps_from_page(self, soup: BeautifulSoup) -> List[MPData]:
+        """
+        Extract MP data from a single page.
+
+        CSS Selector: table.cols-7 tr.mp
+        Fields:
+        - Name: td.views-field-field-name
+        - County: td.views-field-field-county
+        - Constituency: td.views-field-field-constituency
+        - Party: td.views-field-field-party
+        - Status: td.views-field-field-status
+        - Profile URL: td.views-field-view-node a[href]
+        """
+        mps = []
+        rows = soup.select('table.cols-7 tr.mp')
+
+        for row in rows:
+            # Extract fields
+            name_td = row.select_one('td.views-field-field-name')
+            county_td = row.select_one('td.views-field-field-county')
+            constituency_td = row.select_one('td.views-field-field-constituency')
+            party_td = row.select_one('td.views-field-field-party')
+            status_td = row.select_one('td.views-field-field-status')
+            profile_link = row.select_one('td.views-field-view-node a[href]')
+
+            # Skip rows with empty name
+            if not name_td or not name_td.get_text(strip=True):
+                continue
+
+            name = name_td.get_text(strip=True)
+            county = county_td.get_text(strip=True) if county_td else None
+            constituency = constituency_td.get_text(strip=True) if constituency_td else None
+            party = party_td.get_text(strip=True) if party_td else None
+            status = status_td.get_text(strip=True) if status_td else None
+            profile_url = profile_link.get('href') if profile_link else None
+
+            # Parse honorifics
+            honorifics, clean_name = self._parse_honorifics(name)
+
+            mps.append(MPData(
+                name=name,
+                clean_name=clean_name,
+                honorifics=honorifics,
+                county=county or None,
+                constituency=constituency or None,
+                party=party,
+                status=status,
+                profile_url=profile_url,
+                parliament_term=self.parliament_term,
+                photo_url=None,  # Can be extracted from profile page later
+            ))
+
+        return mps
+
+    def _parse_honorifics(self, name: str) -> Tuple[List[str], str]:
+        """
+        Parse honorifics from MP name.
+
+        Examples:
+        - "HON. JOHN DOE" → (["HON."], "JOHN DOE")
+        - "HON. (DR.) JANE SMITH" → (["HON.", "DR."], "JANE SMITH")
+        - "HON. (ENG.) PETER JONES" → (["HON.", "ENG."], "PETER JONES")
+
+        Returns:
+            Tuple of (honorifics_list, clean_name)
+        """
+        honorifics = []
+        clean_name = name
+
+        # Extract honorifics in parentheses: (DR.), (ENG.), etc.
+        paren_pattern = r'\(([A-Z]+\.)\)'
+        for match in re.finditer(paren_pattern, name):
+            honorific = match.group(1)
+            if honorific in self.HONORIFICS:
+                honorifics.append(honorific)
+            clean_name = clean_name.replace(match.group(0), '').strip()
+
+        # Extract leading honorifics: HON., DR., etc.
+        for honorific in self.HONORIFICS:
+            if clean_name.startswith(honorific):
+                honorifics.append(honorific)
+                clean_name = clean_name[len(honorific):].strip()
+
+        # Clean up extra spaces and commas
+        clean_name = re.sub(r'\s+', ' ', clean_name)
+        clean_name = clean_name.strip(', ')
+
+        return honorifics, clean_name
+
+    def scrape(
+        self,
+        parliament_term: int = 2022,
+        max_pages: Optional[int] = None
+    ) -> List[MPData]:
+        """
+        Scrape all MPs for a given parliament term.
+
+        Args:
+            parliament_term: Parliament term (default: 2022 for 13th Parliament)
+            max_pages: Maximum pages to scrape (None = all pages)
+
+        Returns:
+            List of MPData objects
+        """
+        all_mps = []
+
+        # Fetch first page to get total pages
+        url = self._build_url(page=0, parliament_term=parliament_term)
+        soup = self._fetch_page(url)
+
+        total_pages = self._get_total_pages(soup)
+        if max_pages:
+            total_pages = min(total_pages, max_pages)
+
+        self.logger.info(f"Found {total_pages} pages to scrape")
+
+        # Extract MPs from first page
+        mps = self._extract_mps_from_page(soup)
+        all_mps.extend(mps)
+
+        # Fetch remaining pages
+        for page in range(1, total_pages):
+            url = self._build_url(page=page, parliament_term=parliament_term)
+            soup = self._fetch_page(url)
+            mps = self._extract_mps_from_page(soup)
+            all_mps.extend(mps)
+
+            # Rate limiting
+            time.sleep(self.config.retry_delay)
+
+        self.logger.info(f"Scraped {len(all_mps)} MPs from {total_pages} pages")
+        return all_mps
+```
+
+### Correctness Properties
+
+**Property 0.1**: MP data extraction completeness
+- **Validates**: Requirements 0.5.2, 0.5.3
+- **Property**: All MPs in HTML table must be extracted
+- **Test Strategy**: Use sample_mps.html, verify all 7 MPs extracted
+
+**Property 0.2**: Honorific parsing accuracy
+- **Validates**: Requirements 0.5.4
+- **Property**: All honorifics must be correctly identified and removed
+- **Test Strategy**: Test with various honorific combinations from sample data
+
+**Property 0.3**: Pagination detection
+- **Validates**: Requirements 0.5.6
+- **Property**: Total pages must be correctly extracted from pagination
+- **Test Strategy**: Use sample_mps.html, verify 35 pages detected
 
 ## Design 1: MP Identification
 
@@ -85,12 +341,12 @@ class MPMatch:
 
 class MPIdentifier:
     """Identify MPs in Hansard text"""
-    
+
     def __init__(self, db_session, nlp_model: str = "en_core_web_sm"):
         self.db = db_session
         self.nlp = spacy.load(nlp_model)
         self.mp_cache = self._load_mp_cache()
-        
+
         # Compile regex patterns
         self.patterns = [
             # Hon. Name (Constituency, Party)
@@ -100,18 +356,18 @@ class MPIdentifier:
             # Name (Constituency)
             re.compile(r'([A-Z][a-z]+(?:\s+[A-Z][a-z]+)+)\s*\(([^)]+)\)'),
         ]
-    
+
     def _load_mp_cache(self) -> dict:
         """Load all MPs into memory for fast lookup"""
         mps = self.db.query(MPORM).filter(
             MPORM.chamber == 'national_assembly'
         ).all()
-        
+
         cache = {}
         for mp in mps:
             # Index by full name
             cache[mp.name.lower()] = mp
-            
+
             # Index by last name
             last_name = mp.name.split()[-1].lower()
             if last_name not in cache:
@@ -120,9 +376,9 @@ class MPIdentifier:
                 cache[last_name].append(mp)
             else:
                 cache[last_name] = [cache[last_name], mp]
-        
+
         return cache
-    
+
     def identify(self, text: str, context: Optional[dict] = None) -> Optional[MPMatch]:
         """Identify MP from text mention"""
         # Try regex patterns first
@@ -132,7 +388,7 @@ class MPIdentifier:
                 name = match.group(1)
                 constituency = match.group(2) if len(match.groups()) > 1 else None
                 party = match.group(3) if len(match.groups()) > 2 else None
-                
+
                 mp = self._match_to_database(name, constituency, party)
                 if mp:
                     return MPMatch(
@@ -142,7 +398,7 @@ class MPIdentifier:
                         constituency=mp.constituency,
                         party=mp.party
                     )
-        
+
         # Try NER extraction
         doc = self.nlp(text)
         for ent in doc.ents:
@@ -156,9 +412,9 @@ class MPIdentifier:
                         constituency=mp.constituency,
                         party=mp.party
                     )
-        
+
         return None
-    
+
     def _match_to_database(
         self,
         name: str,
@@ -167,39 +423,39 @@ class MPIdentifier:
     ) -> Optional[MPORM]:
         """Match extracted name to database record"""
         name_lower = name.lower()
-        
+
         # Exact match
         if name_lower in self.mp_cache:
             mp = self.mp_cache[name_lower]
             if not isinstance(mp, list):
                 return mp
-        
+
         # Fuzzy match on full name
         best_match = None
         best_score = 0
-        
+
         for cached_name, mp in self.mp_cache.items():
             if isinstance(mp, list):
                 continue
-            
+
             score = fuzz.ratio(name_lower, cached_name)
-            
+
             # Boost score if constituency matches
             if constituency and mp.constituency:
                 if constituency.lower() in mp.constituency.lower():
                     score += 20
-            
+
             # Boost score if party matches
             if party and mp.party:
                 if party.lower() in mp.party.lower():
                     score += 10
-            
+
             if score > best_score and score >= 85:
                 best_score = score
                 best_match = mp
-        
+
         return best_match
-    
+
     def identify_batch(self, texts: List[str]) -> List[Optional[MPMatch]]:
         """Identify MPs in batch of texts"""
         return [self.identify(text) for text in texts]
@@ -249,13 +505,13 @@ class Statement:
     start_pos: int
     end_pos: int
     page_number: Optional[int] = None
-    
+
 class StatementSegmenter:
     """Segment Hansard text into statements"""
-    
+
     def __init__(self, mp_identifier: MPIdentifier):
         self.mp_identifier = mp_identifier
-        
+
         # Patterns for statement boundaries
         self.boundary_patterns = [
             # MP name with title
@@ -265,27 +521,27 @@ class StatementSegmenter:
             # Section headers
             re.compile(r'\n[A-Z\s]{10,}\n'),
         ]
-    
+
     def segment(self, text: str, session_id: str) -> List[Statement]:
         """Segment text into statements"""
         statements = []
         current_pos = 0
-        
+
         # Find all boundary positions
         boundaries = self._find_boundaries(text)
         boundaries.append(len(text))  # Add end of text
-        
+
         for i in range(len(boundaries) - 1):
             start = boundaries[i]
             end = boundaries[i + 1]
-            
+
             segment_text = text[start:end].strip()
             if not segment_text or len(segment_text) < 20:
                 continue
-            
+
             # Identify MP for this segment
             mp_match = self.mp_identifier.identify(segment_text[:200])
-            
+
             statement = Statement(
                 text=segment_text,
                 mp_id=mp_match.mp_id if mp_match else None,
@@ -293,33 +549,33 @@ class StatementSegmenter:
                 end_pos=end
             )
             statements.append(statement)
-        
+
         return statements
-    
+
     def _find_boundaries(self, text: str) -> List[int]:
         """Find all statement boundary positions"""
         boundaries = [0]  # Start of text
-        
+
         for pattern in self.boundary_patterns:
             for match in pattern.finditer(text):
                 pos = match.start()
                 if pos not in boundaries:
                     boundaries.append(pos)
-        
+
         return sorted(boundaries)
-    
+
     def clean_statement(self, text: str) -> str:
         """Clean statement text"""
         # Remove page numbers
         text = re.sub(r'\n\d+\n', '\n', text)
-        
+
         # Remove excessive whitespace
         text = re.sub(r'\n{3,}', '\n\n', text)
         text = re.sub(r' {2,}', ' ', text)
-        
+
         # Remove header/footer artifacts
         text = re.sub(r'NATIONAL ASSEMBLY.*?\n', '', text)
-        
+
         return text.strip()
 ```
 
@@ -366,7 +622,7 @@ class StatementType(Enum):
 
 class FillerDetector:
     """Detect filler/non-substantive statements"""
-    
+
     def __init__(self):
         self.filler_patterns = {
             StatementType.PROCEDURAL: [
@@ -395,30 +651,30 @@ class FillerDetector:
                 r'^No\.?$',
             ]
         }
-        
+
         # Compile patterns
         self.compiled_patterns = {
             stmt_type: [re.compile(p, re.IGNORECASE) for p in patterns]
             for stmt_type, patterns in self.filler_patterns.items()
         }
-    
+
     def classify(self, statement: Statement) -> Tuple[StatementType, float]:
         """Classify statement as substantive or filler"""
         text = statement.text.strip()
-        
+
         # Check length first
         if len(text) < 10:
             return StatementType.SHORT_ACK, 1.0
-        
+
         # Check patterns
         for stmt_type, patterns in self.compiled_patterns.items():
             for pattern in patterns:
                 if pattern.search(text):
                     return stmt_type, 0.95
-        
+
         # Default to substantive
         return StatementType.SUBSTANTIVE, 0.90
-    
+
     def is_substantive(self, statement: Statement) -> bool:
         """Check if statement is substantive"""
         stmt_type, confidence = self.classify(statement)
@@ -469,11 +725,11 @@ class RetrievedContext:
 
 class ContextRetriever:
     """Retrieve relevant context using RAG"""
-    
+
     def __init__(self, vector_db, embedding_model: str = "all-MiniLM-L6-v2"):
         self.vector_db = vector_db
         self.embedder = SentenceTransformer(embedding_model)
-    
+
     def retrieve(
         self,
         statement: Statement,
@@ -482,7 +738,7 @@ class ContextRetriever:
         """Retrieve relevant context for statement"""
         # Generate embedding for statement
         query_embedding = self.embedder.encode(statement.text)
-        
+
         # Retrieve historical statements by same MP
         historical = []
         if statement.mp_id:
@@ -491,32 +747,32 @@ class ContextRetriever:
                 where={"mp_id": statement.mp_id},
                 n_results=top_k
             )
-        
+
         # Retrieve related bills
         related_bills = self._retrieve_related_bills(
             query_embedding,
             top_k=3
         )
-        
+
         # Retrieve related votes
         related_votes = self._retrieve_related_votes(
             query_embedding,
             top_k=3
         )
-        
+
         # Retrieve session context
         session_context = self._retrieve_session_context(
             statement,
             top_k=5
         )
-        
+
         return RetrievedContext(
             historical_statements=historical,
             related_bills=related_bills,
             related_votes=related_votes,
             session_context=session_context
         )
-    
+
     def _retrieve_related_bills(
         self,
         query_embedding,
@@ -528,7 +784,7 @@ class ContextRetriever:
             where={"document_type": "bill"},
             n_results=top_k
         )
-    
+
     def _retrieve_related_votes(
         self,
         query_embedding,
@@ -540,7 +796,7 @@ class ContextRetriever:
             where={"document_type": "vote"},
             n_results=top_k
         )
-    
+
     def _retrieve_session_context(
         self,
         statement: Statement,
@@ -580,24 +836,24 @@ from typing import List, Literal
 
 class StatementAnalysis(BaseModel):
     """LLM analysis of a statement"""
-    
+
     # Sentiment analysis
     sentiment: Literal["positive", "negative", "neutral", "mixed"]
     sentiment_confidence: float = Field(ge=0.0, le=1.0)
     sentiment_explanation: str
-    
+
     # Quality scoring
     quality_score: int = Field(ge=0, le=100)
     quality_factors: Dict[str, int]  # clarity, depth, evidence, etc.
-    
+
     # Topic classification
     primary_topic: str
     secondary_topics: List[str]
     topic_confidence: float = Field(ge=0.0, le=1.0)
-    
+
     # Key points
     key_points: List[str] = Field(max_items=5)
-    
+
     # Citations (for verification)
     citations: List[str]  # Direct quotes from statement
 ```
@@ -610,14 +866,14 @@ from typing import Optional
 
 class LLMAnalyzer:
     """Analyze statements using Claude"""
-    
+
     def __init__(self, api_key: str, model: str = "claude-3-5-haiku-20241022"):
         self.client = anthropic.Anthropic(api_key=api_key)
         self.model = model
-        
+
         # System prompt for analysis
         self.system_prompt = """You are analyzing Kenyan parliamentary statements.
-        
+
 Your task:
 1. Determine sentiment (positive/negative/neutral/mixed)
 2. Score quality (0-100) based on clarity, depth, evidence
@@ -628,7 +884,7 @@ Your task:
 CRITICAL: Only use information from the statement itself.
 Do not make assumptions or add external knowledge.
 All citations must be exact quotes from the statement."""
-    
+
     def analyze(
         self,
         statement: Statement,
@@ -637,7 +893,7 @@ All citations must be exact quotes from the statement."""
         """Analyze statement with LLM"""
         # Build prompt with context
         prompt = self._build_prompt(statement, context)
-        
+
         # Call Claude API
         response = self.client.messages.create(
             model=self.model,
@@ -647,12 +903,12 @@ All citations must be exact quotes from the statement."""
                 {"role": "user", "content": prompt}
             ]
         )
-        
+
         # Parse structured response
         analysis = self._parse_response(response.content[0].text)
-        
+
         return analysis
-    
+
     def _build_prompt(
         self,
         statement: Statement,
@@ -665,12 +921,12 @@ STATEMENT:
 {statement.text}
 
 """
-        
+
         if context and context.historical_statements:
             prompt += "\nHISTORICAL CONTEXT (previous statements by this MP):\n"
             for hist in context.historical_statements[:3]:
                 prompt += f"- {hist['text'][:200]}...\n"
-        
+
         prompt += """
 Provide analysis in JSON format:
 {
@@ -685,21 +941,21 @@ Provide analysis in JSON format:
   "key_points": ["point1", "point2", ...],
   "citations": ["exact quote 1", "exact quote 2", ...]
 }"""
-        
+
         return prompt
-    
+
     def _parse_response(self, response_text: str) -> StatementAnalysis:
         """Parse LLM response into structured format"""
         import json
-        
+
         # Extract JSON from response
         json_match = re.search(r'\{.*\}', response_text, re.DOTALL)
         if not json_match:
             raise ValueError("No JSON found in response")
-        
+
         data = json.loads(json_match.group(0))
         return StatementAnalysis(**data)
-    
+
     def analyze_batch(
         self,
         statements: List[Statement],
@@ -707,15 +963,15 @@ Provide analysis in JSON format:
     ) -> List[StatementAnalysis]:
         """Analyze statements in batches"""
         results = []
-        
+
         for i in range(0, len(statements), batch_size):
             batch = statements[i:i + batch_size]
-            
+
             # Process batch (could parallelize here)
             for statement in batch:
                 analysis = self.analyze(statement)
                 results.append(analysis)
-        
+
         return results
 ```
 
@@ -770,10 +1026,10 @@ class Citation:
 
 class CitationVerifier:
     """Verify LLM-generated citations"""
-    
+
     def __init__(self, db_session):
         self.db = db_session
-    
+
     def verify_citation(
         self,
         citation: str,
@@ -791,7 +1047,7 @@ class CitationVerifier:
                 verification_status="failed",
                 similarity_score=0.0
             )
-        
+
         # Exact match
         if citation in source.text:
             return Citation(
@@ -802,7 +1058,7 @@ class CitationVerifier:
                 verification_status="verified",
                 similarity_score=1.0
             )
-        
+
         # Fuzzy match
         similarity = self._fuzzy_match(citation, source.text)
         if similarity >= threshold:
@@ -816,7 +1072,7 @@ class CitationVerifier:
                 verification_status="verified",
                 similarity_score=similarity
             )
-        
+
         return Citation(
             quote=citation,
             source_id=source_id,
@@ -824,21 +1080,21 @@ class CitationVerifier:
             verification_status="unverified",
             similarity_score=similarity
         )
-    
+
     def _fuzzy_match(self, citation: str, source_text: str) -> float:
         """Calculate fuzzy match score"""
         from fuzzywuzzy import fuzz
         return fuzz.partial_ratio(citation, source_text) / 100.0
-    
+
     def _find_best_match(self, citation: str, source_text: str) -> str:
         """Find best matching substring in source"""
         from difflib import SequenceMatcher
-        
+
         matcher = SequenceMatcher(None, citation, source_text)
         match = matcher.find_longest_match(0, len(citation), 0, len(source_text))
-        
+
         return source_text[match.b:match.b + match.size]
-    
+
     def verify_batch(
         self,
         citations: List[Tuple[str, str]]
@@ -904,58 +1160,58 @@ class MPVote:
 
 class VoteProcessor:
     """Process Votes & Proceedings documents"""
-    
+
     def __init__(self, db_session, mp_identifier: MPIdentifier):
         self.db = db_session
         self.mp_identifier = mp_identifier
-    
+
     def process_pdf(self, pdf_path: Path) -> List[VoteRecord]:
         """Extract votes from PDF"""
         import pdfplumber
-        
+
         votes = []
-        
+
         with pdfplumber.open(pdf_path) as pdf:
             for page in pdf.pages:
                 # Extract tables
                 tables = page.extract_tables()
-                
+
                 for table in tables:
                     if self._is_vote_table(table):
                         vote = self._parse_vote_table(table)
                         if vote:
                             votes.append(vote)
-        
+
         return votes
-    
+
     def _is_vote_table(self, table: List[List[str]]) -> bool:
         """Check if table contains vote data"""
         if not table or len(table) < 2:
             return False
-        
+
         # Check for vote-related headers
         header = ' '.join(table[0]).lower()
         return any(keyword in header for keyword in ['ayes', 'noes', 'vote', 'division'])
-    
+
     def _parse_vote_table(self, table: List[List[str]]) -> Optional[VoteRecord]:
         """Parse vote table into structured data"""
         # Extract motion text (usually above table)
         motion_text = ""
-        
+
         # Parse MP votes
         mp_votes = []
         for row in table[1:]:  # Skip header
             if len(row) < 2:
                 continue
-            
+
             mp_name = row[0]
             vote_value = row[1].lower()
-            
+
             # Match MP
             mp_match = self.mp_identifier.identify(mp_name)
             if not mp_match:
                 continue
-            
+
             # Parse vote
             if 'aye' in vote_value or 'yes' in vote_value:
                 vote = "aye"
@@ -965,17 +1221,17 @@ class VoteProcessor:
                 vote = "abstain"
             else:
                 vote = "absent"
-            
+
             mp_votes.append(MPVote(
                 mp_id=mp_match.mp_id,
                 vote=vote
             ))
-        
+
         # Calculate totals
         ayes = sum(1 for v in mp_votes if v.vote == "aye")
         noes = sum(1 for v in mp_votes if v.vote == "no")
         abstentions = sum(1 for v in mp_votes if v.vote == "abstain")
-        
+
         return VoteRecord(
             vote_id=str(uuid.uuid4()),
             session_id="",  # Set from context
@@ -1032,27 +1288,27 @@ class BillMention:
 
 class BillStatementLinker:
     """Link statements to bills"""
-    
+
     def __init__(self, db_session, vector_db):
         self.db = db_session
         self.vector_db = vector_db
-        
+
         # Bill mention patterns
         self.patterns = [
             re.compile(r'(?:The\s+)?([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)\s+Bill,?\s+(\d{4})'),
             re.compile(r'Bill\s+No\.\s+(\d+)\s+of\s+(\d{4})'),
             re.compile(r'the\s+Bill', re.IGNORECASE),
         ]
-    
+
     def find_bill_mentions(self, statement: Statement) -> List[BillMention]:
         """Find all bill mentions in statement"""
         mentions = []
-        
+
         # Pattern-based extraction
         for pattern in self.patterns:
             for match in pattern.finditer(statement.text):
                 mention_text = match.group(0)
-                
+
                 # Try to resolve to specific bill
                 bill = self._resolve_bill(mention_text, statement)
                 if bill:
@@ -1063,40 +1319,40 @@ class BillStatementLinker:
                         confidence=0.90,
                         context=self._extract_context(statement.text, match.start())
                     ))
-        
+
         return mentions
-    
+
     def _resolve_bill(self, mention_text: str, statement: Statement) -> Optional[BillORM]:
         """Resolve bill mention to database record"""
         # Try exact title match
         bills = self.db.query(BillORM).filter(
             BillORM.title.ilike(f"%{mention_text}%")
         ).all()
-        
+
         if len(bills) == 1:
             return bills[0]
-        
+
         # Try vector similarity
         if len(bills) > 1:
             # Use statement context to disambiguate
             query_embedding = self.vector_db.embed(statement.text)
-            
+
             best_bill = None
             best_score = 0
-            
+
             for bill in bills:
                 bill_embedding = self.vector_db.embed(bill.title + " " + bill.summary)
                 score = cosine_similarity(query_embedding, bill_embedding)
-                
+
                 if score > best_score:
                     best_score = score
                     best_bill = bill
-            
+
             if best_score > 0.7:
                 return best_bill
-        
+
         return None
-    
+
     def _extract_context(self, text: str, position: int, window: int = 100) -> str:
         """Extract context around mention"""
         start = max(0, position - window)
@@ -1135,54 +1391,54 @@ class MPProfile:
     name: str
     constituency: str
     party: str
-    
+
     # Activity metrics
     total_statements: int
     substantive_statements: int
     avg_quality_score: float
-    
+
     # Participation
     sessions_attended: int
     votes_cast: int
     votes_aye: int
     votes_no: int
     votes_abstain: int
-    
+
     # Topics
     top_topics: List[Tuple[str, int]]  # (topic, count)
-    
+
     # Bills
     bills_sponsored: List[str]
     bills_discussed: List[str]
-    
+
     # Sentiment
     avg_sentiment: str
     sentiment_distribution: Dict[str, int]
-    
+
     # Generated summary
     summary: str
     key_positions: List[str]
 
 class MPProfileGenerator:
     """Generate MP profiles"""
-    
+
     def __init__(self, db_session, llm_analyzer: LLMAnalyzer):
         self.db = db_session
         self.llm = llm_analyzer
-    
+
     def generate_profile(self, mp_id: str) -> MPProfile:
         """Generate comprehensive MP profile"""
         # Fetch MP data
         mp = self.db.query(MPORM).filter(MPORM.id == mp_id).first()
         if not mp:
             raise ValueError(f"MP not found: {mp_id}")
-        
+
         # Aggregate statistics
         stats = self._aggregate_statistics(mp_id)
-        
+
         # Generate summary
         summary = self._generate_summary(mp, stats)
-        
+
         return MPProfile(
             mp_id=str(mp.id),
             name=mp.name,
@@ -1191,35 +1447,35 @@ class MPProfileGenerator:
             **stats,
             summary=summary
         )
-    
+
     def _aggregate_statistics(self, mp_id: str) -> Dict:
         """Aggregate MP statistics from database"""
         from sqlalchemy import func
-        
+
         # Statement counts
         total_statements = self.db.query(func.count(StatementORM.id)).filter(
             StatementORM.mp_id == mp_id
         ).scalar()
-        
+
         substantive_statements = self.db.query(func.count(StatementORM.id)).filter(
             StatementORM.mp_id == mp_id,
             StatementORM.statement_type == 'substantive'
         ).scalar()
-        
+
         # Quality score
         avg_quality = self.db.query(func.avg(StatementORM.quality_score)).filter(
             StatementORM.mp_id == mp_id
         ).scalar() or 0.0
-        
+
         # Vote counts
         votes = self.db.query(MPVoteORM).filter(
             MPVoteORM.mp_id == mp_id
         ).all()
-        
+
         votes_aye = sum(1 for v in votes if v.vote == 'aye')
         votes_no = sum(1 for v in votes if v.vote == 'no')
         votes_abstain = sum(1 for v in votes if v.vote == 'abstain')
-        
+
         # Top topics
         top_topics = self.db.query(
             StatementORM.primary_topic,
@@ -1231,7 +1487,7 @@ class MPProfileGenerator:
         ).order_by(
             func.count(StatementORM.id).desc()
         ).limit(5).all()
-        
+
         return {
             'total_statements': total_statements,
             'substantive_statements': substantive_statements,
@@ -1242,7 +1498,7 @@ class MPProfileGenerator:
             'votes_abstain': votes_abstain,
             'top_topics': top_topics,
         }
-    
+
     def _generate_summary(self, mp: MPORM, stats: Dict) -> str:
         """Generate LLM summary of MP"""
         prompt = f"""Generate a brief profile summary for this MP:
@@ -1259,13 +1515,13 @@ Statistics:
 - Top topics: {', '.join(t[0] for t in stats['top_topics'][:3])}
 
 Write a 2-3 sentence summary highlighting their key focus areas and participation level."""
-        
+
         response = self.llm.client.messages.create(
             model=self.llm.model,
             max_tokens=256,
             messages=[{"role": "user", "content": prompt}]
         )
-        
+
         return response.content[0].text
 ```
 
@@ -1299,52 +1555,52 @@ class SessionSummary:
     session_id: str
     date: date
     session_type: str  # "morning", "afternoon", "evening"
-    
+
     # Overview
     title: str
     summary: str  # 2-3 paragraphs
-    
+
     # Key events
     key_debates: List[str]
     bills_discussed: List[str]
     votes_held: List[str]
-    
+
     # Participation
     total_mps_present: int
     total_statements: int
-    
+
     # Topics
     main_topics: List[str]
 
 class SessionSummaryGenerator:
     """Generate session summaries"""
-    
+
     def __init__(self, db_session, llm_analyzer: LLMAnalyzer):
         self.db = db_session
         self.llm = llm_analyzer
-    
+
     def generate_summary(self, session_id: str) -> SessionSummary:
         """Generate session summary"""
         # Fetch session data
         session = self.db.query(SessionORM).filter(
             SessionORM.id == session_id
         ).first()
-        
+
         if not session:
             raise ValueError(f"Session not found: {session_id}")
-        
+
         # Fetch statements
         statements = self.db.query(StatementORM).filter(
             StatementORM.session_id == session_id,
             StatementORM.statement_type == 'substantive'
         ).all()
-        
+
         # Generate summary with LLM
         summary_text = self._generate_llm_summary(session, statements)
-        
+
         # Extract structured data
         return self._parse_summary(session, statements, summary_text)
-    
+
     def _generate_llm_summary(
         self,
         session: SessionORM,
@@ -1356,7 +1612,7 @@ class SessionSummaryGenerator:
             f"MP: {s.mp.name}\nTopic: {s.primary_topic}\nKey points: {', '.join(s.key_points[:3])}"
             for s in statements[:20]  # Limit to top 20 statements
         ])
-        
+
         prompt = f"""Summarize this parliamentary session:
 
 Date: {session.date}
@@ -1378,15 +1634,15 @@ Format as JSON:
   "key_debates": ["...", "..."],
   "main_topics": ["...", "..."]
 }}"""
-        
+
         response = self.llm.client.messages.create(
             model=self.llm.model,
             max_tokens=1024,
             messages=[{"role": "user", "content": prompt}]
         )
-        
+
         return response.content[0].text
-    
+
     def _parse_summary(
         self,
         session: SessionORM,
@@ -1395,20 +1651,20 @@ Format as JSON:
     ) -> SessionSummary:
         """Parse LLM output into structured summary"""
         import json
-        
+
         data = json.loads(summary_text)
-        
+
         # Get bills and votes
         bills = self.db.query(BillORM).join(
             BillStatementLinkORM
         ).filter(
             BillStatementLinkORM.statement_id.in_([s.id for s in statements])
         ).distinct().all()
-        
+
         votes = self.db.query(VoteRecordORM).filter(
             VoteRecordORM.session_id == session.id
         ).all()
-        
+
         return SessionSummary(
             session_id=str(session.id),
             date=session.date,
@@ -1479,25 +1735,25 @@ from typing import List
 
 class StaticSiteGenerator:
     """Generate static HTML site"""
-    
+
     def __init__(self, db_session, template_dir: Path, output_dir: Path):
         self.db = db_session
         self.output_dir = output_dir
-        
+
         # Setup Jinja2
         self.env = Environment(
             loader=FileSystemLoader(template_dir),
             autoescape=True
         )
-        
+
         # Register filters
         self.env.filters['slugify'] = self._slugify
         self.env.filters['format_date'] = self._format_date
-    
+
     def generate_site(self):
         """Generate complete static site"""
         self.output_dir.mkdir(parents=True, exist_ok=True)
-        
+
         # Generate pages
         self._generate_homepage()
         self._generate_mp_pages()
@@ -1505,17 +1761,17 @@ class StaticSiteGenerator:
         self._generate_bill_pages()
         self._generate_party_pages()
         self._generate_search_page()
-        
+
         # Copy static assets
         self._copy_static_assets()
-    
+
     def _generate_homepage(self):
         """Generate homepage"""
         # Fetch recent sessions
         recent_sessions = self.db.query(SessionORM).order_by(
             SessionORM.date.desc()
         ).limit(10).all()
-        
+
         # Fetch statistics
         stats = {
             'total_mps': self.db.query(MPORM).count(),
@@ -1523,49 +1779,49 @@ class StaticSiteGenerator:
             'total_statements': self.db.query(StatementORM).count(),
             'total_bills': self.db.query(BillORM).count(),
         }
-        
+
         # Render template
         template = self.env.get_template('homepage.html')
         html = template.render(
             recent_sessions=recent_sessions,
             stats=stats
         )
-        
+
         # Write file
         (self.output_dir / 'index.html').write_text(html)
-    
+
     def _generate_mp_pages(self):
         """Generate MP pages"""
         mps = self.db.query(MPORM).all()
-        
+
         # MP directory
         template = self.env.get_template('mp_list.html')
         html = template.render(mps=mps)
         mp_dir = self.output_dir / 'mps'
         mp_dir.mkdir(exist_ok=True)
         (mp_dir / 'index.html').write_text(html)
-        
+
         # Individual MP pages
         template = self.env.get_template('mp_profile.html')
         for mp in mps:
             # Fetch MP data
             profile = self._get_mp_profile(mp.id)
-            
+
             html = template.render(mp=mp, profile=profile)
             filename = f"{self._slugify(mp.name)}.html"
             (mp_dir / filename).write_text(html)
-    
+
     def _generate_session_pages(self):
         """Generate session pages"""
         sessions = self.db.query(SessionORM).all()
-        
+
         # Session list
         template = self.env.get_template('session_list.html')
         html = template.render(sessions=sessions)
         session_dir = self.output_dir / 'sessions'
         session_dir.mkdir(exist_ok=True)
         (session_dir / 'index.html').write_text(html)
-        
+
         # Individual session pages
         template = self.env.get_template('session_detail.html')
         for session in sessions:
@@ -1573,7 +1829,7 @@ class StaticSiteGenerator:
             statements = self.db.query(StatementORM).filter(
                 StatementORM.session_id == session.id
             ).all()
-            
+
             html = template.render(
                 session=session,
                 summary=summary,
@@ -1581,7 +1837,7 @@ class StaticSiteGenerator:
             )
             filename = f"{session.date}-{session.session_type}.html"
             (session_dir / filename).write_text(html)
-    
+
     def _slugify(self, text: str) -> str:
         """Convert text to URL-safe slug"""
         import re
@@ -1589,7 +1845,7 @@ class StaticSiteGenerator:
         text = re.sub(r'[^\w\s-]', '', text)
         text = re.sub(r'[\s_-]+', '-', text)
         return text.strip('-')
-    
+
     def _format_date(self, date_obj) -> str:
         """Format date for display"""
         return date_obj.strftime('%B %d, %Y')
@@ -1650,12 +1906,12 @@ class PipelineResult:
 
 class ProcessingPipeline:
     """Orchestrate document processing pipeline"""
-    
+
     def __init__(self, config: dict):
         self.config = config
         self.db = self._init_database()
         self.vector_db = self._init_vector_db()
-        
+
         # Initialize components
         self.mp_identifier = MPIdentifier(self.db)
         self.segmenter = StatementSegmenter(self.mp_identifier)
@@ -1672,11 +1928,11 @@ class ProcessingPipeline:
             Path(config['template_dir']),
             Path(config['output_dir'])
         )
-    
+
     def process_hansard(self, pdf_path: Path) -> List[PipelineResult]:
         """Process a Hansard PDF through complete pipeline"""
         results = []
-        
+
         try:
             # Stage 1: Text extraction
             result = self._run_stage(
@@ -1685,7 +1941,7 @@ class ProcessingPipeline:
             )
             results.append(result)
             text = result.data
-            
+
             # Stage 2: MP identification & segmentation
             result = self._run_stage(
                 PipelineStage.SEGMENTATION,
@@ -1693,7 +1949,7 @@ class ProcessingPipeline:
             )
             results.append(result)
             statements = result.data
-            
+
             # Stage 3: Classification
             result = self._run_stage(
                 PipelineStage.CLASSIFICATION,
@@ -1704,13 +1960,13 @@ class ProcessingPipeline:
             )
             results.append(result)
             classified = result.data
-            
+
             # Filter substantive statements
             substantive = [
                 stmt for stmt, (type_, _) in classified
                 if type_ == StatementType.SUBSTANTIVE
             ]
-            
+
             # Stage 4: Context retrieval
             result = self._run_stage(
                 PipelineStage.CONTEXT_RETRIEVAL,
@@ -1721,7 +1977,7 @@ class ProcessingPipeline:
             )
             results.append(result)
             with_context = result.data
-            
+
             # Stage 5: LLM analysis
             result = self._run_stage(
                 PipelineStage.LLM_ANALYSIS,
@@ -1732,14 +1988,14 @@ class ProcessingPipeline:
             )
             results.append(result)
             analyzed = result.data
-            
+
             # Stage 6: Citation verification
             result = self._run_stage(
                 PipelineStage.CITATION_VERIFICATION,
                 lambda: self._verify_citations(analyzed)
             )
             results.append(result)
-            
+
             # Stage 7: Bill linking
             result = self._run_stage(
                 PipelineStage.BILL_LINKING,
@@ -1749,10 +2005,10 @@ class ProcessingPipeline:
                 ]
             )
             results.append(result)
-            
+
             # Store results
             self._store_results(analyzed)
-            
+
         except Exception as e:
             logger.error(f"Pipeline failed: {e}")
             results.append(PipelineResult(
@@ -1762,9 +2018,9 @@ class ProcessingPipeline:
                 items_processed=0,
                 errors=[str(e)]
             ))
-        
+
         return results
-    
+
     def _run_stage(
         self,
         stage: PipelineStage,
@@ -1772,12 +2028,12 @@ class ProcessingPipeline:
     ) -> PipelineResult:
         """Run a pipeline stage with timing and error handling"""
         import time
-        
+
         start = time.time()
         try:
             data = func()
             duration = time.time() - start
-            
+
             return PipelineResult(
                 stage=stage,
                 success=True,
@@ -1789,7 +2045,7 @@ class ProcessingPipeline:
         except Exception as e:
             duration = time.time() - start
             logger.error(f"Stage {stage} failed: {e}")
-            
+
             return PipelineResult(
                 stage=stage,
                 success=False,
@@ -1840,20 +2096,20 @@ class APIUsage:
 
 class CostManager:
     """Manage and monitor API costs"""
-    
+
     def __init__(self, db_session, monthly_budget: float = 20.0):
         self.db = db_session
         self.monthly_budget = monthly_budget
-        
+
         # Cost per 1M tokens (Claude 3.5 Haiku)
         self.costs = {
             'input': 0.80,   # $0.80 per 1M tokens
             'output': 4.00,  # $4.00 per 1M tokens
         }
-        
+
         # Cache for analysis results
         self.cache = {}
-    
+
     def track_usage(
         self,
         model: str,
@@ -1865,7 +2121,7 @@ class CostManager:
             (input_tokens / 1_000_000) * self.costs['input'] +
             (output_tokens / 1_000_000) * self.costs['output']
         )
-        
+
         usage = APIUsage(
             date=date.today(),
             model=model,
@@ -1874,20 +2130,20 @@ class CostManager:
             cost_usd=cost,
             requests=1
         )
-        
+
         # Store in database
         self._store_usage(usage)
-        
+
         # Check budget
         self._check_budget()
-    
+
     def get_monthly_usage(self) -> Dict:
         """Get current month usage"""
         from sqlalchemy import func
         from datetime import datetime
-        
+
         current_month = datetime.now().replace(day=1)
-        
+
         result = self.db.query(
             func.sum(APIUsageORM.input_tokens),
             func.sum(APIUsageORM.output_tokens),
@@ -1896,7 +2152,7 @@ class CostManager:
         ).filter(
             APIUsageORM.date >= current_month
         ).first()
-        
+
         return {
             'input_tokens': result[0] or 0,
             'output_tokens': result[1] or 0,
@@ -1904,11 +2160,11 @@ class CostManager:
             'requests': result[3] or 0,
             'budget_remaining': self.monthly_budget - (result[2] or 0.0)
         }
-    
+
     def _check_budget(self):
         """Check if budget exceeded"""
         usage = self.get_monthly_usage()
-        
+
         if usage['budget_remaining'] < 0:
             logger.warning(
                 f"Monthly budget exceeded! "
@@ -1918,17 +2174,17 @@ class CostManager:
             raise BudgetExceededError(
                 f"Monthly budget of ${self.monthly_budget} exceeded"
             )
-        
+
         if usage['budget_remaining'] < 2.0:
             logger.warning(
                 f"Approaching budget limit! "
                 f"Remaining: ${usage['budget_remaining']:.2f}"
             )
-    
+
     def cache_analysis(self, statement_id: str, analysis: StatementAnalysis):
         """Cache analysis result"""
         self.cache[statement_id] = analysis
-    
+
     def get_cached_analysis(self, statement_id: str) -> Optional[StatementAnalysis]:
         """Get cached analysis"""
         return self.cache.get(statement_id)
@@ -2007,10 +2263,10 @@ active_processing = Gauge(
 
 class MonitoringService:
     """Monitor pipeline execution"""
-    
+
     def __init__(self):
         self.logger = structlog.get_logger()
-    
+
     def track_statement_processed(
         self,
         status: str,
@@ -2021,7 +2277,7 @@ class MonitoringService:
             status=status,
             type=statement_type
         ).inc()
-    
+
     def track_stage_duration(
         self,
         stage: str,
@@ -2029,7 +2285,7 @@ class MonitoringService:
     ):
         """Track stage processing time"""
         processing_duration.labels(stage=stage).observe(duration)
-    
+
     def track_llm_call(
         self,
         model: str,
@@ -2041,7 +2297,7 @@ class MonitoringService:
         llm_api_calls.labels(model=model, status=status).inc()
         llm_tokens.labels(model=model, type='input').inc(input_tokens)
         llm_tokens.labels(model=model, type='output').inc(output_tokens)
-    
+
     def track_error(
         self,
         stage: str,
@@ -2053,7 +2309,7 @@ class MonitoringService:
             stage=stage,
             error_type=error_type
         ).inc()
-        
+
         self.logger.error(
             "pipeline_error",
             stage=stage,
@@ -2210,22 +2466,22 @@ analysis:
   mp_identification:
     nlp_model: "en_core_web_sm"
     confidence_threshold: 0.85
-  
+
   segmentation:
     min_statement_length: 20
-  
+
   classification:
     filler_threshold: 0.90
-  
+
   context_retrieval:
     embedding_model: "all-MiniLM-L6-v2"
     top_k: 5
-  
+
   llm:
     model: "claude-3-5-haiku-20241022"
     max_tokens: 1024
     temperature: 0.0
-  
+
   cost_management:
     monthly_budget: 20.0
     cache_enabled: true

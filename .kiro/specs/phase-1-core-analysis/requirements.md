@@ -46,6 +46,58 @@ This document specifies requirements for Phase 1 of the Hansard Tales system: im
 13. WHEN processing historical data, THE System SHALL use parallel processing
 14. THE System SHALL generate reports for historical data operations
 
+### Requirement 0.5: MP Data Collection
+
+**User Story:** As a system, I want to scrape MP data from parliament.go.ke, so that I can build a complete MP database for identification and attribution.
+
+#### Acceptance Criteria
+
+1. THE System SHALL implement an MP scraper for parliament.go.ke/the-national-assembly/mps
+2. THE System SHALL extract MP data from HTML table with class "cols-7"
+3. THE System SHALL extract: name, county, constituency, party, status, profile_url
+4. THE System SHALL parse honorifics: HON., DR., ENG., AMB., PROF., etc.
+5. THE System SHALL handle missing fields (empty county/constituency for nominated MPs)
+6. THE System SHALL support pagination (35 pages for 2022 parliament term)
+7. THE System SHALL use parliament term parameter: ?field_parliament_value=2022
+8. THE System SHALL detect duplicate MPs by name+constituency combination
+9. THE System SHALL store MPs in database with proper indexing
+10. THE System SHALL use CSS selector: `table.cols-7 tr.mp` for row extraction
+11. THE System SHALL extract profile URLs from "More..." links
+12. THE System SHALL handle both "Elected" and "Nominated" status values
+13. THE System SHALL use sample HTML from tests/sample_html.md for test fixtures
+14. WHEN scraping fails on first page, THE System SHALL raise error indicating HTML changes
+15. THE System SHALL add rate limiting between page requests
+16. THE System SHALL generate standardized MP identifiers for database storage
+
+#### Implementation Notes
+
+**MP Scraper Specifics:**
+- URL Format: `https://parliament.go.ke/the-national-assembly/mps?field_parliament_value=2022&page=0`
+- CSS Selector: `table.cols-7 tr.mp` for MP rows
+- Field Extraction:
+  - Name: `td.views-field-field-name` (includes honorifics)
+  - County: `td.views-field-field-county`
+  - Constituency: `td.views-field-field-constituency`
+  - Party: `td.views-field-field-party`
+  - Status: `td.views-field-field-status` (Elected/Nominated)
+  - Profile URL: `td.views-field-view-node a[href]`
+- Pagination: Extract last page from `nav.pager li.pager__item--last a[href]`
+- Test Data: Use `tests/sample_html.md` for realistic test fixtures
+
+**Honorific Patterns:**
+- HON. (Honorable)
+- DR. (Doctor)
+- ENG. (Engineer)
+- AMB. (Ambassador)
+- PROF. (Professor)
+- Combined: HON. (DR.), HON. (ENG.), HON. (AMB.)
+
+**Edge Cases:**
+- Empty county/constituency for nominated MPs
+- Name variations (with/without middle names)
+- Special characters in names (apostrophes, hyphens)
+- Multiple honorifics in single name
+
 ### Requirement 1: MP Identification and Extraction
 
 **User Story:** As a system, I want to identify MPs in Hansard text, so that I can attribute statements correctly.
