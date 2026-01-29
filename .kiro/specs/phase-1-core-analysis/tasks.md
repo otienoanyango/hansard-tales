@@ -12,6 +12,51 @@ This document breaks down Phase 1 implementation into actionable tasks. Each tas
 
 ## Tasks
 
+### Week 0: Technical Debt from Phase 0
+
+- [ ] 0. Address Phase 0 Technical Debt
+  - [ ] 0.1 Improve Test Coverage
+    - [ ] 0.1.1 Increase Qdrant adapter coverage from 37.93% to ≥80%
+    - [ ] 0.1.2 Increase Votes scraper coverage from 76.85% to ≥85%
+    - [ ] 0.1.3 Increase Base scraper coverage from 79.25% to ≥85%
+    - [ ] 0.1.4 Add tests for uncovered error handling paths
+  - [ ] 0.2 Type Annotations
+    - [ ] 0.2.1 Add type annotations to example scripts
+    - [ ] 0.2.2 Add type annotations to utility functions
+    - [ ] 0.2.3 Fix Alembic migration type issues
+    - [ ] 0.2.4 Enable mypy in pre-commit hooks
+  - [ ] 0.3 Scraper Enhancements
+    - [ ] 0.3.1 Implement date range filtering (start_date, end_date parameters)
+    - [ ] 0.3.2 Add support for multiple parliament terms
+    - [ ] 0.3.3 Implement parallel page fetching with connection pooling
+    - [ ] 0.3.4 Add progress reporting for long-running scrapes
+
+- [ ] 0.4 Historical Data Processing Scripts
+  - [ ] 0.4.1 Create `scripts/download_historical_data.py`
+    - [ ] 0.4.1.1 Implement parliament term iteration (2013-2024)
+    - [ ] 0.4.1.2 Implement date range support
+    - [ ] 0.4.1.3 Add progress tracking with tqdm
+    - [ ] 0.4.1.4 Add resume capability (skip already downloaded)
+    - [ ] 0.4.1.5 Add summary statistics reporting
+    - [ ] 0.4.1.6 Add error logging and recovery
+  - [ ] 0.4.2 Create `scripts/process_historical_data.py`
+    - [ ] 0.4.2.1 Implement batch PDF processing
+    - [ ] 0.4.2.2 Add parallel processing with worker pool
+    - [ ] 0.4.2.3 Add progress tracking
+    - [ ] 0.4.2.4 Add error recovery and retry logic
+    - [ ] 0.4.2.5 Add validation and quality checks
+    - [ ] 0.4.2.6 Generate processing report
+  - [ ] 0.4.3 Create `scripts/validate_historical_data.py`
+    - [ ] 0.4.3.1 Verify all PDFs are readable
+    - [ ] 0.4.3.2 Check database consistency
+    - [ ] 0.4.3.3 Validate vector DB entries
+    - [ ] 0.4.3.4 Generate validation report
+  - [ ] 0.4.4 Write tests for historical data scripts
+    - [ ] 0.4.4.1 Test download script with mock data
+    - [ ] 0.4.4.2 Test process script with sample PDFs
+    - [ ] 0.4.4.3 Test validation script
+    - [ ] 0.4.4.4 Test error recovery
+
 ### Week 1-2: Core NLP Components
 
 - [ ] 1. MP Identification System
@@ -335,19 +380,21 @@ This document breaks down Phase 1 implementation into actionable tasks. Each tas
 
 ## Summary
 
-**Total Tasks**: 16 major tasks
-**Total Subtasks**: 180+ subtasks
-**Timeline**: 8 weeks
+**Total Tasks**: 17 major tasks (including Phase 0 technical debt)
+**Total Subtasks**: 210+ subtasks
+**Timeline**: 9 weeks (1 week for technical debt + 8 weeks for core analysis)
 **Test Coverage Target**: ≥90%
 
 **Key Milestones**:
-- Week 2: Core NLP components complete
-- Week 4: LLM integration complete
-- Week 6: Document processing complete
-- Week 8: Site generation and polish complete
+- Week 1: Phase 0 technical debt resolved, historical data scripts complete
+- Week 3: Core NLP components complete
+- Week 5: LLM integration complete
+- Week 7: Document processing complete
+- Week 9: Site generation and polish complete
 
 **Dependencies**:
 - Phase 0 must be complete before starting Phase 1
+- Task 0 (technical debt) should be completed first for clean foundation
 - Tasks 1-3 must complete before Task 4
 - Tasks 4-7 must complete before Tasks 8-11
 - Tasks 8-11 must complete before Task 12
@@ -355,3 +402,9 @@ This document breaks down Phase 1 implementation into actionable tasks. Each tas
 - Task 14 can run in parallel with other tasks
 - Tasks 15-16 are final integration and documentation
 
+**Phase 0 Technical Debt Items**:
+- Increase test coverage for Qdrant adapter, Votes scraper, Base scraper
+- Add comprehensive type annotations for mypy compliance
+- Implement date range filtering in scrapers
+- Add support for multiple parliament terms
+- Create historical data processing scripts

@@ -4,9 +4,9 @@
 
 This document specifies requirements for Phase 1 of the Hansard Tales system: implementing the core analysis pipeline for Hansard and Votes & Proceedings documents from the National Assembly. This phase builds on Phase 0's foundation to add AI-powered analysis with anti-hallucination measures.
 
-**Scope**: Statement classification, sentiment analysis, quality scoring, topic classification, citation verification, basic MP profiles
+**Scope**: Statement classification, sentiment analysis, quality scoring, topic classification, citation verification, basic MP profiles, historical data processing
 
-**Duration**: 4 weeks
+**Duration**: 9 weeks (1 week technical debt + 8 weeks core analysis)
 
 **Dependencies**: Phase 0 (Foundation) complete
 
@@ -21,8 +21,30 @@ This document specifies requirements for Phase 1 of the Hansard Tales system: im
 - **Citation**: Reference to source document with page/line numbers
 - **Quality Score**: 0-100 score indicating statement value
 - **Sentiment**: Support, oppose, or neutral stance on a topic
+- **Technical Debt**: Incomplete or suboptimal implementations from Phase 0
 
 ## Requirements
+
+### Requirement 0: Phase 0 Technical Debt Resolution
+
+**User Story:** As a developer, I want to resolve Phase 0 technical debt, so that Phase 1 builds on a solid foundation.
+
+#### Acceptance Criteria
+
+1. THE System SHALL increase Qdrant adapter test coverage from 37.93% to ≥80%
+2. THE System SHALL increase Votes scraper test coverage from 76.85% to ≥85%
+3. THE System SHALL increase Base scraper test coverage from 79.25% to ≥85%
+4. THE System SHALL add type annotations to all example scripts
+5. THE System SHALL add type annotations to all utility functions
+6. THE System SHALL enable mypy in pre-commit hooks after type annotation completion
+7. THE System SHALL implement date range filtering in scrapers (start_date, end_date)
+8. THE System SHALL support multiple parliament terms (2013-2024)
+9. THE System SHALL provide scripts for downloading historical data
+10. THE System SHALL provide scripts for processing historical data in batches
+11. THE System SHALL provide scripts for validating historical data integrity
+12. WHEN downloading historical data, THE System SHALL support resume capability
+13. WHEN processing historical data, THE System SHALL use parallel processing
+14. THE System SHALL generate reports for historical data operations
 
 ### Requirement 1: MP Identification and Extraction
 
@@ -289,5 +311,3 @@ This document specifies requirements for Phase 1 of the Hansard Tales system: im
 4. THE System SHALL document API endpoints (if any)
 5. THE System SHALL include examples of analysis outputs
 6. THE System SHALL update ARCHITECTURE.md with Phase 1 components
-
-
