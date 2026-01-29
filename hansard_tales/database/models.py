@@ -26,7 +26,7 @@ from sqlalchemy import (
 from sqlalchemy.dialects.postgresql import UUID as PGUUID
 from sqlalchemy.orm import declarative_base, relationship
 
-Base = declarative_base()
+Base = declarative_base()  # type: ignore[misc]
 
 
 class DocumentTypeEnum(enum.Enum):
@@ -52,7 +52,7 @@ class ChamberEnum(enum.Enum):
     SENATE = "senate"
 
 
-class DocumentORM(Base):
+class DocumentORM(Base):  # type: ignore[misc,valid-type]
     """
     Documents table.
 
@@ -62,8 +62,8 @@ class DocumentORM(Base):
     __tablename__ = "documents"
 
     id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
-    type = Column(SQLEnum(DocumentTypeEnum), nullable=False)
-    chamber = Column(SQLEnum(ChamberEnum), nullable=False)
+    type = Column(SQLEnum(DocumentTypeEnum), nullable=False)  # type: ignore[var-annotated]
+    chamber = Column(SQLEnum(ChamberEnum), nullable=False)  # type: ignore[var-annotated]
     title = Column(String(500), nullable=False)
     date = Column(Date, nullable=False)
     session_id = Column(String(100))
@@ -92,7 +92,7 @@ class DocumentORM(Base):
     )
 
 
-class MPORM(Base):
+class MPORM(Base):  # type: ignore[misc,valid-type]
     """
     MPs/Senators table.
 
@@ -103,7 +103,7 @@ class MPORM(Base):
 
     id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
     name = Column(String(200), nullable=False)
-    chamber = Column(SQLEnum(ChamberEnum), nullable=False)
+    chamber = Column(SQLEnum(ChamberEnum), nullable=False)  # type: ignore[var-annotated]
     party = Column(String(100))
     constituency = Column(String(200))
     parliament_term = Column(Integer, nullable=False)
@@ -119,7 +119,7 @@ class MPORM(Base):
     )
 
 
-class StatementORM(Base):
+class StatementORM(Base):  # type: ignore[misc,valid-type]
     """
     Statements table.
 
@@ -166,7 +166,7 @@ class StatementORM(Base):
     )
 
 
-class BillORM(Base):
+class BillORM(Base):  # type: ignore[misc,valid-type]
     """
     Bills table.
 
@@ -178,7 +178,7 @@ class BillORM(Base):
     id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
     bill_number = Column(String(50), nullable=False, unique=True)
     title = Column(String(500), nullable=False)
-    chamber = Column(SQLEnum(ChamberEnum), nullable=False)
+    chamber = Column(SQLEnum(ChamberEnum), nullable=False)  # type: ignore[var-annotated]
     status = Column(String(50), nullable=False)
     current_version = Column(Integer, default=1)
 
@@ -210,7 +210,7 @@ class BillORM(Base):
     )
 
 
-class BillVersionORM(Base):
+class BillVersionORM(Base):  # type: ignore[misc,valid-type]
     """
     Bill versions table.
 
@@ -246,7 +246,7 @@ class BillVersionORM(Base):
     )
 
 
-class VoteORM(Base):
+class VoteORM(Base):  # type: ignore[misc,valid-type]
     """
     Votes table.
 
@@ -258,7 +258,7 @@ class VoteORM(Base):
     id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
     bill_id = Column(PGUUID(as_uuid=True), ForeignKey("bills.id"), nullable=False)
     vote_date = Column(Date, nullable=False)
-    chamber = Column(SQLEnum(ChamberEnum), nullable=False)
+    chamber = Column(SQLEnum(ChamberEnum), nullable=False)  # type: ignore[var-annotated]
     vote_type = Column(String(50), nullable=False)
 
     # Results
@@ -285,7 +285,7 @@ class VoteORM(Base):
     )
 
 
-class MPVoteORM(Base):
+class MPVoteORM(Base):  # type: ignore[misc,valid-type]
     """
     Individual MP votes table.
 
@@ -310,7 +310,7 @@ class MPVoteORM(Base):
     )
 
 
-class QuestionORM(Base):
+class QuestionORM(Base):  # type: ignore[misc,valid-type]
     """
     Questions table.
 
@@ -327,7 +327,7 @@ class QuestionORM(Base):
     answer_text = Column(Text)
     question_date = Column(Date, nullable=False)
     answer_date = Column(Date)
-    chamber = Column(SQLEnum(ChamberEnum), nullable=False)
+    chamber = Column(SQLEnum(ChamberEnum), nullable=False)  # type: ignore[var-annotated]
 
     # Categorization
     question_type = Column(String(20), nullable=False)
@@ -354,7 +354,7 @@ class QuestionORM(Base):
     )
 
 
-class PetitionORM(Base):
+class PetitionORM(Base):  # type: ignore[misc,valid-type]
     """
     Petitions table.
 
@@ -369,7 +369,7 @@ class PetitionORM(Base):
     petitioner = Column(String(200), nullable=False)
     sponsor_id = Column(PGUUID(as_uuid=True), ForeignKey("mps.id"), nullable=False)
     submission_date = Column(Date, nullable=False)
-    chamber = Column(SQLEnum(ChamberEnum), nullable=False)
+    chamber = Column(SQLEnum(ChamberEnum), nullable=False)  # type: ignore[var-annotated]
 
     # Content
     petition_text = Column(Text, nullable=False)
@@ -402,7 +402,7 @@ class PetitionORM(Base):
     )
 
 
-class DownloadedFileORM(Base):
+class DownloadedFileORM(Base):  # type: ignore[misc,valid-type]
     """
     Downloaded files tracking table for duplicate prevention.
 
