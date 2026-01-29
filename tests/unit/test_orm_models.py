@@ -4,28 +4,27 @@ Unit tests for SQLAlchemy ORM models.
 Tests database schema, relationships, and constraints.
 """
 
-import pytest
 import tempfile
+from datetime import UTC, date, datetime
 from pathlib import Path
-from datetime import date, datetime
 from uuid import uuid4
+
+import pytest
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import sessionmaker
 
 from hansard_tales.database.models import (
+    MPORM,
     Base,
-    DocumentTypeEnum,
+    BillORM,
     ChamberEnum,
     DocumentORM,
-    MPORM,
-    StatementORM,
-    BillORM,
-    BillVersionORM,
-    VoteORM,
-    MPVoteORM,
-    QuestionORM,
+    DocumentTypeEnum,
     PetitionORM,
+    QuestionORM,
+    StatementORM,
+    VoteORM,
 )
 
 
@@ -34,17 +33,17 @@ def temp_db():
     """Create temporary database for testing."""
     with tempfile.NamedTemporaryFile(suffix=".db", delete=False) as f:
         db_path = f.name
-    
+
     # Create engine and tables
     engine = create_engine(f"sqlite:///{db_path}")
     Base.metadata.create_all(engine)
-    
+
     # Create session
     Session = sessionmaker(bind=engine)
     session = Session()
-    
+
     yield session
-    
+
     # Cleanup
     session.close()
     Base.metadata.drop_all(engine)
@@ -53,7 +52,7 @@ def temp_db():
 
 class TestDocumentORM:
     """Test suite for DocumentORM model."""
-    
+
     def test_create_document(self, temp_db):
         """Test creating a document in database."""
         doc = DocumentORM(
@@ -65,21 +64,21 @@ class TestDocumentORM:
             parliament_term=13,
             source_url="https://parliament.go.ke/test.pdf",
             source_hash="abc123def456" + "0" * 52,  # 64 chars
-            download_date=datetime.utcnow(),
+            download_date=datetime.now(UTC),
             vector_doc_id="test_doc_1",
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow(),
+            created_at=datetime.now(UTC),
+            updated_at=datetime.now(UTC),
         )
-        
+
         temp_db.add(doc)
         temp_db.commit()
-        
+
         # Verify document was created
         retrieved = temp_db.query(DocumentORM).filter_by(title="Test Hansard").first()
         assert retrieved is not None
         assert retrieved.type == DocumentTypeEnum.HANSARD
         assert retrieved.chamber == ChamberEnum.NATIONAL_ASSEMBLY
-    
+
     def test_document_unique_source_hash(self, temp_db):
         """Test that source_hash must be unique."""
         doc1 = DocumentORM(
@@ -91,12 +90,12 @@ class TestDocumentORM:
             parliament_term=13,
             source_url="https://parliament.go.ke/test1.pdf",
             source_hash="abc123def456" + "0" * 52,
-            download_date=datetime.utcnow(),
+            download_date=datetime.now(UTC),
             vector_doc_id="test_doc_1",
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow(),
+            created_at=datetime.now(UTC),
+            updated_at=datetime.now(UTC),
         )
-        
+
         doc2 = DocumentORM(
             id=uuid4(),
             type=DocumentTypeEnum.HANSARD,
@@ -106,15 +105,15 @@ class TestDocumentORM:
             parliament_term=13,
             source_url="https://parliament.go.ke/test2.pdf",
             source_hash="abc123def456" + "0" * 52,  # Same hash
-            download_date=datetime.utcnow(),
+            download_date=datetime.now(UTC),
             vector_doc_id="test_doc_2",
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow(),
+            created_at=datetime.now(UTC),
+            updated_at=datetime.now(UTC),
         )
-        
+
         temp_db.add(doc1)
         temp_db.commit()
-        
+
         # Attempt to add document with duplicate hash
         temp_db.add(doc2)
         with pytest.raises(IntegrityError):
@@ -123,7 +122,7 @@ class TestDocumentORM:
 
 class TestMPORM:
     """Test suite for MPORM model."""
-    
+
     def test_create_mp(self, temp_db):
         """Test creating an MP in database."""
         mp = MPORM(
@@ -133,13 +132,13 @@ class TestMPORM:
             party="Test Party",
             constituency="Test Constituency",
             parliament_term=13,
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow(),
+            created_at=datetime.now(UTC),
+            updated_at=datetime.now(UTC),
         )
-        
+
         temp_db.add(mp)
         temp_db.commit()
-        
+
         # Verify MP was created
         retrieved = temp_db.query(MPORM).filter_by(name="John Doe").first()
         assert retrieved is not None
@@ -149,7 +148,7 @@ class TestMPORM:
 
 class TestStatementORM:
     """Test suite for StatementORM model."""
-    
+
     def test_create_statement_with_relationships(self, temp_db):
         """Test creating a statement with document and MP relationships."""
         # Create document
@@ -162,26 +161,26 @@ class TestStatementORM:
             parliament_term=13,
             source_url="https://parliament.go.ke/test.pdf",
             source_hash="abc123def456" + "0" * 52,
-            download_date=datetime.utcnow(),
+            download_date=datetime.now(UTC),
             vector_doc_id="test_doc_1",
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow(),
+            created_at=datetime.now(UTC),
+            updated_at=datetime.now(UTC),
         )
-        
+
         # Create MP
         mp = MPORM(
             id=uuid4(),
             name="John Doe",
             chamber=ChamberEnum.NATIONAL_ASSEMBLY,
             parliament_term=13,
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow(),
+            created_at=datetime.now(UTC),
+            updated_at=datetime.now(UTC),
         )
-        
+
         temp_db.add(doc)
         temp_db.add(mp)
         temp_db.commit()
-        
+
         # Create statement
         statement = StatementORM(
             id=uuid4(),
@@ -193,12 +192,12 @@ class TestStatementORM:
             page_number=5,
             line_number=10,
             vector_doc_id="test_statement_1",
-            created_at=datetime.utcnow(),
+            created_at=datetime.now(UTC),
         )
-        
+
         temp_db.add(statement)
         temp_db.commit()
-        
+
         # Verify relationships
         retrieved = temp_db.query(StatementORM).first()
         assert retrieved.document.title == "Test Hansard"
@@ -207,7 +206,7 @@ class TestStatementORM:
 
 class TestBillORM:
     """Test suite for BillORM model."""
-    
+
     def test_create_bill_with_sponsor(self, temp_db):
         """Test creating a bill with sponsor relationship."""
         # Create sponsor
@@ -216,13 +215,13 @@ class TestBillORM:
             name="Jane Smith",
             chamber=ChamberEnum.NATIONAL_ASSEMBLY,
             parliament_term=13,
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow(),
+            created_at=datetime.now(UTC),
+            updated_at=datetime.now(UTC),
         )
-        
+
         temp_db.add(sponsor)
         temp_db.commit()
-        
+
         # Create bill
         bill = BillORM(
             id=uuid4(),
@@ -231,17 +230,17 @@ class TestBillORM:
             chamber=ChamberEnum.NATIONAL_ASSEMBLY,
             status="proposed",
             sponsor_id=sponsor.id,
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow(),
+            created_at=datetime.now(UTC),
+            updated_at=datetime.now(UTC),
         )
-        
+
         temp_db.add(bill)
         temp_db.commit()
-        
+
         # Verify relationship
         retrieved = temp_db.query(BillORM).first()
         assert retrieved.sponsor.name == "Jane Smith"
-    
+
     def test_bill_unique_bill_number(self, temp_db):
         """Test that bill_number must be unique."""
         sponsor = MPORM(
@@ -249,13 +248,13 @@ class TestBillORM:
             name="Jane Smith",
             chamber=ChamberEnum.NATIONAL_ASSEMBLY,
             parliament_term=13,
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow(),
+            created_at=datetime.now(UTC),
+            updated_at=datetime.now(UTC),
         )
-        
+
         temp_db.add(sponsor)
         temp_db.commit()
-        
+
         bill1 = BillORM(
             id=uuid4(),
             bill_number="Bill No. 1 of 2024",
@@ -263,10 +262,10 @@ class TestBillORM:
             chamber=ChamberEnum.NATIONAL_ASSEMBLY,
             status="proposed",
             sponsor_id=sponsor.id,
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow(),
+            created_at=datetime.now(UTC),
+            updated_at=datetime.now(UTC),
         )
-        
+
         bill2 = BillORM(
             id=uuid4(),
             bill_number="Bill No. 1 of 2024",  # Same number
@@ -274,13 +273,13 @@ class TestBillORM:
             chamber=ChamberEnum.NATIONAL_ASSEMBLY,
             status="proposed",
             sponsor_id=sponsor.id,
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow(),
+            created_at=datetime.now(UTC),
+            updated_at=datetime.now(UTC),
         )
-        
+
         temp_db.add(bill1)
         temp_db.commit()
-        
+
         # Attempt to add bill with duplicate number
         temp_db.add(bill2)
         with pytest.raises(IntegrityError):
@@ -289,7 +288,7 @@ class TestBillORM:
 
 class TestVoteORM:
     """Test suite for VoteORM model."""
-    
+
     def test_create_vote_with_bill(self, temp_db):
         """Test creating a vote with bill relationship."""
         # Create sponsor and bill
@@ -298,13 +297,13 @@ class TestVoteORM:
             name="Jane Smith",
             chamber=ChamberEnum.NATIONAL_ASSEMBLY,
             parliament_term=13,
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow(),
+            created_at=datetime.now(UTC),
+            updated_at=datetime.now(UTC),
         )
-        
+
         temp_db.add(sponsor)
         temp_db.commit()
-        
+
         bill = BillORM(
             id=uuid4(),
             bill_number="Bill No. 1 of 2024",
@@ -312,13 +311,13 @@ class TestVoteORM:
             chamber=ChamberEnum.NATIONAL_ASSEMBLY,
             status="proposed",
             sponsor_id=sponsor.id,
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow(),
+            created_at=datetime.now(UTC),
+            updated_at=datetime.now(UTC),
         )
-        
+
         temp_db.add(bill)
         temp_db.commit()
-        
+
         # Create vote
         vote = VoteORM(
             id=uuid4(),
@@ -332,13 +331,13 @@ class TestVoteORM:
             result="passed",
             source_url="https://parliament.go.ke/vote.pdf",
             source_hash="abc123def456" + "0" * 52,
-            download_date=datetime.utcnow(),
-            created_at=datetime.utcnow(),
+            download_date=datetime.now(UTC),
+            created_at=datetime.now(UTC),
         )
-        
+
         temp_db.add(vote)
         temp_db.commit()
-        
+
         # Verify relationship
         retrieved = temp_db.query(VoteORM).first()
         assert retrieved.bill.title == "Test Bill"
@@ -346,7 +345,7 @@ class TestVoteORM:
 
 class TestQuestionORM:
     """Test suite for QuestionORM model."""
-    
+
     def test_create_question_with_asker(self, temp_db):
         """Test creating a question with asker relationship."""
         # Create asker
@@ -355,13 +354,13 @@ class TestQuestionORM:
             name="John Doe",
             chamber=ChamberEnum.NATIONAL_ASSEMBLY,
             parliament_term=13,
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow(),
+            created_at=datetime.now(UTC),
+            updated_at=datetime.now(UTC),
         )
-        
+
         temp_db.add(asker)
         temp_db.commit()
-        
+
         # Create question
         question = QuestionORM(
             id=uuid4(),
@@ -373,14 +372,14 @@ class TestQuestionORM:
             question_type="oral",
             source_url="https://parliament.go.ke/question.pdf",
             source_hash="abc123def456" + "0" * 52,
-            download_date=datetime.utcnow(),
+            download_date=datetime.now(UTC),
             vector_doc_id="question_1",
-            created_at=datetime.utcnow(),
+            created_at=datetime.now(UTC),
         )
-        
+
         temp_db.add(question)
         temp_db.commit()
-        
+
         # Verify relationship
         retrieved = temp_db.query(QuestionORM).first()
         assert retrieved.asker.name == "John Doe"
@@ -388,7 +387,7 @@ class TestQuestionORM:
 
 class TestPetitionORM:
     """Test suite for PetitionORM model."""
-    
+
     def test_create_petition_with_sponsor(self, temp_db):
         """Test creating a petition with sponsor relationship."""
         # Create sponsor
@@ -397,13 +396,13 @@ class TestPetitionORM:
             name="Jane Smith",
             chamber=ChamberEnum.NATIONAL_ASSEMBLY,
             parliament_term=13,
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow(),
+            created_at=datetime.now(UTC),
+            updated_at=datetime.now(UTC),
         )
-        
+
         temp_db.add(sponsor)
         temp_db.commit()
-        
+
         # Create petition
         petition = PetitionORM(
             id=uuid4(),
@@ -418,14 +417,14 @@ class TestPetitionORM:
             status="submitted",
             source_url="https://parliament.go.ke/petition.pdf",
             source_hash="abc123def456" + "0" * 52,
-            download_date=datetime.utcnow(),
+            download_date=datetime.now(UTC),
             vector_doc_id="petition_1",
-            created_at=datetime.utcnow(),
+            created_at=datetime.now(UTC),
         )
-        
+
         temp_db.add(petition)
         temp_db.commit()
-        
+
         # Verify relationship
         retrieved = temp_db.query(PetitionORM).first()
         assert retrieved.sponsor.name == "Jane Smith"

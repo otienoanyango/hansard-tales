@@ -77,4 +77,3 @@ coverage.xml
 *.swp
 cloudflare/
 .hypothesis/
-**/hansard_*.pdf

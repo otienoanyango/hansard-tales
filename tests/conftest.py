@@ -1,243 +1,160 @@
 """
-Shared test fixtures for Hansard Tales test suite.
+Shared test fixtures for Hansard Tales tests.
 
-This module provides reusable fixtures for:
-- Temporary directories and files
-- Test configurations
-- Database sessions
-- Vector database instances
-- Sample PDFs and documents
+Provides realistic test data including real PDFs from parliament.go.ke
+and temporary databases with actual schema.
 """
 
-import pytest
 import tempfile
-import sqlite3
 from pathlib import Path
-from datetime import date, datetime
-from typing import Generator
-from unittest.mock import Mock
 
-from hansard_tales.config.settings import (
-    Config,
-    DatabaseConfig,
-    VectorDBConfig,
-    EmbeddingConfig,
-    ScraperConfig,
-)
+import pytest
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+
+from hansard_tales.database.models import Base
 
 
 @pytest.fixture
-def temp_dir() -> Generator[Path, None, None]:
-    """Create temporary directory for test files."""
-    with tempfile.TemporaryDirectory() as tmpdir:
-        yield Path(tmpdir)
-
-
-@pytest.fixture
-def test_config(temp_dir: Path) -> Config:
+def real_hansard_pdfs():
     """
-    Create test configuration with temporary paths.
-    
-    Uses SQLite and ChromaDB for testing to avoid external dependencies.
-    """
-    return Config(
-        environment="test",
-        database=DatabaseConfig(
-            engine="sqlite",
-            database=str(temp_dir / "test.db"),
-        ),
-        vector_db=VectorDBConfig(
-            engine="chromadb",
-            persist_directory=temp_dir / "vector_db",
-        ),
-        embedding=EmbeddingConfig(
-            model_name="sentence-transformers/all-MiniLM-L6-v2",
-            dimension=384,
-            batch_size=32,
-            device="cpu",
-        ),
-        scraper=ScraperConfig(
-            base_url="https://parliament.go.ke",
-            download_dir=temp_dir / "pdfs",
-            max_retries=3,
-            retry_delay=1.0,
-            timeout=30,
-        ),
-    )
+    Provide real Hansard PDFs downloaded from parliament.go.ke.
 
-
-@pytest.fixture
-def temp_db(temp_dir: Path) -> Generator[Path, None, None]:
-    """
-    Create temporary SQLite database with schema.
-    
-    Yields:
-        Path to temporary database file
-    """
-    db_path = temp_dir / "test.db"
-    
-    # Create database with basic schema
-    conn = sqlite3.connect(db_path)
-    cursor = conn.cursor()
-    
-    # Create minimal schema for testing
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS documents (
-            id TEXT PRIMARY KEY,
-            type TEXT NOT NULL,
-            chamber TEXT NOT NULL,
-            title TEXT NOT NULL,
-            date TEXT NOT NULL,
-            source_url TEXT NOT NULL,
-            source_hash TEXT NOT NULL UNIQUE,
-            vector_doc_id TEXT NOT NULL
-        )
-    """)
-    
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS downloaded_files (
-            id TEXT PRIMARY KEY,
-            source_url TEXT NOT NULL,
-            source_hash TEXT NOT NULL UNIQUE,
-            standardized_filename TEXT NOT NULL,
-            original_filename TEXT NOT NULL,
-            file_size INTEGER NOT NULL,
-            document_type TEXT NOT NULL,
-            download_date TEXT NOT NULL,
-            file_path TEXT NOT NULL
-        )
-    """)
-    
-    conn.commit()
-    conn.close()
-    
-    yield db_path
-    
-    # Cleanup
-    if db_path.exists():
-        db_path.unlink()
-
-
-@pytest.fixture
-def sample_pdf(temp_dir: Path) -> Path:
-    """
-    Create sample PDF for testing.
-    
-    Creates a simple PDF with test content using reportlab.
-    Falls back to creating a dummy file if reportlab is not available.
-    """
-    pdf_path = temp_dir / "sample_hansard.pdf"
-    
-    try:
-        from reportlab.pdfgen import canvas
-        from reportlab.lib.pagesizes import letter
-        
-        c = canvas.Canvas(str(pdf_path), pagesize=letter)
-        c.drawString(100, 750, "NATIONAL ASSEMBLY")
-        c.drawString(100, 730, "HANSARD")
-        c.drawString(100, 710, "Thursday, 15th January 2024")
-        c.drawString(100, 680, "")
-        c.drawString(100, 660, "Hon. John Doe (Nairobi, Party): Mr. Speaker, I rise to...")
-        c.drawString(100, 640, "This is a sample statement for testing purposes.")
-        c.save()
-    except ImportError:
-        # Fallback: create a dummy PDF-like file
-        pdf_path.write_bytes(b"%PDF-1.4\n%Test PDF\n%%EOF")
-    
-    return pdf_path
-
-
-@pytest.fixture
-def sample_document():
-    """
-    Create sample Document model for testing.
-    
-    Returns a valid Document instance with all required fields.
-    """
-    from hansard_tales.models.base import Document, DocumentType, Chamber, SourceReference
-    
-    return Document(
-        type=DocumentType.HANSARD,
-        chamber=Chamber.NATIONAL_ASSEMBLY,
-        title="Test Hansard - 15th January 2024",
-        date=date(2024, 1, 15),
-        parliament_term=13,
-        source=SourceReference(
-            source_url="https://parliament.go.ke/test/hansard_20240115.pdf",
-            source_hash="abc123def456",
-            download_date=datetime.utcnow(),
-        ),
-        vector_doc_id="test_doc_001",
-    )
-
-
-@pytest.fixture
-def sample_statement():
-    """
-    Create sample Statement model for testing.
-    
-    Returns a valid Statement instance with all required fields.
-    """
-    from hansard_tales.models.base import Statement, SourceReference
-    from uuid import uuid4
-    
-    return Statement(
-        document_id=uuid4(),
-        mp_id=uuid4(),
-        text="Mr. Speaker, I rise to address the issue of education funding.",
-        source=SourceReference(
-            source_url="https://parliament.go.ke/test/hansard_20240115.pdf",
-            source_hash="abc123def456",
-            download_date=datetime.utcnow(),
-            page_number=5,
-            line_number=120,
-        ),
-        vector_doc_id="test_stmt_001",
-    )
-
-
-@pytest.fixture
-def mock_vector_db():
-    """
-    Create mock vector database for testing.
-    
-    Returns a Mock object with common vector DB methods.
-    """
-    mock_db = Mock()
-    mock_db.create_collection = Mock()
-    mock_db.insert = Mock()
-    mock_db.search = Mock(return_value=[])
-    mock_db.delete = Mock()
-    mock_db.get = Mock(return_value=None)
-    return mock_db
-
-
-@pytest.fixture
-def mock_embedding_generator():
-    """
-    Create mock embedding generator for testing.
-    
-    Returns a Mock object that generates fake embeddings.
-    """
-    mock_gen = Mock()
-    # Return a fake 384-dimensional embedding
-    mock_gen.generate = Mock(return_value=[0.1] * 384)
-    mock_gen.generate_batch = Mock(return_value=[[0.1] * 384])
-    mock_gen.similarity = Mock(return_value=0.95)
-    return mock_gen
-
-
-@pytest.fixture
-def sample_pdf_files(temp_dir: Path) -> list[Path]:
-    """
-    Create multiple sample PDF files for batch testing.
-    
     Returns:
-        List of paths to sample PDF files
+        List of tuples: (file_path, url, metadata)
     """
-    pdf_files = []
-    for i in range(3):
-        pdf_path = temp_dir / f"hansard_2024010{i+1}.pdf"
-        pdf_path.write_bytes(b"%PDF-1.4\n%Test PDF %d\n%%EOF" % i)
-        pdf_files.append(pdf_path)
-    return pdf_files
+    base_dir = Path("tests/data/pdfs/hansard")
+
+    # Real PDFs with their metadata from parliament.go.ke
+    pdfs = [
+        {
+            "file": base_dir / "hansard_20251204_E.pdf",
+            "url": "https://www.parliament.go.ke/sites/default/files/2025-12/Hansard%20Report%20-%20Thursday%2C%204th%20December%202025%20%28E%29.pdf",
+            "title": "Hansard Report - Thursday, 4th December 2025 (E).pdf",
+            "link_text": "Hansard Report - Thursday, 4th December 2025 - Evening Sitting",
+            "date": "2025-12-04",
+            "period": "E",
+            "chamber": "national_assembly",
+        },
+        {
+            "file": base_dir / "hansard_20251204_P.pdf",
+            "url": "https://www.parliament.go.ke/sites/default/files/2025-12/Hansard%20Report%20-%20Thursday%2C%204th%20December%202025%20%28P%29.pdf",
+            "title": "Hansard Report - Thursday, 4th December 2025 (P).pdf",
+            "link_text": "Hansard Report - Thursday, 4th December 2025 - Afternoon Sitting",
+            "date": "2025-12-04",
+            "period": "P",
+            "chamber": "national_assembly",
+        },
+        {
+            "file": base_dir / "hansard_20251203_P.pdf",
+            "url": "https://www.parliament.go.ke/sites/default/files/2025-12/Hansard%20Report%20-%20Wednesday%2C%203rd%20December%202025%20%28P%29.pdf",
+            "title": "Hansard Report - Wednesday, 3rd December 2025 (P).pdf",
+            "link_text": "Hansard Report - Wednesday, 3rd December 2025 - Afternoon Sitting",
+            "date": "2025-12-03",
+            "period": "P",
+            "chamber": "national_assembly",
+        },
+    ]
+
+    # Filter to only existing files
+    existing_pdfs = [pdf for pdf in pdfs if pdf["file"].exists()]
+
+    return existing_pdfs
+
+
+@pytest.fixture
+def temp_db():
+    """
+    Create temporary SQLite database with actual schema.
+
+    Prefer this over mocking database operations.
+    """
+    # Create temporary database file
+    with tempfile.NamedTemporaryFile(suffix=".db", delete=False) as f:
+        db_path = f.name
+
+    # Create engine and tables
+    engine = create_engine(f"sqlite:///{db_path}")
+    Base.metadata.create_all(engine)
+
+    # Create session
+    Session = sessionmaker(bind=engine)
+    session = Session()
+
+    yield session
+
+    # Cleanup
+    session.close()
+    engine.dispose()
+    Path(db_path).unlink()
+
+
+@pytest.fixture
+def temp_storage(tmp_path):
+    """
+    Create temporary storage directory for file operations.
+
+    Prefer this over mocking file operations.
+    """
+    storage_dir = tmp_path / "storage"
+    storage_dir.mkdir(parents=True, exist_ok=True)
+    return storage_dir
+
+
+@pytest.fixture
+def sample_pdf_content():
+    """
+    Minimal valid PDF content for tests that need to create PDFs.
+
+    Use real_hansard_pdfs fixture when possible instead.
+    """
+    return b"""%PDF-1.4
+1 0 obj
+<<
+/Type /Catalog
+/Pages 2 0 R
+>>
+endobj
+2 0 obj
+<<
+/Type /Pages
+/Kids [3 0 R]
+/Count 1
+>>
+endobj
+3 0 obj
+<<
+/Type /Page
+/Parent 2 0 R
+/MediaBox [0 0 612 792]
+/Contents 4 0 R
+>>
+endobj
+4 0 obj
+<<
+/Length 44
+>>
+stream
+BT
+/F1 12 Tf
+100 700 Td
+(Test content) Tj
+ET
+endstream
+endobj
+xref
+0 5
+0000000000 65535 f
+0000000009 00000 n
+0000000058 00000 n
+0000000115 00000 n
+0000000214 00000 n
+trailer
+<<
+/Size 5
+/Root 1 0 R
+>>
+startxref
+306
+%%EOF
+"""

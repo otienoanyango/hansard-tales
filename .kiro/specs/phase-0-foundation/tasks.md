@@ -44,10 +44,12 @@ This task list implements the foundational infrastructure for the Hansard Tales 
   - [x] 2.4 Download Tracking Table
     - [x] 2.4.1 Create DownloadedFileORM model (Design 3)
     - [x] 2.4.2 Add migration for downloaded_files table
-    - [x] 2.4.3 Implement _is_duplicate() in BaseScraper to query downloaded_files
-    - [x] 2.4.4 Implement _record_download() in BaseScraper to insert records
-    - [x] 2.4.5 Update scrape() method to call _record_download() after saving files
-    - [x] 2.4.6 Write download tracking tests
+    - [x] 2.4.3 Implement _is_duplicate_by_url() in BaseScraper to query downloaded_files by URL
+    - [x] 2.4.4 Implement _verify_file_exists() in BaseScraper to check storage
+    - [x] 2.4.5 Implement _record_download() in BaseScraper to insert records
+    - [x] 2.4.6 Implement _update_download_record() in BaseScraper to update existing records
+    - [x] 2.4.7 Update scrape() method to follow new workflow: check URL → verify file → download/skip
+    - [x] 2.4.8 Write download tracking tests
 
 ### Vector Database Integration
 
@@ -75,15 +77,19 @@ This task list implements the foundational infrastructure for the Hansard Tales 
     - [x] 4.2.2 Implement pagination support with parliament term parameter
     - [x] 4.2.3 Implement CSS selector extraction (table.cols-2 td.views-field-field-pdf a[href$=".pdf"])
     - [x] 4.2.4 Add rate limiting between page requests
-    - [x] 4.2.5 Implement standardized filename generation (hansard_YYYYMMDD_<P|A|E>.pdf)
-    - [x] 4.2.6 Write Hansard scraper tests (19 tests, 98.88% coverage)
+    - [x] 4.2.5 Implement dateparser usage for British format dates with UTC+3 timezone
+    - [x] 4.2.6 Implement standardized filename generation (hansard_YYYYMMDD_<P|A|E>.pdf)
+    - [x] 4.2.7 Implement new scraping workflow: check URL → verify file → download/skip
+    - [x] 4.2.8 Write Hansard scraper tests (90 tests total, all passing)
   - [x] 4.3 Votes Scraper
     - [x] 4.3.1 Implement Votes scraper (Design 5)
     - [x] 4.3.2 Implement pagination support with parliament term parameter
     - [x] 4.3.3 Implement CSS selector extraction
-    - [x] 4.3.4 Implement time parsing and 24-hour conversion
-    - [x] 4.3.5 Implement standardized filename generation (votes_YYYYMMDDTHHMMSSZ.pdf)
-    - [x] 4.3.6 Write Votes scraper tests (19 tests, 64.54% coverage)
+    - [x] 4.3.4 Implement dateparser usage for British format dates with UTC+3 timezone
+    - [x] 4.3.5 Implement time parsing and 24-hour conversion
+    - [x] 4.3.6 Implement standardized filename generation (votes_YYYYMMDDTHHMMSSZ.pdf)
+    - [x] 4.3.7 Implement new scraping workflow: check URL → verify file → download/skip
+    - [x] 4.3.8 Write Votes scraper tests (includes 13 real-world examples)
   - [x] 4.4 Scraper Factory
     - [x] 4.4.1 Implement scraper factory (Design 5)
     - [x] 4.4.2 Write factory tests (7 tests, 100% coverage)
@@ -137,74 +143,79 @@ This task list implements the foundational infrastructure for the Hansard Tales 
 
 ### CI/CD Pipeline
 
-- [ ] 8. CI/CD Pipeline
-  - [ ] 8.1 GitHub Actions Workflow
-    - [ ] 8.1.1 Create CI workflow (Design 10)
-    - [ ] 8.1.2 Configure test matrix
-    - [ ] 8.1.3 Write CI tests
-  - [ ] 8.2 Pre-commit Hooks
-    - [ ] 8.2.1 Configure pre-commit (Design 10)
-    - [ ] 8.2.2 Test pre-commit hooks
+- [x] 8. CI/CD Pipeline
+  - [x] 8.1 GitHub Actions Workflow
+    - [x] 8.1.1 Create CI workflow (Design 10)
+    - [x] 8.1.2 Configure test matrix
+    - [x] 8.1.3 Write CI tests
+  - [x] 8.2 Pre-commit Hooks
+    - [x] 8.2.1 Configure pre-commit (Design 10)
+    - [x] 8.2.2 Test pre-commit hooks
 
 ### Development Environment
 
-- [ ] 9. Development Environment
-  - [ ] 9.1 Docker Compose Setup
-    - [ ] 9.1.1 Create docker-compose.yml (Design 11)
-  - [ ] 9.2 Makefile
-    - [ ] 9.2.1 Create Makefile (Design 11)
-  - [ ] 9.3 Setup Scripts
-    - [ ] 9.3.1 Create setup script (Design 11)
-    - [ ] 9.3.2 Write setup tests
-  - [ ] 9.4 Requirements Files
-    - [ ] 9.4.1 Create requirements files (Design 11)
+- [x] 9. Development Environment
+  - [x] 9.1 Docker Compose Setup
+    - [x] 9.1.1 Create docker-compose.yml (Design 11)
+  - [x] 9.2 Makefile
+    - [x] 9.2.1 Create Makefile (Design 11)
+  - [x] 9.3 Setup Scripts
+    - [x] 9.3.1 Create setup script (Design 11)
+    - [x] 9.3.2 Write setup tests
+  - [x] 9.4 Requirements Files
+    - [x] 9.4.1 Create requirements files (Design 11)
 
 ### Monitoring Setup
 
-- [ ] 10. Monitoring Setup
-  - [ ] 10.1 Prometheus Metrics
-    - [ ] 10.1.1 Create metrics exporter (Design 12)
-    - [ ] 10.1.2 Configure Prometheus (Design 12)
-  - [ ] 10.2 Grafana Dashboards
-    - [ ] 10.2.1 Create Grafana dashboards (Design 12)
-  - [ ] 10.3 Sentry Integration
-    - [ ] 10.3.1 Configure Sentry (Design 12)
-    - [ ] 10.3.2 Write monitoring tests
+- [x] 10. Monitoring Setup
+  - [x] 10.1 Prometheus Metrics
+    - [x] 10.1.1 Create metrics exporter (Design 12)
+    - [x] 10.1.2 Configure Prometheus (Design 12)
+  - [x] 10.2 Grafana Dashboards
+    - [x] 10.2.1 Create Grafana dashboards (Design 12)
+  - [x] 10.3 Sentry Integration
+    - [x] 10.3.1 Configure Sentry (Design 12)
+    - [x] 10.3.2 Write monitoring tests
 
 ### Documentation
 
-- [ ] 11. Documentation
-  - [ ] 11.1 Project Documentation
-    - [ ] 11.1.1 Create README.md
-    - [ ] 11.1.2 Create ARCHITECTURE.md
-    - [ ] 11.1.3 Create CONTRIBUTING.md
-    - [ ] 11.1.4 Create API documentation
-    - [ ] 11.1.5 Create ADRs
-  - [ ] 11.2 Data Source Documentation
-    - [ ] 11.2.1 Document data sources
+- [x] 11. Documentation
+  - [x] 11.1 Project Documentation
+    - [x] 11.1.1 Create README.md
+    - [x] 11.1.2 Create ARCHITECTURE.md
+    - [x] 11.1.3 Create CONTRIBUTING.md
+    - [x] 11.1.4 Create API documentation
+    - [x] 11.1.5 Create ADRs
+  - [x] 11.2 Data Source Documentation
+    - [x] 11.2.1 Document data sources
 
 ### Integration & End-to-End Testing
 
-- [ ] 12. Integration & End-to-End Testing
-  - [ ] 12.1 Integration Tests
-    - [ ] 12.1.1 Write integration tests
-  - [ ] 12.2 End-to-End Tests
-    - [ ] 12.2.1 Create test data
-    - [ ] 12.2.2 Write E2E tests
+- [x] 12. Integration & End-to-End Testing
+  - [x] 12.1 Integration Tests
+    - [x] 12.1.1 Write integration tests
+  - [x] 12.2 End-to-End Tests
+    - [x] 12.2.1 Create test data
+    - [x] 12.2.2 Write E2E tests
+  - [-] 12.3 Test review
+    - [x] 12.3.1 Ensure all python packages are at their latest
+    - [x] 12.3.2 Fix any failing tests
+    - [x] 12.3.3 Ensure test coverage is over 90%
+    - [x] 12.3.4 Verify all unit, integration and E2E tests pass
 
 ### Final Validation & Cleanup
 
-- [ ] 13. Final Validation & Cleanup
-  - [ ] 13.1 Code Quality
-    - [ ] 13.1.1 Run linters
-    - [ ] 13.1.2 Format code
-  - [ ] 13.2 Test Coverage
-    - [ ] 13.2.1 Generate coverage report
-    - [ ] 13.2.2 Add missing tests
-  - [ ] 13.3 Documentation Review
-    - [ ] 13.3.1 Review documentation
-  - [ ] 13.4 Final Integration Test
-    - [ ] 13.4.1 Run full system test
+- [x] 13. Final Validation & Cleanup
+  - [x] 13.1 Code Quality
+    - [x] 13.1.1 Run linters
+    - [x] 13.1.2 Format code
+  - [x] 13.2 Test Coverage
+    - [x] 13.2.1 Generate coverage report
+    - [x] 13.2.2 Add missing tests
+  - [x] 13.3 Documentation Review
+    - [x] 13.3.1 Review documentation
+  - [x] 13.4 Final Integration Test
+    - [x] 13.4.1 Run full system test
 
 ---
 
@@ -230,4 +241,3 @@ This task list implements the foundational infrastructure for the Hansard Tales 
 - ✅ Can scrape, process, and store Hansard and Votes documents
 - ✅ Vector search working
 - ✅ Monitoring dashboards functional
-

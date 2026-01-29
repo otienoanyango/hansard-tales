@@ -5,20 +5,29 @@
 -r requirements.txt
 
 # Testing
-pytest>=7.4.0
-pytest-cov>=4.1.0
-pytest-xdist>=3.3.0  # Parallel test execution
-hypothesis>=6.82.0
-faker>=19.0.0  # Test data generation
+pytest>=9.0.2
+pytest-cov>=7.0.0
+pytest-asyncio>=1.3.0
+pytest-xdist>=3.8.0  # Parallel test execution
+hypothesis>=6.151.4
+faker>=40.1.2  # Test data generation
+pyyaml>=6.0.3  # YAML parsing for CI config tests
+tomli>=2.4.0  # TOML parsing for pyproject.toml tests
 
-# Code quality
-ruff>=0.1.0
-mypy>=1.5.0
-black>=23.7.0
-isort>=5.12.0
-pre-commit>=3.3.0
+# Linting
+ruff>=0.14.14
+mypy>=1.19.1
+
+# Type stubs
+types-requests>=2.32.4.20260107
+types-beautifulsoup4>=4.12.0.20250516
+
+# Pre-commit
+pre-commit>=4.5.1
 
 # Documentation
+mkdocs>=1.5.0
+mkdocs-material>=9.5.0
 sphinx>=7.1.0
 sphinx-rtd-theme>=1.3.0
 

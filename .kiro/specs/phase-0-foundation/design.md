@@ -84,7 +84,7 @@ class DatabaseConfig(BaseSettings):
     database: str = "hansard_tales"
     user: str = "hansard"
     password: str = Field(default="", env="DB_PASSWORD")
-    
+
     @property
     def connection_string(self) -> str:
         if self.engine == "sqlite":
@@ -98,7 +98,7 @@ class VectorDBConfig(BaseSettings):
     port: int = 6333
     collection_prefix: str = "hansard_tales"
     persist_directory: Path = Path("data/vector_db")
-    
+
 class EmbeddingConfig(BaseSettings):
     """Embedding model configuration"""
     model_name: str = "sentence-transformers/all-MiniLM-L6-v2"
@@ -140,7 +140,7 @@ class Config(BaseSettings):
     scraper: ScraperConfig = ScraperConfig()
     logging: LoggingConfig = LoggingConfig()
     monitoring: MonitoringConfig = MonitoringConfig()
-    
+
     class Config:
         env_file = ".env"
         env_nested_delimiter = "__"
@@ -244,7 +244,7 @@ class DocumentType(str, Enum):
 class SourceReference(BaseModel):
     """Immutable source tracking (anti-hallucination)"""
     model_config = ConfigDict(frozen=True)
-    
+
     source_url: str = Field(..., description="Original document URL")
     source_hash: str = Field(..., description="SHA256 hash of original PDF")
     download_date: datetime = Field(default_factory=datetime.utcnow)
@@ -260,16 +260,16 @@ class Document(BaseModel):
     date: date
     session_id: Optional[str] = None
     parliament_term: int = Field(..., ge=1, le=20)
-    
+
     # Source tracking (immutable)
     source: SourceReference
-    
+
     # Vector DB reference
     vector_doc_id: str = Field(..., description="ID in vector database")
-    
+
     # Metadata (varies by document type)
     metadata: Dict[str, Any] = Field(default_factory=dict)
-    
+
     # Timestamps
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
@@ -281,13 +281,13 @@ class Statement(BaseModel):
     mp_id: UUID = Field(..., description="MP who made statement")
     text: str = Field(..., min_length=1)
     timestamp: Optional[datetime] = None
-    
+
     # Source tracking (immutable)
     source: SourceReference
-    
+
     # Vector DB reference
     vector_doc_id: str
-    
+
     # Analysis results (populated by pipeline)
     classification: Optional[str] = Field(None, description="filler or substantive")
     sentiment: Optional[str] = Field(None, description="support, oppose, neutral")
@@ -295,7 +295,7 @@ class Statement(BaseModel):
     topics: List[str] = Field(default_factory=list)
     related_bill_ids: List[UUID] = Field(default_factory=list)
     related_question_ids: List[UUID] = Field(default_factory=list)
-    
+
     # Timestamps
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
@@ -328,24 +328,24 @@ class Bill(BaseModel):
     title: str = Field(..., min_length=1, max_length=500)
     chamber: Chamber
     status: BillStatus
-    
+
     # Version tracking
     versions: List[BillVersion] = Field(default_factory=list)
     current_version: int = Field(1, ge=1)
-    
+
     # Sponsorship
     sponsor_id: UUID
     co_sponsor_ids: List[UUID] = Field(default_factory=list)
-    
+
     # Related documents
     related_statement_ids: List[UUID] = Field(default_factory=list)
     related_vote_ids: List[UUID] = Field(default_factory=list)
     related_question_ids: List[UUID] = Field(default_factory=list)
     related_petition_ids: List[UUID] = Field(default_factory=list)
-    
+
     # Categorization
     topics: List[str] = Field(default_factory=list)
-    
+
     # Timestamps
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
@@ -369,19 +369,19 @@ class Vote(BaseModel):
     vote_date: date
     chamber: Chamber
     vote_type: str = Field(..., description="division, voice, etc.")
-    
+
     # Individual votes
     votes: List[MPVote] = Field(default_factory=list)
-    
+
     # Results
     ayes: int = Field(0, ge=0)
     noes: int = Field(0, ge=0)
     abstentions: int = Field(0, ge=0)
     result: str = Field(..., description="passed or failed")
-    
+
     # Source tracking
     source: SourceReference
-    
+
     # Timestamps
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
@@ -401,16 +401,16 @@ class Question(BaseModel):
     question_date: date
     answer_date: Optional[date] = None
     chamber: Chamber
-    
+
     # Categorization
     question_type: QuestionType
     ministry: Optional[str] = None
     topics: List[str] = Field(default_factory=list)
-    
+
     # Source tracking
     source: SourceReference
     vector_doc_id: str
-    
+
     # Timestamps
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
@@ -423,23 +423,23 @@ class Petition(BaseModel):
     sponsor_id: UUID = Field(..., description="MP/Senator sponsor")
     submission_date: date
     chamber: Chamber
-    
+
     # Content
     petition_text: str = Field(..., min_length=1)
     prayer: str = Field(..., description="What petitioners request")
-    
+
     # Status tracking
     status: str = Field(..., description="submitted, committee_review, etc.")
     committee: Optional[str] = None
     response: Optional[str] = None
-    
+
     # Categorization
     topics: List[str] = Field(default_factory=list)
-    
+
     # Source tracking
     source: SourceReference
     vector_doc_id: str
-    
+
     # Timestamps
     created_at: datetime = Field(default_factory=datetime.utcnow)
 ```
@@ -503,7 +503,7 @@ class ChamberEnum(enum.Enum):
 class DocumentORM(Base):
     """Documents table"""
     __tablename__ = "documents"
-    
+
     id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
     type = Column(SQLEnum(DocumentTypeEnum), nullable=False)
     chamber = Column(SQLEnum(ChamberEnum), nullable=False)
@@ -511,22 +511,22 @@ class DocumentORM(Base):
     date = Column(Date, nullable=False)
     session_id = Column(String(100))
     parliament_term = Column(Integer, nullable=False)
-    
+
     # Source tracking (immutable)
     source_url = Column(Text, nullable=False)
     source_hash = Column(String(64), nullable=False, unique=True)
     download_date = Column(DateTime, nullable=False)
-    
+
     # Vector DB reference
     vector_doc_id = Column(String(100), nullable=False)
-    
+
     # Metadata (JSON)
     metadata = Column(JSON, default={})
-    
+
     # Timestamps
     created_at = Column(DateTime, nullable=False)
     updated_at = Column(DateTime, nullable=False)
-    
+
     # Indexes
     __table_args__ = (
         Index('idx_documents_type_chamber_date', 'type', 'chamber', 'date'),
@@ -537,18 +537,18 @@ class DocumentORM(Base):
 class MPORM(Base):
     """MPs/Senators table"""
     __tablename__ = "mps"
-    
+
     id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
     name = Column(String(200), nullable=False)
     chamber = Column(SQLEnum(ChamberEnum), nullable=False)
     party = Column(String(100))
     constituency = Column(String(200))
     parliament_term = Column(Integer, nullable=False)
-    
+
     # Timestamps
     created_at = Column(DateTime, nullable=False)
     updated_at = Column(DateTime, nullable=False)
-    
+
     # Indexes
     __table_args__ = (
         Index('idx_mps_chamber_term', 'chamber', 'parliament_term'),
@@ -558,22 +558,22 @@ class MPORM(Base):
 class StatementORM(Base):
     """Statements table"""
     __tablename__ = "statements"
-    
+
     id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
     document_id = Column(PGUUID(as_uuid=True), ForeignKey('documents.id'), nullable=False)
     mp_id = Column(PGUUID(as_uuid=True), ForeignKey('mps.id'), nullable=False)
     text = Column(Text, nullable=False)
     timestamp = Column(DateTime)
-    
+
     # Source tracking (immutable)
     source_url = Column(Text, nullable=False)
     source_hash = Column(String(64), nullable=False)
     page_number = Column(Integer)
     line_number = Column(Integer)
-    
+
     # Vector DB reference
     vector_doc_id = Column(String(100), nullable=False)
-    
+
     # Analysis results
     classification = Column(String(50))
     sentiment = Column(String(50))
@@ -581,14 +581,14 @@ class StatementORM(Base):
     topics = Column(JSON, default=[])
     related_bill_ids = Column(JSON, default=[])
     related_question_ids = Column(JSON, default=[])
-    
+
     # Timestamps
     created_at = Column(DateTime, nullable=False)
-    
+
     # Relationships
     document = relationship("DocumentORM", backref="statements")
     mp = relationship("MPORM", backref="statements")
-    
+
     # Indexes
     __table_args__ = (
         Index('idx_statements_document_id', 'document_id'),
@@ -599,34 +599,34 @@ class StatementORM(Base):
 class BillORM(Base):
     """Bills table"""
     __tablename__ = "bills"
-    
+
     id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
     bill_number = Column(String(50), nullable=False, unique=True)
     title = Column(String(500), nullable=False)
     chamber = Column(SQLEnum(ChamberEnum), nullable=False)
     status = Column(String(50), nullable=False)
     current_version = Column(Integer, default=1)
-    
+
     # Sponsorship
     sponsor_id = Column(PGUUID(as_uuid=True), ForeignKey('mps.id'), nullable=False)
     co_sponsor_ids = Column(JSON, default=[])
-    
+
     # Related documents
     related_statement_ids = Column(JSON, default=[])
     related_vote_ids = Column(JSON, default=[])
     related_question_ids = Column(JSON, default=[])
     related_petition_ids = Column(JSON, default=[])
-    
+
     # Categorization
     topics = Column(JSON, default=[])
-    
+
     # Timestamps
     created_at = Column(DateTime, nullable=False)
     updated_at = Column(DateTime, nullable=False)
-    
+
     # Relationships
     sponsor = relationship("MPORM", backref="sponsored_bills")
-    
+
     # Indexes
     __table_args__ = (
         Index('idx_bills_bill_number', 'bill_number'),
@@ -637,27 +637,27 @@ class BillORM(Base):
 class BillVersionORM(Base):
     """Bill versions table"""
     __tablename__ = "bill_versions"
-    
+
     id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
     bill_id = Column(PGUUID(as_uuid=True), ForeignKey('bills.id'), nullable=False)
     version_number = Column(Integer, nullable=False)
     title = Column(String(500), nullable=False)
     text = Column(Text, nullable=False)
-    
+
     # Source tracking
     source_url = Column(Text, nullable=False)
     source_hash = Column(String(64), nullable=False)
     download_date = Column(DateTime, nullable=False)
-    
+
     # Vector DB reference
     vector_doc_id = Column(String(100), nullable=False)
-    
+
     changes_summary = Column(Text)
     created_at = Column(DateTime, nullable=False)
-    
+
     # Relationships
     bill = relationship("BillORM", backref="versions")
-    
+
     # Indexes
     __table_args__ = (
         Index('idx_bill_versions_bill_id', 'bill_id'),
@@ -667,30 +667,30 @@ class BillVersionORM(Base):
 class VoteORM(Base):
     """Votes table"""
     __tablename__ = "votes"
-    
+
     id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
     bill_id = Column(PGUUID(as_uuid=True), ForeignKey('bills.id'), nullable=False)
     vote_date = Column(Date, nullable=False)
     chamber = Column(SQLEnum(ChamberEnum), nullable=False)
     vote_type = Column(String(50), nullable=False)
-    
+
     # Results
     ayes = Column(Integer, default=0)
     noes = Column(Integer, default=0)
     abstentions = Column(Integer, default=0)
     result = Column(String(50), nullable=False)
-    
+
     # Source tracking
     source_url = Column(Text, nullable=False)
     source_hash = Column(String(64), nullable=False)
     download_date = Column(DateTime, nullable=False)
-    
+
     # Timestamps
     created_at = Column(DateTime, nullable=False)
-    
+
     # Relationships
     bill = relationship("BillORM", backref="votes")
-    
+
     # Indexes
     __table_args__ = (
         Index('idx_votes_bill_id', 'bill_id'),
@@ -700,16 +700,16 @@ class VoteORM(Base):
 class MPVoteORM(Base):
     """Individual MP votes table"""
     __tablename__ = "mp_votes"
-    
+
     id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
     vote_id = Column(PGUUID(as_uuid=True), ForeignKey('votes.id'), nullable=False)
     mp_id = Column(PGUUID(as_uuid=True), ForeignKey('mps.id'), nullable=False)
     direction = Column(String(20), nullable=False)
-    
+
     # Relationships
     vote = relationship("VoteORM", backref="mp_votes")
     mp = relationship("MPORM", backref="votes")
-    
+
     # Indexes
     __table_args__ = (
         Index('idx_mp_votes_vote_id', 'vote_id'),
@@ -719,7 +719,7 @@ class MPVoteORM(Base):
 class QuestionORM(Base):
     """Questions table"""
     __tablename__ = "questions"
-    
+
     id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
     question_number = Column(String(50), nullable=False)
     asker_id = Column(PGUUID(as_uuid=True), ForeignKey('mps.id'), nullable=False)
@@ -729,25 +729,25 @@ class QuestionORM(Base):
     question_date = Column(Date, nullable=False)
     answer_date = Column(Date)
     chamber = Column(SQLEnum(ChamberEnum), nullable=False)
-    
+
     # Categorization
     question_type = Column(String(20), nullable=False)
     ministry = Column(String(200))
     topics = Column(JSON, default=[])
-    
+
     # Source tracking
     source_url = Column(Text, nullable=False)
     source_hash = Column(String(64), nullable=False)
     download_date = Column(DateTime, nullable=False)
     vector_doc_id = Column(String(100), nullable=False)
-    
+
     # Timestamps
     created_at = Column(DateTime, nullable=False)
-    
+
     # Relationships
     asker = relationship("MPORM", foreign_keys=[asker_id], backref="questions_asked")
     respondent = relationship("MPORM", foreign_keys=[respondent_id], backref="questions_answered")
-    
+
     # Indexes
     __table_args__ = (
         Index('idx_questions_asker_id', 'asker_id'),
@@ -757,7 +757,7 @@ class QuestionORM(Base):
 class PetitionORM(Base):
     """Petitions table"""
     __tablename__ = "petitions"
-    
+
     id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
     petition_number = Column(String(50), nullable=False)
     title = Column(String(500), nullable=False)
@@ -765,31 +765,31 @@ class PetitionORM(Base):
     sponsor_id = Column(PGUUID(as_uuid=True), ForeignKey('mps.id'), nullable=False)
     submission_date = Column(Date, nullable=False)
     chamber = Column(SQLEnum(ChamberEnum), nullable=False)
-    
+
     # Content
     petition_text = Column(Text, nullable=False)
     prayer = Column(Text, nullable=False)
-    
+
     # Status tracking
     status = Column(String(50), nullable=False)
     committee = Column(String(200))
     response = Column(Text)
-    
+
     # Categorization
     topics = Column(JSON, default=[])
-    
+
     # Source tracking
     source_url = Column(Text, nullable=False)
     source_hash = Column(String(64), nullable=False)
     download_date = Column(DateTime, nullable=False)
     vector_doc_id = Column(String(100), nullable=False)
-    
+
     # Timestamps
     created_at = Column(DateTime, nullable=False)
-    
+
     # Relationships
     sponsor = relationship("MPORM", backref="petitions_sponsored")
-    
+
     # Indexes
     __table_args__ = (
         Index('idx_petitions_sponsor_id', 'sponsor_id'),
@@ -799,30 +799,30 @@ class PetitionORM(Base):
 class DownloadedFileORM(Base):
     """Downloaded files tracking table for duplicate prevention"""
     __tablename__ = "downloaded_files"
-    
+
     id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
-    
+
     # Source tracking
     source_url = Column(Text, nullable=False)
     source_hash = Column(String(64), nullable=False, unique=True)
-    
+
     # File information
     standardized_filename = Column(String(255), nullable=False)
     original_filename = Column(String(500), nullable=False)
     file_size = Column(Integer, nullable=False)
     document_type = Column(String(50), nullable=False)
-    
+
     # Download tracking
     download_date = Column(DateTime, nullable=False)
     file_path = Column(Text, nullable=False)
-    
+
     # Metadata
     chamber = Column(String(50))
     parliament_term = Column(Integer)
-    
+
     # Timestamps
     created_at = Column(DateTime, nullable=False)
-    
+
     # Indexes
     __table_args__ = (
         Index('idx_downloaded_files_hash', 'source_hash'),
@@ -849,7 +849,7 @@ def run_migrations_online():
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
     )
-    
+
     with connectable.connect() as connection:
         context.configure(
             connection=connection,
@@ -857,7 +857,7 @@ def run_migrations_online():
             compare_type=True,
             compare_server_default=True,
         )
-        
+
         with context.begin_transaction():
             context.run_migrations()
 ```
@@ -916,12 +916,12 @@ class VectorSearchResult:
 
 class VectorDB(ABC):
     """Abstract vector database interface"""
-    
+
     @abstractmethod
     def create_collection(self, name: str, dimension: int) -> None:
         """Create a new collection"""
         pass
-    
+
     @abstractmethod
     def insert(
         self,
@@ -933,7 +933,7 @@ class VectorDB(ABC):
     ) -> None:
         """Insert a vector with metadata"""
         pass
-    
+
     @abstractmethod
     def search(
         self,
@@ -944,12 +944,12 @@ class VectorDB(ABC):
     ) -> List[VectorSearchResult]:
         """Search for similar vectors"""
         pass
-    
+
     @abstractmethod
     def delete(self, collection: str, id: str) -> None:
         """Delete a vector by ID"""
         pass
-    
+
     @abstractmethod
     def get(self, collection: str, id: str) -> Optional[VectorSearchResult]:
         """Get a vector by ID"""
@@ -957,17 +957,17 @@ class VectorDB(ABC):
 
 class ChromaDBAdapter(VectorDB):
     """ChromaDB implementation (development)"""
-    
+
     def __init__(self, persist_directory: str):
         import chromadb
         self.client = chromadb.PersistentClient(path=persist_directory)
-    
+
     def create_collection(self, name: str, dimension: int) -> None:
         self.client.get_or_create_collection(
             name=name,
             metadata={"dimension": dimension}
         )
-    
+
     def insert(
         self,
         collection: str,
@@ -983,7 +983,7 @@ class ChromaDBAdapter(VectorDB):
             metadatas=[payload],
             documents=[text]
         )
-    
+
     def search(
         self,
         collection: str,
@@ -997,7 +997,7 @@ class ChromaDBAdapter(VectorDB):
             n_results=limit,
             where=filter
         )
-        
+
         return [
             VectorSearchResult(
                 id=results['ids'][0][i],
@@ -1007,11 +1007,11 @@ class ChromaDBAdapter(VectorDB):
             )
             for i in range(len(results['ids'][0]))
         ]
-    
+
     def delete(self, collection: str, id: str) -> None:
         coll = self.client.get_collection(collection)
         coll.delete(ids=[id])
-    
+
     def get(self, collection: str, id: str) -> Optional[VectorSearchResult]:
         coll = self.client.get_collection(collection)
         result = coll.get(ids=[id])
@@ -1026,14 +1026,14 @@ class ChromaDBAdapter(VectorDB):
 
 class QdrantAdapter(VectorDB):
     """Qdrant implementation (production)"""
-    
+
     def __init__(self, host: str, port: int):
         from qdrant_client import QdrantClient
         from qdrant_client.models import Distance, VectorParams
         self.client = QdrantClient(host=host, port=port)
         self.Distance = Distance
         self.VectorParams = VectorParams
-    
+
     def create_collection(self, name: str, dimension: int) -> None:
         from qdrant_client.models import Distance, VectorParams
         self.client.recreate_collection(
@@ -1043,7 +1043,7 @@ class QdrantAdapter(VectorDB):
                 distance=Distance.COSINE
             )
         )
-    
+
     def insert(
         self,
         collection: str,
@@ -1058,7 +1058,7 @@ class QdrantAdapter(VectorDB):
             collection_name=collection,
             points=[PointStruct(id=id, vector=vector, payload=payload)]
         )
-    
+
     def search(
         self,
         collection: str,
@@ -1067,7 +1067,7 @@ class QdrantAdapter(VectorDB):
         filter: Optional[Dict[str, Any]] = None
     ) -> List[VectorSearchResult]:
         from qdrant_client.models import Filter, FieldCondition, MatchValue
-        
+
         qdrant_filter = None
         if filter:
             conditions = [
@@ -1075,14 +1075,14 @@ class QdrantAdapter(VectorDB):
                 for k, v in filter.items()
             ]
             qdrant_filter = Filter(must=conditions)
-        
+
         results = self.client.search(
             collection_name=collection,
             query_vector=query_vector,
             limit=limit,
             query_filter=qdrant_filter
         )
-        
+
         return [
             VectorSearchResult(
                 id=str(result.id),
@@ -1092,13 +1092,13 @@ class QdrantAdapter(VectorDB):
             )
             for result in results
         ]
-    
+
     def delete(self, collection: str, id: str) -> None:
         self.client.delete(
             collection_name=collection,
             points_selector=[id]
         )
-    
+
     def get(self, collection: str, id: str) -> Optional[VectorSearchResult]:
         results = self.client.retrieve(
             collection_name=collection,
@@ -1133,17 +1133,17 @@ import numpy as np
 
 class EmbeddingGenerator:
     """Generate embeddings using sentence-transformers"""
-    
+
     def __init__(self, config: EmbeddingConfig):
         self.model = SentenceTransformer(config.model_name, device=config.device)
         self.dimension = config.dimension
         self.batch_size = config.batch_size
-    
+
     def generate(self, text: str) -> List[float]:
         """Generate embedding for single text"""
         embedding = self.model.encode(text, convert_to_numpy=True)
         return embedding.tolist()
-    
+
     def generate_batch(self, texts: List[str]) -> List[List[float]]:
         """Generate embeddings for batch of texts"""
         embeddings = self.model.encode(
@@ -1153,7 +1153,7 @@ class EmbeddingGenerator:
             show_progress_bar=True
         )
         return embeddings.tolist()
-    
+
     def similarity(self, embedding1: List[float], embedding2: List[float]) -> float:
         """Compute cosine similarity between two embeddings"""
         vec1 = np.array(embedding1)
@@ -1241,15 +1241,18 @@ BILLS_COLLECTION = {
 
 ### Component Design
 
-**Purpose**: Automated collection of parliamentary documents from parliament.go.ke with pagination support
+**Purpose**: Automated collection of parliamentary documents from parliament.go.ke with pagination support and URL-based duplicate detection
 
-**Technology**: requests + BeautifulSoup4 with CSS selectors and retry logic
+**Technology**: requests + BeautifulSoup4 with CSS selectors, dateparser for date parsing, and retry logic
 
 **Implementation Decisions**:
 - Use BeautifulSoup's `.select()` method with CSS selectors for concise, maintainable code
 - Implement pagination to fetch all available documents across multiple pages
 - Use parliament term parameter in URLs for proper filtering
 - Add rate limiting delays between page requests to avoid server issues
+- Use dateparser library for parsing British format dates with UTC+3 timezone
+- Check database by URL BEFORE downloading to eliminate re-downloading existing files
+- Verify file existence in storage for files already in database
 
 ### Base Scraper Interface
 
@@ -1275,12 +1278,12 @@ class ScrapedDocument:
 
 class BaseScraper(ABC):
     """Base class for all scrapers"""
-    
+
     def __init__(self, config: ScraperConfig):
         self.config = config
         self.session = requests.Session()
         self.session.headers.update({'User-Agent': config.user_agent})
-    
+
     @abstractmethod
     def get_document_urls(
         self,
@@ -1290,12 +1293,12 @@ class BaseScraper(ABC):
     ) -> List[str]:
         """Get list of document URLs to download"""
         pass
-    
+
     @abstractmethod
     def extract_metadata(self, url: str, content: bytes) -> dict:
         """Extract metadata from document"""
         pass
-    
+
     def download_document(self, url: str) -> ScrapedDocument:
         """Download a single document with retry logic"""
         for attempt in range(self.config.max_retries):
@@ -1306,12 +1309,12 @@ class BaseScraper(ABC):
                     stream=True
                 )
                 response.raise_for_status()
-                
+
                 content = response.content
                 doc_hash = hashlib.sha256(content).hexdigest()
                 filename = self._generate_filename(url)
                 metadata = self.extract_metadata(url, content)
-                
+
                 return ScrapedDocument(
                     url=url,
                     filename=filename,
@@ -1319,23 +1322,23 @@ class BaseScraper(ABC):
                     hash=doc_hash,
                     metadata=metadata
                 )
-            
+
             except requests.RequestException as e:
                 if attempt == self.config.max_retries - 1:
                     raise
                 time.sleep(self.config.retry_delay * (2 ** attempt))
-    
+
     def save_document(self, doc: ScrapedDocument, output_dir: Path) -> Path:
         """Save document to disk"""
         output_dir.mkdir(parents=True, exist_ok=True)
         output_path = output_dir / doc.filename
         output_path.write_bytes(doc.content)
         return output_path
-    
+
     def _generate_filename(self, url: str) -> str:
         """Generate filename from URL"""
         return url.split('/')[-1]
-    
+
     def scrape(
         self,
         chamber: Chamber,
@@ -1343,64 +1346,126 @@ class BaseScraper(ABC):
         end_date: Optional[date] = None,
         skip_existing: bool = True
     ) -> List[ScrapedDocument]:
-        """Scrape all documents in date range"""
+        """
+        Scrape all documents in date range with URL-based duplicate detection.
+
+        Workflow:
+        1. Fetch page 0 table links using CSS Selectors, extract link title and href
+        2. Parse dates from link titles using dateparser (UTC+3 timezone)
+        3. Determine storage path for each file
+        4. Check downloads tracking table by original URL
+        5. For files in table, verify they exist in storage
+        6. If not in storage, download and update table
+        7. If in storage, skip
+        8. For files not in table, download and insert new records
+        """
         urls = self.get_document_urls(chamber, start_date, end_date)
         documents = []
-        
+
         for url in urls:
             try:
-                doc = self.download_document(url)
-                
-                # Skip if already downloaded (based on hash)
-                if skip_existing and self._is_duplicate(doc.hash):
-                    continue
-                
-                documents.append(doc)
-                
+                # Check if URL already exists in database
+                if skip_existing and self._is_duplicate_by_url(url):
+                    # Verify file exists in storage
+                    expected_filename = self._generate_filename(url)
+                    expected_path = self.config.download_dir / expected_filename
+
+                    if self._verify_file_exists(expected_path):
+                        # File exists in both database and storage, skip
+                        continue
+                    else:
+                        # File in database but not in storage, download and update
+                        doc = self.download_document(url)
+                        file_path = self.save_document(doc, self.config.download_dir)
+                        self._update_download_record(doc, file_path, chamber)
+                        documents.append(doc)
+                else:
+                    # File not in database, download and insert new record
+                    doc = self.download_document(url)
+                    file_path = self.save_document(doc, self.config.download_dir)
+                    self._record_download(doc, file_path, chamber)
+                    documents.append(doc)
+
             except Exception as e:
                 # Log error but continue with remaining documents
                 print(f"Error downloading {url}: {e}")
                 continue
-        
+
         return documents
-    
-    def _is_duplicate(self, doc_hash: str) -> bool:
+
+    def _is_duplicate_by_url(self, url: str) -> bool:
         """
-        Check if document already exists (by hash).
-        
+        Check if document already exists by URL.
+
         Queries the downloaded_files table to check if a document
-        with the given hash has already been downloaded.
-        
+        with the given URL has already been downloaded.
+
         Args:
-            doc_hash: SHA256 hash of document
-            
+            url: Source URL of document
+
         Returns:
             True if document already exists in downloaded_files table
-            
+
         Implementation Note:
             This will be implemented to query DownloadedFileORM table:
-            
+
             existing = session.query(DownloadedFileORM).filter(
-                DownloadedFileORM.source_hash == doc_hash
+                DownloadedFileORM.source_url == url
             ).first()
-            
+
             return existing is not None
         """
         # Placeholder - will be implemented with database connection
         return False
-    
+
+    def _verify_file_exists(self, file_path: Path) -> bool:
+        """
+        Verify that file exists in storage.
+
+        Args:
+            file_path: Expected path to file
+
+        Returns:
+            True if file exists and is readable
+        """
+        return file_path.exists() and file_path.is_file()
+
+    def _is_duplicate(self, doc_hash: str) -> bool:
+        """
+        Check if document already exists (by hash).
+
+        This method is kept for hash-based verification after download.
+
+        Args:
+            doc_hash: SHA256 hash of document
+
+        Returns:
+            True if document already exists in downloaded_files table
+
+        Implementation Note:
+            This will be implemented to query DownloadedFileORM table:
+
+            existing = session.query(DownloadedFileORM).filter(
+                DownloadedFileORM.source_hash == doc_hash
+            ).first()
+
+            return existing is not None
+        """
+        # Placeholder - will be implemented with database connection
+        return False
+
     def _record_download(self, doc: ScrapedDocument, file_path: Path, chamber: Chamber) -> None:
         """
         Record downloaded file in database for duplicate tracking.
-        
+
         Args:
             doc: Scraped document to record
             file_path: Path where file was saved
             chamber: Parliamentary chamber
-            
+
         Implementation Note:
             This will be implemented to insert into DownloadedFileORM table:
-            
+
             record = DownloadedFileORM(
                 source_url=doc.url,
                 source_hash=doc.hash,
@@ -1413,16 +1478,41 @@ class BaseScraper(ABC):
                 chamber=chamber.value,
                 parliament_term=2022
             )
-            
+
             session.add(record)
             session.commit()
+        """
+        pass
+
+    def _update_download_record(self, doc: ScrapedDocument, file_path: Path, chamber: Chamber) -> None:
+        """
+        Update existing download record when file is re-downloaded.
+
+        Args:
+            doc: Scraped document to update
+            file_path: Path where file was saved
+            chamber: Parliamentary chamber
+
+        Implementation Note:
+            This will be implemented to update DownloadedFileORM table:
+
+            existing = session.query(DownloadedFileORM).filter(
+                DownloadedFileORM.source_url == doc.url
+            ).first()
+
+            if existing:
+                existing.source_hash = doc.hash
+                existing.file_size = len(doc.content)
+                existing.download_date = datetime.utcnow()
+                existing.file_path = str(file_path)
+                session.commit()
         """
         pass
 
 class HansardScraper(BaseScraper):
     """
     Scraper for Hansard documents with pagination support.
-    
+
     Implementation Details:
     - Uses CSS selector: table.cols-2 td.views-field-field-pdf a[href$=".pdf"]
     - URL format: /the-national-assembly/house-business/hansard?field_parliament_value=2022&page=0
@@ -1431,7 +1521,7 @@ class HansardScraper(BaseScraper):
     - Generates standardized filenames: hansard_YYYYMMDD_<P|A|E>.pdf
     - Successfully tested: 452 PDFs from 19 pages (parliament term 2022)
     """
-    
+
     def get_document_urls(
         self,
         chamber: Chamber,
@@ -1441,13 +1531,13 @@ class HansardScraper(BaseScraper):
     ) -> List[str]:
         """
         Get Hansard PDF URLs from parliament.go.ke with pagination.
-        
+
         Args:
             chamber: Parliamentary chamber
             start_date: Optional start date (not implemented yet)
             end_date: Optional end date (not implemented yet)
             parliament_term: Parliament term start year (default: 2022)
-            
+
         Returns:
             List of all Hansard PDF URLs across all pages
         """
@@ -1458,71 +1548,71 @@ class HansardScraper(BaseScraper):
             base_path = "/the-senate/house-business/hansard"
         else:
             raise ValueError(f"Unknown chamber: {chamber}")
-        
+
         urls = []
-        
+
         # Fetch first page to determine total pages
         first_page_url = f"{self.config.base_url}{base_path}?field_parliament_value={parliament_term}&page=0"
         response = self.session.get(first_page_url, timeout=self.config.timeout)
         response.raise_for_status()
-        
+
         soup = BeautifulSoup(response.content, 'html.parser')
-        
+
         # Determine total number of pages from pagination
         total_pages = self._get_total_pages(soup)
-        
+
         # Extract URLs from first page
         page_urls = self._extract_urls_from_page(soup)
         urls.extend(page_urls)
-        
+
         # Fetch remaining pages with rate limiting
         for page_num in range(1, total_pages):
             time.sleep(self.config.retry_delay)  # Rate limiting
-            
+
             page_url = f"{self.config.base_url}{base_path}?field_parliament_value={parliament_term}&page={page_num}"
             response = self.session.get(page_url, timeout=self.config.timeout)
             response.raise_for_status()
-            
+
             soup = BeautifulSoup(response.content, 'html.parser')
             page_urls = self._extract_urls_from_page(soup)
             urls.extend(page_urls)
-        
+
         # Fail fast if no documents found
         if not urls:
             raise DataCollectionError(
                 f"No Hansard documents found at {first_page_url}. "
                 "This may indicate that the website structure has changed."
             )
-        
+
         return urls
-    
+
     def _get_total_pages(self, soup: BeautifulSoup) -> int:
         """Extract total number of pages from pagination element."""
         pager = soup.select_one('nav.pager, ul.pager, div.pager')
-        
+
         if not pager:
             return 1
-        
+
         # Find all page links and extract max page number
         page_links = pager.select('a')
         max_page = 0
-        
+
         for link in page_links:
             href = link.get('href', '')
             match = re.search(r'page=(\d+)', href)
             if match:
                 page_num = int(match.group(1))
                 max_page = max(max_page, page_num)
-        
+
         return max_page + 1 if max_page > 0 else 1
-    
+
     def _extract_urls_from_page(self, soup: BeautifulSoup) -> List[str]:
         """Extract PDF URLs from a single page using CSS selectors."""
         urls = []
-        
+
         # Use CSS selector for precise extraction
         pdf_links = soup.select('table.cols-2 td.views-field-field-pdf a[href$=".pdf"]')
-        
+
         for link in pdf_links:
             href = link.get('href', '')
             if href:
@@ -1533,76 +1623,89 @@ class HansardScraper(BaseScraper):
                     href = href.lstrip('/')
                     full_url = f"{self.config.base_url}/{href}"
                 urls.append(full_url)
-        
+
         return urls
-    
+
     def extract_metadata(self, url: str, content: bytes) -> dict:
         """
-        Extract metadata from Hansard PDF.
-        
-        Extracts date and period from filename title.
+        Extract metadata from Hansard PDF using dateparser.
+
+        Extracts date and period from filename title using dateparser library.
+        All dates are assumed to be in UTC+3 timezone (Kenya timezone).
+
         Example: "Hansard Report - Tuesday, 4th November 2025 (P).pdf"
         """
         import urllib.parse
+        import dateparser
+
         filename = urllib.parse.unquote(url.split('/')[-1])
-        
+
         metadata = {
             'document_type': 'hansard',
             'original_filename': filename,
         }
-        
-        # Extract date: "4th November 2025"
-        date_match = re.search(r'(\d{1,2})(?:st|nd|rd|th)?\s+(\w+)\s+(\d{4})', filename)
+
+        # Extract date using dateparser with UTC+3 timezone
+        # dateparser handles British format dates like "4th November 2025"
+        date_match = re.search(r'(\d{1,2}(?:st|nd|rd|th)?\s+\w+\s+\d{4})', filename)
         if date_match:
-            day, month_name, year = date_match.groups()
-            month_map = {
-                'january': '01', 'february': '02', 'march': '03', 'april': '04',
-                'may': '05', 'june': '06', 'july': '07', 'august': '08',
-                'september': '09', 'october': '10', 'november': '11', 'december': '12'
-            }
-            month = month_map.get(month_name.lower(), '01')
-            metadata['date'] = f"{year}-{month}-{day.zfill(2)}"
-        
+            date_str = date_match.group(1)
+            parsed_date = dateparser.parse(
+                date_str,
+                settings={
+                    'TIMEZONE': 'Africa/Nairobi',  # UTC+3
+                    'RETURN_AS_TIMEZONE_AWARE': True
+                }
+            )
+            if parsed_date:
+                metadata['date'] = parsed_date.strftime('%Y-%m-%d')
+
         # Extract period (P=Morning, A=Afternoon, E=Evening)
         period_match = re.search(r'\(([APE])\)', filename)
         if period_match:
             metadata['period'] = period_match.group(1)
-        
+
         return metadata
-    
+
     def _generate_filename(self, url: str) -> str:
         """
-        Generate standardized filename from URL.
-        
+        Generate standardized filename from URL using dateparser.
+
         Format: hansard_YYYYMMDD_<P|A|E>.pdf
         Example: hansard_20251104_P.pdf
+
+        Uses dateparser to parse British format dates with UTC+3 timezone.
         """
         import urllib.parse
+        import dateparser
+
         original_filename = urllib.parse.unquote(url.split('/')[-1])
-        
-        # Extract date and period
-        date_match = re.search(r'(\d{1,2})(?:st|nd|rd|th)?\s+(\w+)\s+(\d{4})', original_filename)
+
+        # Extract date using dateparser
+        date_match = re.search(r'(\d{1,2}(?:st|nd|rd|th)?\s+\w+\s+\d{4})', original_filename)
         period_match = re.search(r'\(([APE])\)', original_filename)
-        
+
         if date_match and period_match:
-            day, month_name, year = date_match.groups()
+            date_str = date_match.group(1)
             period = period_match.group(1)
-            
-            month_map = {
-                'january': '01', 'february': '02', 'march': '03', 'april': '04',
-                'may': '05', 'june': '06', 'july': '07', 'august': '08',
-                'september': '09', 'october': '10', 'november': '11', 'december': '12'
-            }
-            month = month_map.get(month_name.lower(), '01')
-            
-            return f"hansard_{year}{month}{day.zfill(2)}_{period}.pdf"
-        
+
+            parsed_date = dateparser.parse(
+                date_str,
+                settings={
+                    'TIMEZONE': 'Africa/Nairobi',  # UTC+3
+                    'RETURN_AS_TIMEZONE_AWARE': True
+                }
+            )
+
+            if parsed_date:
+                return f"hansard_{parsed_date.strftime('%Y%m%d')}_{period}.pdf"
+
         return original_filename
 
 class VotesScraper(BaseScraper):
     """
     Scraper for Votes & Proceedings documents with pagination support.
-    
+
     Implementation Details:
     - Uses CSS selector: table.cols-2 td.views-field-field-pdf a[href$=".pdf"]
     - URL format: /the-national-assembly/house-business/votes-proceedings?field_parliament_value=2022&page=0
@@ -1611,7 +1714,7 @@ class VotesScraper(BaseScraper):
     - Generates standardized filenames: votes_YYYYMMDDTHHMMSSZ.pdf
     - Extracts time from title and converts to 24-hour format
     """
-    
+
     def get_document_urls(
         self,
         chamber: Chamber,
@@ -1621,13 +1724,13 @@ class VotesScraper(BaseScraper):
     ) -> List[str]:
         """
         Get Votes & Proceedings PDF URLs from parliament.go.ke with pagination.
-        
+
         Args:
             chamber: Parliamentary chamber
             start_date: Optional start date (not implemented yet)
             end_date: Optional end date (not implemented yet)
             parliament_term: Parliament term start year (default: 2022)
-            
+
         Returns:
             List of all Votes PDF URLs across all pages
         """
@@ -1638,68 +1741,68 @@ class VotesScraper(BaseScraper):
             base_path = "/the-senate/house-business/votes-proceedings"
         else:
             raise ValueError(f"Unknown chamber: {chamber}")
-        
+
         urls = []
-        
+
         # Fetch first page to determine total pages
         first_page_url = f"{self.config.base_url}{base_path}?field_parliament_value={parliament_term}&page=0"
         response = self.session.get(first_page_url, timeout=self.config.timeout)
         response.raise_for_status()
-        
+
         soup = BeautifulSoup(response.content, 'html.parser')
-        
+
         # Determine total number of pages from pagination
         total_pages = self._get_total_pages(soup)
-        
+
         # Extract URLs from first page
         page_urls = self._extract_urls_from_page(soup)
         urls.extend(page_urls)
-        
+
         # Fetch remaining pages with rate limiting
         for page_num in range(1, total_pages):
             time.sleep(self.config.retry_delay)
-            
+
             page_url = f"{self.config.base_url}{base_path}?field_parliament_value={parliament_term}&page={page_num}"
             response = self.session.get(page_url, timeout=self.config.timeout)
             response.raise_for_status()
-            
+
             soup = BeautifulSoup(response.content, 'html.parser')
             page_urls = self._extract_urls_from_page(soup)
             urls.extend(page_urls)
-        
+
         if not urls:
             raise DataCollectionError(
                 f"No Votes & Proceedings documents found at {first_page_url}. "
                 "This may indicate that the website structure has changed."
             )
-        
+
         return urls
-    
+
     def _get_total_pages(self, soup: BeautifulSoup) -> int:
         """Extract total number of pages from pagination element."""
         pager = soup.select_one('nav.pager, ul.pager, div.pager')
-        
+
         if not pager:
             return 1
-        
+
         page_links = pager.select('a')
         max_page = 0
-        
+
         for link in page_links:
             href = link.get('href', '')
             match = re.search(r'page=(\d+)', href)
             if match:
                 page_num = int(match.group(1))
                 max_page = max(max_page, page_num)
-        
+
         return max_page + 1 if max_page > 0 else 1
-    
+
     def _extract_urls_from_page(self, soup: BeautifulSoup) -> List[str]:
         """Extract PDF URLs from a single page using CSS selectors."""
         urls = []
-        
+
         pdf_links = soup.select('table.cols-2 td.views-field-field-pdf a[href$=".pdf"]')
-        
+
         for link in pdf_links:
             href = link.get('href', '')
             if href:
@@ -1709,89 +1812,101 @@ class VotesScraper(BaseScraper):
                     href = href.lstrip('/')
                     full_url = f"{self.config.base_url}/{href}"
                 urls.append(full_url)
-        
+
         return urls
-    
+
     def extract_metadata(self, url: str, content: bytes) -> dict:
         """
-        Extract metadata from Votes & Proceedings PDF.
-        
-        Extracts date and time from filename title.
+        Extract metadata from Votes & Proceedings PDF using dateparser.
+
+        Extracts date and time from filename title using dateparser library.
+        All dates are assumed to be in UTC+3 timezone (Kenya timezone).
+
         Example: "Tuesday ,November 4, 2025 at 2.30pm.pdf"
         """
         import urllib.parse
+        import dateparser
+
         filename = urllib.parse.unquote(url.split('/')[-1])
-        
+
         metadata = {
             'document_type': 'votes',
             'original_filename': filename,
         }
-        
-        # Extract date: "November 4, 2025"
-        date_match = re.search(r'(\w+)\s*,?\s*(\d{1,2})\s*,?\s*(\d{4})', filename)
+
+        # Extract date using dateparser with UTC+3 timezone
+        date_match = re.search(r'(\w+\s*,?\s*\d{1,2}\s*,?\s*\d{4})', filename)
         if date_match:
-            month_name, day, year = date_match.groups()
-            month_map = {
-                'january': '01', 'february': '02', 'march': '03', 'april': '04',
-                'may': '05', 'june': '06', 'july': '07', 'august': '08',
-                'september': '09', 'october': '10', 'november': '11', 'december': '12'
-            }
-            month = month_map.get(month_name.lower(), '01')
-            metadata['date'] = f"{year}-{month}-{day.zfill(2)}"
-        
+            date_str = date_match.group(1)
+            parsed_date = dateparser.parse(
+                date_str,
+                settings={
+                    'TIMEZONE': 'Africa/Nairobi',  # UTC+3
+                    'RETURN_AS_TIMEZONE_AWARE': True
+                }
+            )
+            if parsed_date:
+                metadata['date'] = parsed_date.strftime('%Y-%m-%d')
+
         # Extract time: "at 2.30pm"
         time_match = re.search(r'at\s+(\d{1,2})\.(\d{2})\s*(am|pm)', filename, re.IGNORECASE)
         if time_match:
             hour, minute, meridiem = time_match.groups()
             hour = int(hour)
-            
+
             # Convert to 24-hour format
             if meridiem.lower() == 'pm' and hour != 12:
                 hour += 12
             elif meridiem.lower() == 'am' and hour == 12:
                 hour = 0
-            
+
             metadata['time'] = f"{hour:02d}:{minute}"
-            
+
             if 'date' in metadata:
                 metadata['datetime_iso'] = f"{metadata['date']}T{hour:02d}:{minute}:00Z"
-        
+
         return metadata
-    
+
     def _generate_filename(self, url: str) -> str:
         """
-        Generate standardized filename from URL.
-        
+        Generate standardized filename from URL using dateparser.
+
         Format: votes_YYYYMMDDTHHMMSSZ.pdf
         Example: votes_20251104T143000Z.pdf
+
+        Uses dateparser to parse British format dates with UTC+3 timezone.
         """
         import urllib.parse
+        import dateparser
+
         original_filename = urllib.parse.unquote(url.split('/')[-1])
-        
-        # Extract date and time
-        date_match = re.search(r'(\w+)\s*,?\s*(\d{1,2})\s*,?\s*(\d{4})', original_filename)
+
+        # Extract date using dateparser
+        date_match = re.search(r'(\w+\s*,?\s*\d{1,2}\s*,?\s*\d{4})', original_filename)
         time_match = re.search(r'at\s+(\d{1,2})\.(\d{2})\s*(am|pm)', original_filename, re.IGNORECASE)
-        
+
         if date_match and time_match:
-            month_name, day, year = date_match.groups()
+            date_str = date_match.group(1)
             hour, minute, meridiem = time_match.groups()
-            
-            month_map = {
-                'january': '01', 'february': '02', 'march': '03', 'april': '04',
-                'may': '05', 'june': '06', 'july': '07', 'august': '08',
-                'september': '09', 'october': '10', 'november': '11', 'december': '12'
-            }
-            month = month_map.get(month_name.lower(), '01')
-            
-            # Convert to 24-hour format
-            hour = int(hour)
-            if meridiem.lower() == 'pm' and hour != 12:
-                hour += 12
-            elif meridiem.lower() == 'am' and hour == 12:
-                hour = 0
-            
-            return f"votes_{year}{month}{day.zfill(2)}T{hour:02d}{minute}00Z.pdf"
-        
+
+            parsed_date = dateparser.parse(
+                date_str,
+                settings={
+                    'TIMEZONE': 'Africa/Nairobi',  # UTC+3
+                    'RETURN_AS_TIMEZONE_AWARE': True
+                }
+            )
+
+            if parsed_date:
+                # Convert to 24-hour format
+                hour = int(hour)
+                if meridiem.lower() == 'pm' and hour != 12:
+                    hour += 12
+                elif meridiem.lower() == 'am' and hour == 12:
+                    hour = 0
+
+                return f"votes_{parsed_date.strftime('%Y%m%d')}T{hour:02d}{minute}00Z.pdf"
+
         return original_filename
 
 def create_scraper(document_type: DocumentType, config: ScraperConfig) -> BaseScraper:
@@ -1800,35 +1915,35 @@ def create_scraper(document_type: DocumentType, config: ScraperConfig) -> BaseSc
         DocumentType.HANSARD: HansardScraper,
         DocumentType.VOTES: VotesScraper,
     }
-    
+
     scraper_class = scrapers.get(document_type)
     if not scraper_class:
         raise ValueError(f"No scraper for document type: {document_type}")
-    
+
     return scraper_class(config)
         """Get Votes & Proceedings PDF URLs from parliament.go.ke tables"""
         base_url = f"{self.config.base_url}/the-national-assembly/house-business/votes-and-proceedings"
         if chamber == Chamber.SENATE:
             base_url = f"{self.config.base_url}/the-senate/house-business/votes-and-proceedings"
-        
+
         response = self.session.get(base_url)
         soup = BeautifulSoup(response.content, 'html.parser')
-        
+
         urls = []
-        
+
         # Find the specific table containing Votes & Proceedings documents
         tables = soup.find_all('table', class_='views-table')
-        
+
         if not tables:
             # Fallback: look for any table containing PDF links
             tables = soup.find_all('table')
-        
+
         for table in tables:
             # Extract PDF links only from table rows
             for row in table.find_all('tr'):
                 for link in row.find_all('a', href=True):
                     href = link['href']
-                    
+
                     # Validate it's a PDF link
                     if href.endswith('.pdf'):
                         # Additional validation: check if it's a Votes document
@@ -1836,7 +1951,7 @@ def create_scraper(document_type: DocumentType, config: ScraperConfig) -> BaseSc
                         if 'vote' in link_text or 'vote' in href.lower() or 'proceeding' in link_text:
                             full_url = href if href.startswith('http') else f"{self.config.base_url}{href}"
                             urls.append(full_url)
-        
+
         # Fail fast if no documents found - likely indicates HTML/CSS changes
         if not urls:
             raise DataCollectionError(
@@ -1844,24 +1959,24 @@ def create_scraper(document_type: DocumentType, config: ScraperConfig) -> BaseSc
                 "This may indicate that the website structure has changed. "
                 "Please verify the page HTML and update the scraper accordingly."
             )
-        
+
         return urls
-    
+
     def extract_metadata(self, url: str, content: bytes) -> dict:
         """Extract metadata from Votes PDF"""
         filename = url.split('/')[-1]
-        
+
         metadata = {
             'document_type': 'votes',
             'filename': filename,
         }
-        
+
         # Try to extract date from filename
         import re
         date_match = re.search(r'(\d{4})-(\d{2})-(\d{2})', filename)
         if date_match:
             metadata['date'] = f"{date_match.group(1)}-{date_match.group(2)}-{date_match.group(3)}"
-        
+
         return metadata
 
 def create_scraper(document_type: DocumentType, config: ScraperConfig) -> BaseScraper:
@@ -1871,35 +1986,45 @@ def create_scraper(document_type: DocumentType, config: ScraperConfig) -> BaseSc
         DocumentType.VOTES: VotesScraper,
         # More scrapers will be added in later phases
     }
-    
+
     scraper_class = scrapers.get(document_type)
     if not scraper_class:
         raise ValueError(f"No scraper for document type: {document_type}")
-    
+
     return scraper_class(config)
 ```
 
 ### Correctness Properties
 
 **Property 5.1**: Hash uniqueness
-- **Validates**: Requirements 4.8
+- **Validates**: Requirements 4.10
 - **Property**: Same PDF content must always generate same hash
 - **Test Strategy**: Download same PDF multiple times, verify hash consistency
 
-**Property 5.2**: Duplicate detection
-- **Validates**: Requirements 4.9
-- **Property**: Already-downloaded documents must be skipped
-- **Test Strategy**: Download document, attempt to download again, verify skip
+**Property 5.2**: URL-based duplicate detection
+- **Validates**: Requirements 4.11, 4.12, 4.13
+- **Property**: Documents with URLs in downloaded_files table must be checked before downloading
+- **Test Strategy**: Insert URL in table, attempt to scrape, verify no download occurs if file exists in storage
 
-**Property 5.3**: Error resilience
-- **Validates**: Requirements 4.10
+**Property 5.3**: File existence verification
+- **Validates**: Requirements 4.12, 4.14
+- **Property**: Files in database but not in storage must be re-downloaded
+- **Test Strategy**: Insert URL in table, delete file from storage, verify re-download occurs
+
+**Property 5.4**: Error resilience
+- **Validates**: Requirements 4.16
 - **Property**: Single document failure must not stop entire scrape
 - **Test Strategy**: Mock failing downloads, verify scraper continues
 
-**Property 5.4**: Fail-fast on empty results
+**Property 5.5**: Fail-fast on empty results
 - **Validates**: Requirements 4.5
 - **Property**: Scraper must raise DataCollectionError when no documents found on first page
 - **Test Strategy**: Mock HTML response with no tables/PDFs, verify error is raised with descriptive message
+
+**Property 5.6**: Dateparser consistency
+- **Validates**: Requirements 4.7, 4.8
+- **Property**: Same date string must always parse to same date with UTC+3 timezone
+- **Test Strategy**: Parse same British format date multiple times, verify consistency
 
 
 
@@ -1947,28 +2072,28 @@ class ProcessedPDF:
 
 class PDFProcessor:
     """Process PDF documents"""
-    
+
     def __init__(self):
         pass
-    
+
     def process(self, pdf_path: Path) -> ProcessedPDF:
         """Process a PDF file"""
         # Compute hash
         file_hash = self._compute_hash(pdf_path)
-        
+
         # Extract text with source tracking
         text_blocks = self._extract_text(pdf_path)
-        
+
         # Extract tables
         tables = self._extract_tables(pdf_path)
-        
+
         # Extract metadata
         metadata = self._extract_metadata(pdf_path)
-        
+
         # Get page count
         with fitz.open(pdf_path) as doc:
             page_count = len(doc)
-        
+
         return ProcessedPDF(
             file_path=pdf_path,
             file_hash=file_hash,
@@ -1977,21 +2102,21 @@ class PDFProcessor:
             metadata=metadata,
             page_count=page_count
         )
-    
+
     def _compute_hash(self, pdf_path: Path) -> str:
         """Compute SHA256 hash of PDF"""
         import hashlib
         return hashlib.sha256(pdf_path.read_bytes()).hexdigest()
-    
+
     def _extract_text(self, pdf_path: Path) -> List[ExtractedText]:
         """Extract text with page and line tracking"""
         text_blocks = []
-        
+
         with fitz.open(pdf_path) as doc:
             for page_num, page in enumerate(doc, start=1):
                 # Get text blocks with bounding boxes
                 blocks = page.get_text("blocks")
-                
+
                 for block_num, block in enumerate(blocks):
                     if block[6] == 0:  # Text block (not image)
                         text = block[4].strip()
@@ -2002,17 +2127,17 @@ class PDFProcessor:
                                 line_number=block_num,
                                 bbox=(block[0], block[1], block[2], block[3])
                             ))
-        
+
         return text_blocks
-    
+
     def _extract_tables(self, pdf_path: Path) -> List[ExtractedTable]:
         """Extract tables from PDF"""
         tables = []
-        
+
         with pdfplumber.open(pdf_path) as pdf:
             for page_num, page in enumerate(pdf.pages, start=1):
                 page_tables = page.extract_tables()
-                
+
                 for table in page_tables:
                     if table:  # Skip empty tables
                         tables.append(ExtractedTable(
@@ -2020,14 +2145,14 @@ class PDFProcessor:
                             page_number=page_num,
                             bbox=None  # pdfplumber doesn't provide bbox easily
                         ))
-        
+
         return tables
-    
+
     def _extract_metadata(self, pdf_path: Path) -> Dict[str, Any]:
         """Extract PDF metadata"""
         with fitz.open(pdf_path) as doc:
             metadata = doc.metadata
-            
+
             return {
                 'title': metadata.get('title', ''),
                 'author': metadata.get('author', ''),
@@ -2037,24 +2162,24 @@ class PDFProcessor:
                 'creation_date': metadata.get('creationDate', ''),
                 'modification_date': metadata.get('modDate', ''),
             }
-    
+
     def extract_text_by_page(self, pdf_path: Path, page_number: int) -> str:
         """Extract text from specific page"""
         with fitz.open(pdf_path) as doc:
             if page_number < 1 or page_number > len(doc):
                 raise ValueError(f"Invalid page number: {page_number}")
-            
+
             page = doc[page_number - 1]
             return page.get_text()
-    
+
     def search_text(self, pdf_path: Path, query: str) -> List[ExtractedText]:
         """Search for text in PDF"""
         results = []
-        
+
         with fitz.open(pdf_path) as doc:
             for page_num, page in enumerate(doc, start=1):
                 text_instances = page.search_for(query)
-                
+
                 for inst in text_instances:
                     # Get surrounding text
                     text = page.get_text("text", clip=inst)
@@ -2063,31 +2188,31 @@ class PDFProcessor:
                         page_number=page_num,
                         bbox=(inst.x0, inst.y0, inst.x1, inst.y1)
                     ))
-        
+
         return results
 
 class HansardProcessor(PDFProcessor):
     """Specialized processor for Hansard documents"""
-    
+
     def process_hansard(self, pdf_path: Path) -> ProcessedPDF:
         """Process Hansard with MP identification"""
         base_result = self.process(pdf_path)
-        
+
         # Additional Hansard-specific processing
         # This will be expanded in Phase 1
-        
+
         return base_result
 
 class VotesProcessor(PDFProcessor):
     """Specialized processor for Votes & Proceedings"""
-    
+
     def process_votes(self, pdf_path: Path) -> ProcessedPDF:
         """Process Votes with structured data extraction"""
         base_result = self.process(pdf_path)
-        
+
         # Extract vote tables
         # This will be expanded in Phase 1
-        
+
         return base_result
 ```
 
@@ -2099,7 +2224,7 @@ from datetime import datetime
 
 class DocumentStorageService:
     """Service for storing processed documents"""
-    
+
     def __init__(
         self,
         db_session,
@@ -2109,7 +2234,7 @@ class DocumentStorageService:
         self.db = db_session
         self.vector_db = vector_db
         self.embedding_generator = embedding_generator
-    
+
     def store_document(
         self,
         processed_pdf: ProcessedPDF,
@@ -2135,11 +2260,11 @@ class DocumentStorageService:
         )
         self.db.add(doc_orm)
         self.db.commit()
-        
+
         # Generate embedding for full document text
         full_text = " ".join([block.text for block in processed_pdf.text_blocks])
         embedding = self.embedding_generator.generate(full_text)
-        
+
         # Store in vector DB
         self.vector_db.insert(
             collection="documents",
@@ -2157,25 +2282,25 @@ class DocumentStorageService:
             },
             text=full_text
         )
-        
+
         return str(document.id)
-    
+
     def is_duplicate(self, source_hash: str) -> bool:
         """Check if document already exists"""
         existing = self.db.query(DocumentORM).filter(
             DocumentORM.source_hash == source_hash
         ).first()
         return existing is not None
-    
+
     def get_document(self, document_id: str) -> Optional[Document]:
         """Retrieve document by ID"""
         doc_orm = self.db.query(DocumentORM).filter(
             DocumentORM.id == document_id
         ).first()
-        
+
         if not doc_orm:
             return None
-        
+
         return Document(
             id=doc_orm.id,
             type=DocumentType(doc_orm.type),
@@ -2234,14 +2359,14 @@ import sys
 
 def configure_logging(config: LoggingConfig) -> None:
     """Configure structured logging"""
-    
+
     # Configure standard library logging
     logging.basicConfig(
         format="%(message)s",
         stream=sys.stdout if config.output in ["stdout", "both"] else None,
         level=getattr(logging, config.level)
     )
-    
+
     # Configure structlog
     processors = [
         structlog.contextvars.merge_contextvars,
@@ -2250,12 +2375,12 @@ def configure_logging(config: LoggingConfig) -> None:
         structlog.processors.StackInfoRenderer(),
         structlog.processors.format_exc_info,
     ]
-    
+
     if config.format == "json":
         processors.append(structlog.processors.JSONRenderer())
     else:
         processors.append(structlog.dev.ConsoleRenderer())
-    
+
     structlog.configure(
         processors=processors,
         wrapper_class=structlog.make_filtering_bound_logger(
@@ -2268,30 +2393,30 @@ def configure_logging(config: LoggingConfig) -> None:
 
 class Logger:
     """Structured logger wrapper"""
-    
+
     def __init__(self, name: str):
         self.logger = structlog.get_logger(name)
-    
+
     def debug(self, message: str, **kwargs: Any) -> None:
         """Log debug message"""
         self.logger.debug(message, **kwargs)
-    
+
     def info(self, message: str, **kwargs: Any) -> None:
         """Log info message"""
         self.logger.info(message, **kwargs)
-    
+
     def warning(self, message: str, **kwargs: Any) -> None:
         """Log warning message"""
         self.logger.warning(message, **kwargs)
-    
+
     def error(self, message: str, **kwargs: Any) -> None:
         """Log error message"""
         self.logger.error(message, **kwargs)
-    
+
     def critical(self, message: str, **kwargs: Any) -> None:
         """Log critical message"""
         self.logger.critical(message, **kwargs)
-    
+
     def bind(self, **kwargs: Any) -> 'Logger':
         """Bind context to logger"""
         bound_logger = self.logger.bind(**kwargs)
@@ -2363,10 +2488,10 @@ def setup_file_logging(config: LoggingConfig) -> None:
     """Setup file logging with rotation"""
     if config.output not in ["file", "both"]:
         return
-    
+
     log_dir = Path(config.log_dir)
     log_dir.mkdir(parents=True, exist_ok=True)
-    
+
     handler = TimedRotatingFileHandler(
         filename=log_dir / "hansard_tales.log",
         when="midnight",
@@ -2374,11 +2499,11 @@ def setup_file_logging(config: LoggingConfig) -> None:
         backupCount=30,  # Keep 30 days of logs
         encoding="utf-8"
     )
-    
+
     handler.setFormatter(
         logging.Formatter('%(message)s')
     )
-    
+
     logging.getLogger().addHandler(handler)
 ```
 
@@ -2529,10 +2654,10 @@ T = TypeVar('T')
 
 class BatchProcessor(Generic[T]):
     """Process items in batch with error isolation"""
-    
+
     def __init__(self, logger: Logger):
         self.logger = logger
-    
+
     def process_batch(
         self,
         items: List[T],
@@ -2542,14 +2667,14 @@ class BatchProcessor(Generic[T]):
         """Process batch of items, isolating errors"""
         results = []
         errors = []
-        
+
         for item in items:
             try:
                 result = process_func(item)
                 results.append(result)
             except Exception as e:
                 errors.append((item, e))
-                
+
                 error_context = capture_error_context(
                     error=e,
                     component="batch_processor",
@@ -2557,10 +2682,10 @@ class BatchProcessor(Generic[T]):
                     input_data={"item": str(item)}
                 )
                 log_error(self.logger, error_context)
-                
+
                 if not continue_on_error:
                     raise
-        
+
         return results, errors
 
 # Usage
@@ -2670,12 +2795,12 @@ def db_session(test_config):
     """Create test database session"""
     engine = create_engine(test_config.database.connection_string)
     Base.metadata.create_all(engine)
-    
+
     Session = sessionmaker(bind=engine)
     session = Session()
-    
+
     yield session
-    
+
     session.close()
     Base.metadata.drop_all(engine)
 
@@ -2691,13 +2816,13 @@ def vector_db(test_config):
 def sample_pdf(temp_dir):
     """Create sample PDF for testing"""
     from reportlab.pdfgen import canvas
-    
+
     pdf_path = temp_dir / "sample.pdf"
     c = canvas.Canvas(str(pdf_path))
     c.drawString(100, 750, "Sample Hansard Document")
     c.drawString(100, 700, "This is a test statement by MP John Doe.")
     c.save()
-    
+
     return pdf_path
 
 @pytest.fixture
@@ -2705,7 +2830,7 @@ def sample_document():
     """Create sample document model"""
     from hansard_tales.models import Document, DocumentType, Chamber, SourceReference
     from datetime import date, datetime
-    
+
     return Document(
         type=DocumentType.HANSARD,
         chamber=Chamber.NATIONAL_ASSEMBLY,
@@ -2736,7 +2861,7 @@ import json
 def test_document_serialization_roundtrip(title, parliament_term):
     """Property: Document serialization must be lossless"""
     from datetime import date, datetime
-    
+
     doc = Document(
         type=DocumentType.HANSARD,
         chamber=Chamber.NATIONAL_ASSEMBLY,
@@ -2750,13 +2875,13 @@ def test_document_serialization_roundtrip(title, parliament_term):
         ),
         vector_doc_id="test_doc"
     )
-    
+
     # Serialize to JSON
     json_str = doc.model_dump_json()
-    
+
     # Deserialize from JSON
     doc_restored = Document.model_validate_json(json_str)
-    
+
     # Verify equality
     assert doc.title == doc_restored.title
     assert doc.parliament_term == doc_restored.parliament_term
@@ -2765,13 +2890,13 @@ def test_document_serialization_roundtrip(title, parliament_term):
 def test_source_reference_immutability(text):
     """Property: SourceReference must be immutable"""
     from datetime import datetime
-    
+
     source = SourceReference(
         source_url="https://example.com/test.pdf",
         source_hash="abc123",
         download_date=datetime.utcnow()
     )
-    
+
     # Attempt to modify should raise error
     with pytest.raises(Exception):
         source.source_url = text
@@ -2785,11 +2910,11 @@ def test_embedding_consistency(text, num_runs):
     """Property: Same text must generate same embedding"""
     from hansard_tales.embedding import EmbeddingGenerator
     from hansard_tales.config import EmbeddingConfig
-    
+
     generator = EmbeddingGenerator(EmbeddingConfig())
-    
+
     embeddings = [generator.generate(text) for _ in range(num_runs)]
-    
+
     # All embeddings should be identical
     for i in range(1, num_runs):
         assert embeddings[0] == embeddings[i]
@@ -2803,13 +2928,13 @@ def test_vector_search_returns_most_similar(texts):
     from hansard_tales.embedding import EmbeddingGenerator
     from hansard_tales.config import EmbeddingConfig
     import tempfile
-    
+
     with tempfile.TemporaryDirectory() as tmpdir:
         vdb = ChromaDBAdapter(tmpdir)
         vdb.create_collection("test", dimension=384)
-        
+
         generator = EmbeddingGenerator(EmbeddingConfig())
-        
+
         # Insert all texts
         for i, text in enumerate(texts):
             embedding = generator.generate(text)
@@ -2820,7 +2945,7 @@ def test_vector_search_returns_most_similar(texts):
                 payload={"index": i},
                 text=text
             )
-        
+
         # Search for first text
         query_embedding = generator.generate(texts[0])
         results = vdb.search(
@@ -2828,7 +2953,7 @@ def test_vector_search_returns_most_similar(texts):
             query_vector=query_embedding,
             limit=1
         )
-        
+
         # First result should be the query text itself
         assert results[0].text == texts[0]
 ```
@@ -2842,7 +2967,7 @@ testpaths = tests
 python_files = test_*.py
 python_classes = Test*
 python_functions = test_*
-addopts = 
+addopts =
     --cov=hansard_tales
     --cov-report=html
     --cov-report=term-missing
@@ -2894,21 +3019,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.12'
           cache: 'pip'
-      
+
       - name: Install dependencies
         run: |
           pip install ruff mypy
           pip install -e .
-      
+
       - name: Run ruff
         run: ruff check .
-      
+
       - name: Run mypy
         run: mypy hansard_tales
 
@@ -2917,24 +3042,24 @@ jobs:
     strategy:
       matrix:
         python-version: ['3.10', '3.11', '3.12']
-    
+
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
           cache: 'pip'
-      
+
       - name: Install dependencies
         run: |
           pip install -e .[dev]
-      
+
       - name: Run tests
         run: |
           pytest --cov=hansard_tales --cov-report=xml --cov-report=term
-      
+
       - name: Upload coverage
         uses: codecov/codecov-action@v3
         with:
@@ -2944,20 +3069,20 @@ jobs:
   build:
     runs-on: ubuntu-latest
     needs: [lint, test]
-    
+
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.12'
-      
+
       - name: Build package
         run: |
           pip install build
           python -m build
-      
+
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
@@ -2968,10 +3093,10 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     if: github.ref == 'refs/heads/main'
-    
+
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Deploy to production
         run: |
           echo "Deployment will be configured in Phase 1"
@@ -2991,14 +3116,14 @@ repos:
       - id: check-added-large-files
       - id: check-json
       - id: check-toml
-  
+
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.1.9
     hooks:
       - id: ruff
         args: [--fix]
       - id: ruff-format
-  
+
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: v1.8.0
     hooks:
@@ -3399,11 +3524,11 @@ scrape_configs:
   - job_name: 'hansard_tales'
     static_configs:
       - targets: ['localhost:9090']
-    
+
   - job_name: 'postgres'
     static_configs:
       - targets: ['postgres:5432']
-    
+
   - job_name: 'qdrant'
     static_configs:
       - targets: ['qdrant:6333']
@@ -3463,7 +3588,7 @@ def configure_sentry(config: MonitoringConfig):
     """Configure Sentry error tracking"""
     if not config.sentry_enabled:
         return
-    
+
     sentry_sdk.init(
         dsn=config.sentry_dsn,
         environment=config.environment,
@@ -3500,9 +3625,9 @@ async def health_check() -> Dict[str, Any]:
         "vector_db": check_vector_db_health(),
         "disk_space": check_disk_space(),
     }
-    
+
     all_healthy = all(checks.values())
-    
+
     return {
         "status": "healthy" if all_healthy else "unhealthy",
         "checks": checks
@@ -3948,4 +4073,3 @@ After completing Phase 0 design:
 - [requirements.md](requirements.md) - Phase 0 requirements
 - [DOCUMENT_FLOW.md](../DOCUMENT_FLOW.md) - Data flow architecture
 - [README.md](../README.md) - Project overview
-

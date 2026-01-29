@@ -1,19 +1,27 @@
 """Qdrant adapter for production environment."""
 
-from typing import List, Dict, Any, Optional
+from typing import Any
+
 from qdrant_client import QdrantClient
-from qdrant_client.models import Distance, VectorParams, PointStruct, Filter, FieldCondition, MatchValue
+from qdrant_client.models import (
+    Distance,
+    FieldCondition,
+    Filter,
+    MatchValue,
+    PointStruct,
+    VectorParams,
+)
 
 from hansard_tales.vector_db.interface import VectorDB, VectorSearchResult
 
 
 class QdrantAdapter(VectorDB):
     """Qdrant implementation (production)."""
-    
+
     def __init__(self, host: str, port: int):
         """
         Initialize Qdrant adapter.
-        
+
         Args:
             host: Qdrant server host
             port: Qdrant server port
@@ -21,34 +29,26 @@ class QdrantAdapter(VectorDB):
         self.client = QdrantClient(host=host, port=port)
         self.Distance = Distance
         self.VectorParams = VectorParams
-    
+
     def create_collection(self, name: str, dimension: int) -> None:
         """
         Create a new collection.
-        
+
         Args:
             name: Collection name
             dimension: Vector dimension
         """
         self.client.recreate_collection(
             collection_name=name,
-            vectors_config=VectorParams(
-                size=dimension,
-                distance=Distance.COSINE
-            )
+            vectors_config=VectorParams(size=dimension, distance=Distance.COSINE),
         )
-    
+
     def insert(
-        self,
-        collection: str,
-        id: str,
-        vector: List[float],
-        payload: Dict[str, Any],
-        text: str
+        self, collection: str, id: str, vector: list[float], payload: dict[str, Any], text: str
     ) -> None:
         """
         Insert a vector with metadata.
-        
+
         Args:
             collection: Collection name
             id: Document ID
@@ -56,84 +56,76 @@ class QdrantAdapter(VectorDB):
             payload: Metadata dictionary
             text: Original text
         """
-        payload['text'] = text
+        payload["text"] = text
         self.client.upsert(
-            collection_name=collection,
-            points=[PointStruct(id=id, vector=vector, payload=payload)]
+            collection_name=collection, points=[PointStruct(id=id, vector=vector, payload=payload)]
         )
-    
+
     def search(
         self,
         collection: str,
-        query_vector: List[float],
+        query_vector: list[float],
         limit: int = 10,
-        filter: Optional[Dict[str, Any]] = None
-    ) -> List[VectorSearchResult]:
+        filter: dict[str, Any] | None = None,
+    ) -> list[VectorSearchResult]:
         """
         Search for similar vectors.
-        
+
         Args:
             collection: Collection name
             query_vector: Query embedding
             limit: Maximum number of results
             filter: Optional metadata filters
-            
+
         Returns:
             List of search results
         """
         qdrant_filter = None
         if filter:
             conditions = [
-                FieldCondition(key=k, match=MatchValue(value=v))
-                for k, v in filter.items()
+                FieldCondition(key=k, match=MatchValue(value=v)) for k, v in filter.items()
             ]
             qdrant_filter = Filter(must=conditions)
-        
+
         results = self.client.search(
             collection_name=collection,
             query_vector=query_vector,
             limit=limit,
-            query_filter=qdrant_filter
+            query_filter=qdrant_filter,
         )
-        
+
         return [
             VectorSearchResult(
                 id=str(result.id),
                 score=result.score,
                 payload=result.payload,
-                text=result.payload.get('text', '')
+                text=result.payload.get("text", ""),
             )
             for result in results
         ]
-    
+
     def delete(self, collection: str, id: str) -> None:
         """
         Delete a vector by ID.
-        
+
         Args:
             collection: Collection name
             id: Document ID
         """
-        self.client.delete(
-            collection_name=collection,
-            points_selector=[id]
-        )
-    
-    def get(self, collection: str, id: str) -> Optional[VectorSearchResult]:
+        self.client.delete(collection_name=collection, points_selector=[id])
+
+    def get(self, collection: str, id: str) -> VectorSearchResult | None:
         """
         Get a vector by ID.
-        
+
         Args:
             collection: Collection name
             id: Document ID
-            
+
         Returns:
             Search result or None if not found
         """
-        results = self.client.retrieve(
-            collection_name=collection,
-            ids=[id]
-        )
+        results = self.client.retrieve(collection_name=collection, ids=[id])
         if not results:
             return None
         result = results[0]
@@ -141,5 +133,5 @@ class QdrantAdapter(VectorDB):
             id=str(result.id),
             score=1.0,
             payload=result.payload,
-            text=result.payload.get('text', '')
+            text=result.payload.get("text", ""),
         )

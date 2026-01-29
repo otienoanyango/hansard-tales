@@ -1,6 +1,5 @@
 """Embedding generator using sentence-transformers."""
 
-from typing import List
 import numpy as np
 from sentence_transformers import SentenceTransformer
 
@@ -9,28 +8,28 @@ from hansard_tales.config.settings import EmbeddingConfig
 
 class EmbeddingGenerator:
     """Generate embeddings using sentence-transformers."""
-    
+
     def __init__(self, config: EmbeddingConfig):
         """
         Initialize embedding generator.
-        
+
         Args:
             config: Embedding configuration
         """
         self.model = SentenceTransformer(config.model_name, device=config.device)
         self.dimension = config.dimension
         self.batch_size = config.batch_size
-    
-    def generate(self, text: str) -> List[float]:
+
+    def generate(self, text: str) -> list[float]:
         """
         Generate embedding for single text.
-        
+
         Args:
             text: Input text
-            
+
         Returns:
             Embedding vector as list of floats
-            
+
         Example:
             >>> generator = EmbeddingGenerator(EmbeddingConfig())
             >>> embedding = generator.generate("This is a test")
@@ -39,17 +38,17 @@ class EmbeddingGenerator:
         """
         embedding = self.model.encode(text, convert_to_numpy=True)
         return embedding.tolist()
-    
-    def generate_batch(self, texts: List[str]) -> List[List[float]]:
+
+    def generate_batch(self, texts: list[str]) -> list[list[float]]:
         """
         Generate embeddings for batch of texts.
-        
+
         Args:
             texts: List of input texts
-            
+
         Returns:
             List of embedding vectors
-            
+
         Example:
             >>> generator = EmbeddingGenerator(EmbeddingConfig())
             >>> texts = ["First text", "Second text"]
@@ -58,24 +57,21 @@ class EmbeddingGenerator:
             2
         """
         embeddings = self.model.encode(
-            texts,
-            batch_size=self.batch_size,
-            convert_to_numpy=True,
-            show_progress_bar=True
+            texts, batch_size=self.batch_size, convert_to_numpy=True, show_progress_bar=True
         )
         return embeddings.tolist()
-    
-    def similarity(self, embedding1: List[float], embedding2: List[float]) -> float:
+
+    def similarity(self, embedding1: list[float], embedding2: list[float]) -> float:
         """
         Compute cosine similarity between two embeddings.
-        
+
         Args:
             embedding1: First embedding vector
             embedding2: Second embedding vector
-            
+
         Returns:
             Cosine similarity score (0 to 1)
-            
+
         Example:
             >>> generator = EmbeddingGenerator(EmbeddingConfig())
             >>> emb1 = generator.generate("Hello world")

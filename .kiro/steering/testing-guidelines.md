@@ -6,7 +6,44 @@ inclusion: always
 
 ## Overview
 
-This project maintains high test coverage (≥90%) using pytest. All new code should include comprehensive tests covering both happy paths and error cases.
+This project maintains high test coverage (≥90%) using pytest with a preference for realistic test data over excessive mocking. All new code should include comprehensive tests covering both happy paths and error cases.
+
+## Testing Philosophy
+
+### Prefer Realistic Data Over Mocking
+
+**Use real data when possible:**
+- ✅ Real PDFs from parliament.go.ke (stored in `tests/data/pdfs/`)
+- ✅ Temporary SQLite databases with actual schema
+- ✅ Real HTTP responses (cached or recorded)
+- ✅ Actual file system operations in temp directories
+
+**Mock only when necessary:**
+- ❌ Don't mock database operations - use temp SQLite
+- ❌ Don't mock file operations - use temp directories
+- ✅ DO mock external network calls (after initial download)
+- ✅ DO mock slow operations (embedding generation, etc.)
+
+**Benefits of realistic data:**
+- Tests catch real-world issues
+- Easier to understand and maintain
+- More confidence in production behavior
+- Reduces brittleness from over-mocking
+
+### Test Data Organization
+
+```
+tests/
+├── data/
+│   ├── pdfs/
+│   │   ├── hansard/          # Real Hansard PDFs
+│   │   └── votes/            # Real Votes PDFs
+│   └── fixtures/             # HTML fixtures, etc.
+├── unit/                     # Unit tests
+├── integration/              # Integration tests
+├── property/                 # Property-based tests
+└── e2e/                      # End-to-end tests
+```
 
 ## Test Structure
 
@@ -22,13 +59,13 @@ tests/
 ```python
 class TestFunctionName:
     """Test suite for specific function."""
-    
+
     def test_success_case(self):
         """Test normal operation."""
-        
+
     def test_error_handling(self):
         """Test error scenarios."""
-        
+
     def test_edge_cases(self):
         """Test boundary conditions."""
 ```
@@ -44,13 +81,13 @@ def temp_db():
     """Create temporary database for testing."""
     with tempfile.NamedTemporaryFile(suffix='.db', delete=False) as f:
         db_path = f.name
-    
+
     # Initialize schema
     conn = sqlite3.Connection(db_path)
     # ... create tables
-    
+
     yield db_path
-    
+
     Path(db_path).unlink()
 ```
 
@@ -76,10 +113,10 @@ def test_with_mock(self, mock_class):
     mock_instance = Mock()
     mock_instance.method.return_value = expected_value
     mock_class.return_value = mock_instance
-    
+
     # Test code
     result = function_under_test()
-    
+
     # Verify
     assert result == expected_value
     mock_instance.method.assert_called_once()
@@ -140,7 +177,7 @@ def test_invalid_input(self):
     """Test handling of invalid input."""
     result = function(None)
     assert result is None
-    
+
 def test_exception_handling(self):
     """Test exception handling."""
     with pytest.raises(ValueError):
@@ -177,7 +214,7 @@ def test_large_input(self):
 def test_function_name(self):
     """
     Test description explaining what is being tested.
-    
+
     This test verifies that [specific behavior] works correctly
     when [specific conditions].
     """
@@ -189,10 +226,10 @@ def test_example(self):
     """Test example function."""
     # Arrange: Setup test data
     input_data = create_test_data()
-    
+
     # Act: Execute function
     result = function_under_test(input_data)
-    
+
     # Assert: Verify results
     assert result.status == 'success'
     assert result.count == 10
@@ -223,7 +260,7 @@ class TestFunction:
         """Test successful operation."""
         result = function(valid_input)
         assert result.status == 'success'
-    
+
     def test_failure_case(self):
         """Test failure handling."""
         result = function(invalid_input)
@@ -239,16 +276,16 @@ def test_database_operation(self, temp_db):
     """Test database operation."""
     conn = sqlite3.connect(temp_db)
     cursor = conn.cursor()
-    
+
     # Perform operation
     cursor.execute("INSERT INTO table VALUES (?)", (value,))
     conn.commit()
-    
+
     # Verify
     cursor.execute("SELECT * FROM table")
     result = cursor.fetchone()
     assert result[0] == value
-    
+
     conn.close()
 ```
 
@@ -259,10 +296,10 @@ def test_parallel_processing(self, mock_executor):
     """Test parallel processing."""
     # Mock executor behavior
     mock_executor.return_value.__enter__.return_value.submit.return_value.result.return_value = expected
-    
+
     # Test code
     result = parallel_function()
-    
+
     # Verify
     assert result == expected
 ```
@@ -273,10 +310,10 @@ def test_parallel_processing(self, mock_executor):
 def test_cli_argument(self):
     """Test command-line argument parsing."""
     from module import main
-    
+
     with pytest.raises(SystemExit) as exc_info:
         main()
-    
+
     assert exc_info.value.code == 0
 ```
 

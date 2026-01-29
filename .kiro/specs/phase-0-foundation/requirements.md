@@ -80,21 +80,40 @@ This document specifies requirements for Phase 0 of the Hansard Tales system: es
 4. EACH scraper SHALL identify the correct table by HTML structure (class, id, or table headers)
 5. WHEN no documents are found on the first page, THE System SHALL raise an error indicating potential HTML/CSS changes
 6. EACH scraper SHALL download PDFs to either local storage (for testing and adhoc runs) or to cloud storage (S3)
-7. EACH scraper SHALL extract metadata (date, session, title) from PDF filename or content
-8. EACH scraper SHALL compute SHA256 hash of downloaded PDF
-9. EACH scraper SHALL skip already-downloaded documents (based on hash)
-10. WHEN a scraper fails during document processing, THE System SHALL log the error and continue with remaining documents
-11. THE System SHALL support date range filtering for scrapers
-12. EACH scraper SHALL validate that extracted links are PDF files before downloading
-13. THE System SHALL support pagination to fetch all available documents across multiple pages
-14. THE System SHALL use parliament term parameter in URLs for proper document filtering
-15. THE System SHALL add rate limiting delays between page requests to avoid server issues
-16. THE System SHALL generate standardized filenames for downloaded documents based on extracted metadata
-17. HANSARD documents SHALL be renamed to format: hansard_YYYYMMDD_<P|A|E>.pdf where P=Morning, A=Afternoon, E=Evening
-18. VOTES documents SHALL be renamed to format: votes_YYYYMMDDTHHMMSSZ.pdf in ISO 8601 datetime format with UTC timezone
-19. WHEN filename parsing fails, THE System SHALL fallback to original filename
+7. EACH scraper SHALL use the dateparser library to parse British format dates from PDF link titles
+8. EACH scraper SHALL assume all dates are in UTC+3 timezone (Kenya timezone)
+9. EACH scraper SHALL extract metadata (date, session, title) from PDF filename or content
+10. EACH scraper SHALL compute SHA256 hash of downloaded PDF
+11. WHEN checking for duplicates, THE System SHALL first query the downloaded_files table by source URL
+12. WHEN a file exists in the downloaded_files table, THE System SHALL verify the file exists in storage
+13. WHEN a file exists in both the table and storage, THE System SHALL skip downloading
+14. WHEN a file exists in the table but not in storage, THE System SHALL download and update the table
+15. WHEN a file does not exist in the table, THE System SHALL download and insert a new record
+16. WHEN a scraper fails during document processing, THE System SHALL log the error and continue with remaining documents
+17. THE System SHALL support date range filtering for scrapers
+18. EACH scraper SHALL validate that extracted links are PDF files before downloading
+19. THE System SHALL support pagination to fetch all available documents across multiple pages
+20. THE System SHALL use parliament term parameter in URLs for proper document filtering
+21. THE System SHALL add rate limiting delays between page requests to avoid server issues
+22. THE System SHALL generate standardized filenames for downloaded documents based on extracted metadata
+23. HANSARD documents SHALL be renamed to format: hansard_YYYYMMDD_<P|A|E>.pdf where P=Morning, A=Afternoon, E=Evening
+24. VOTES documents SHALL be renamed to format: votes_YYYYMMDDTHHMMSSZ.pdf in ISO 8601 datetime format with UTC timezone
+25. WHEN filename parsing fails, THE System SHALL fallback to original filename
 
 #### Implementation Notes
+
+**Scraping Workflow Order:**
+1. Fetch page 0 table links using CSS Selectors, extract link title and href
+2. Parse dates from link titles using dateparser library (UTC+3 timezone)
+3. Determine what the storage path would be for each file
+4. Check the downloads tracking table by original URL to find if file has been downloaded
+5. For files existing in the tracking table, verify if they exist in storage
+6. If files don't exist in storage, download them and update table if necessary
+7. If files exist in storage, skip them
+8. For files that don't exist in the tracking table, download and insert new records
+
+**Rationale for URL-based checking:**
+Using hash-based comparison requires downloading files first to compute hashes. Since the goal is to eliminate re-downloading existing files, checking the database by URL first, then verifying file existence in storage, achieves this goal without unnecessary downloads.
 
 **Hansard Scraper Specifics:**
 - URL Format: `https://parliament.go.ke/the-national-assembly/house-business/hansard?field_parliament_value=2022&page=0`
@@ -102,6 +121,7 @@ This document specifies requirements for Phase 0 of the Hansard Tales system: es
 - Pagination: Automatically detects total pages from `nav.pager` element
 - Parliament Term: Default 2022 (13th Parliament)
 - Rate Limiting: Uses `retry_delay` config between page requests
+- Date Parsing: Uses dateparser library with UTC+3 timezone for British format dates
 - Filename Format: `hansard_YYYYMMDD_<P|A|E>.pdf`
 - Verified: Successfully fetches 452 PDFs from 19 pages
 
@@ -109,6 +129,7 @@ This document specifies requirements for Phase 0 of the Hansard Tales system: es
 - URL Format: `https://parliament.go.ke/the-national-assembly/house-business/votes-proceedings?field_parliament_value=2022&page=0`
 - CSS Selector: `table.cols-2 td.views-field-field-pdf a[href$=".pdf"]`
 - Pagination: Same as Hansard scraper
+- Date Parsing: Uses dateparser library with UTC+3 timezone for British format dates
 - Filename Format: `votes_YYYYMMDDTHHMMSSZ.pdf`
 - Time Parsing: Extracts time from title (e.g., "at 2.30pm") and converts to 24-hour format
 
@@ -166,7 +187,7 @@ This document specifies requirements for Phase 0 of the Hansard Tales system: es
 
 ### Requirement 9: Testing Infrastructure
 
-**User Story:** As a developer, I want comprehensive testing infrastructure, so that I can verify correctness.
+**User Story:** As a developer, I want comprehensive testing infrastructure with realistic test data, so that I can verify correctness and catch real-world issues.
 
 #### Acceptance Criteria
 
@@ -175,8 +196,13 @@ This document specifies requirements for Phase 0 of the Hansard Tales system: es
 3. THE System SHALL maintain ≥90% code coverage
 4. THE System SHALL run tests on every commit (CI/CD)
 5. THE System SHALL include: unit tests, integration tests, property tests
-6. THE System SHALL use fixtures for test data
-7. THE System SHALL mock external dependencies (network, filesystem)
+6. THE System SHALL prefer realistic test data over excessive mocking
+7. THE System SHALL use real PDFs from parliament.go.ke for testing (stored in tests/data/pdfs/)
+8. THE System SHALL use temporary SQLite databases instead of mocking database operations
+9. THE System SHALL use temporary directories for file operations
+10. THE System SHALL mock only external network calls and slow operations
+11. THE System SHALL use fixtures for test data
+12. THE System SHALL mock external dependencies only when necessary (network, slow operations)
 
 ### Requirement 10: CI/CD Pipeline
 
@@ -252,4 +278,3 @@ This document specifies requirements for Phase 0 of the Hansard Tales system: es
 3. THE System SHALL NEVER modify source reference fields after initial storage
 4. THE System SHALL support linking from any processed data back to original PDF
 5. THE System SHALL verify PDF integrity using stored hash
-

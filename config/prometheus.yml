@@ -1,0 +1,65 @@
+# Prometheus Configuration for Hansard Tales
+# This configuration defines how Prometheus scrapes metrics from various services
+
+global:
+  # How frequently to scrape targets by default
+  scrape_interval: 15s
+
+  # How frequently to evaluate rules
+  evaluation_interval: 15s
+
+  # Attach these labels to any time series or alerts when communicating with
+  # external systems (federation, remote storage, Alertmanager)
+  external_labels:
+    monitor: 'hansard-tales'
+    environment: 'development'
+
+# Scrape configurations
+scrape_configs:
+  # Hansard Tales application metrics
+  - job_name: 'hansard_tales'
+    static_configs:
+      - targets: ['host.docker.internal:9090']
+    scrape_interval: 15s
+    scrape_timeout: 10s
+    metrics_path: '/metrics'
+
+  # PostgreSQL database metrics (requires postgres_exporter)
+  - job_name: 'postgres'
+    static_configs:
+      - targets: ['postgres:5432']
+    scrape_interval: 30s
+    scrape_timeout: 10s
+
+  # Qdrant vector database metrics
+  - job_name: 'qdrant'
+    static_configs:
+      - targets: ['qdrant:6333']
+    scrape_interval: 30s
+    scrape_timeout: 10s
+    metrics_path: '/metrics'
+
+  # Prometheus self-monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+    scrape_interval: 15s
+
+# Storage configuration
+storage:
+  tsdb:
+    # How long to retain data (default: 15 days)
+    retention.time: 30d
+
+    # Maximum size of storage (optional)
+    # retention.size: 10GB
+
+# Alerting configuration (optional - can be added later)
+# alerting:
+#   alertmanagers:
+#     - static_configs:
+#         - targets: ['alertmanager:9093']
+
+# Rule files (optional - can be added later for alerting rules)
+# rule_files:
+#   - 'alerts/*.yml'
