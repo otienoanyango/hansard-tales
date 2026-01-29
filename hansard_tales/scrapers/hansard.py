@@ -64,12 +64,11 @@ class HansardScraper(BaseScraper):
 
         urls = []
 
-        # Fetch first page to determine total pages
+        # Fetch first page to determine total pages (with retry)
         first_page_url = (
             f"{self.config.base_url}{base_path}?field_parliament_value={parliament_term}&page=0"
         )
-        response = self.session.get(first_page_url, timeout=self.config.timeout)
-        response.raise_for_status()
+        response = self._fetch_page_with_retry(first_page_url, timeout=self.config.timeout)
 
         soup = BeautifulSoup(response.content, "html.parser")
 
@@ -80,7 +79,7 @@ class HansardScraper(BaseScraper):
         page_urls = self._extract_urls_from_page(soup)
         urls.extend(page_urls)
 
-        # Fetch remaining pages
+        # Fetch remaining pages with retry logic
         for page_num in range(1, total_pages):
             # Add delay to avoid rate limiting
             import time
@@ -88,12 +87,16 @@ class HansardScraper(BaseScraper):
             time.sleep(self.config.retry_delay)
 
             page_url = f"{self.config.base_url}{base_path}?field_parliament_value={parliament_term}&page={page_num}"
-            response = self.session.get(page_url, timeout=self.config.timeout)
-            response.raise_for_status()
 
-            soup = BeautifulSoup(response.content, "html.parser")
-            page_urls = self._extract_urls_from_page(soup)
-            urls.extend(page_urls)
+            try:
+                response = self._fetch_page_with_retry(page_url, timeout=self.config.timeout)
+                soup = BeautifulSoup(response.content, "html.parser")
+                page_urls = self._extract_urls_from_page(soup)
+                urls.extend(page_urls)
+            except Exception as e:
+                self.logger.error(f"Failed to fetch page {page_num} after retries: {e}")
+                # Continue with remaining pages
+                continue
 
         # Fail fast if no documents found - likely indicates HTML/CSS changes
         if not urls:

@@ -14,16 +14,16 @@ This document breaks down Phase 1 implementation into actionable tasks. Each tas
 
 ### Week 0: Technical Debt from Phase 0
 
-- [ ] 0. Address Phase 0 Technical Debt
-  - [ ] 0.1 Improve Test Coverage
-    - [ ] 0.1.1 Increase Qdrant adapter coverage from 37.93% to ≥80%
-    - [ ] 0.1.2 Increase Votes scraper coverage from 76.85% to ≥85%
-    - [ ] 0.1.3 Increase Base scraper coverage from 79.25% to ≥85%
-    - [ ] 0.1.4 Add tests for uncovered error handling paths
-  - [ ] 0.2 Type Annotations
-    - [ ] 0.2.1 Add type annotations to example scripts
-    - [ ] 0.2.2 Add type annotations to utility functions
-    - [ ] 0.2.3 Fix Alembic migration type issues
+- [-] 0. Address Phase 0 Technical Debt
+  - [x] 0.1 Improve Test Coverage
+    - [x] 0.1.1 Increase Qdrant adapter coverage from 37.93% to ≥80%
+    - [x] 0.1.2 Increase Votes scraper coverage from 76.85% to ≥85%
+    - [x] 0.1.3 Increase Base scraper coverage from 79.25% to ≥85%
+    - [x] 0.1.4 Add tests for uncovered error handling paths
+  - [-] 0.2 Type Annotations
+    - [x] 0.2.1 Add type annotations to example scripts
+    - [x] 0.2.2 Add type annotations to utility functions
+    - [x] 0.2.3 Fix Alembic migration type issues
     - [ ] 0.2.4 Enable mypy in pre-commit hooks
   - [ ] 0.3 Scraper Enhancements
     - [ ] 0.3.1 Implement date range filtering (start_date, end_date parameters)
@@ -31,74 +31,75 @@ This document breaks down Phase 1 implementation into actionable tasks. Each tas
     - [ ] 0.3.3 Implement parallel page fetching with connection pooling
     - [ ] 0.3.4 Add progress reporting for long-running scrapes
 
-- [ ] 0.4 MP Scraper Implementation
-  - [ ] 0.4.1 Create MPScraper class
-    - [ ] 0.4.1.1 Implement CSS selector for MP table (table.cols-7 tr.mp)
-    - [ ] 0.4.1.2 Extract MP data: name, county, constituency, party, status
-    - [ ] 0.4.1.3 Handle honorifics (HON., DR., ENG., AMB., etc.)
-    - [ ] 0.4.1.4 Implement pagination support (35 pages total)
-    - [ ] 0.4.1.5 Add parliament term parameter support
-    - [ ] 0.4.1.6 Implement duplicate detection by name+constituency
-    - [ ] 0.4.1.7 Store MPs in database with proper relationships
-  - [ ] 0.4.2 Write MP scraper tests
-    - [ ] 0.4.2.1 Test MP data extraction from sample HTML (tests/sample_html.md)
-    - [ ] 0.4.2.2 Test honorific parsing (HON., DR., ENG., AMB.)
-    - [ ] 0.4.2.3 Test pagination detection (35 pages)
-    - [ ] 0.4.2.4 Test empty field handling (missing county/constituency)
-    - [ ] 0.4.2.5 Test status field (Elected vs Nominated)
-    - [ ] 0.4.2.6 Test duplicate detection
-    - [ ] 0.4.2.7 Test database storage
-  - [ ] 0.4.3 Create MP scraper fixtures
-    - [ ] 0.4.3.1 Create tests/fixtures/sample_mps.html from tests/sample_html.md
-    - [ ] 0.4.3.2 Add realistic test data with various honorifics
-    - [ ] 0.4.3.3 Add edge cases (missing fields, special characters)
+- [x] 0.4 MP Scraper Implementation
+  - [x] 0.4.1 Create MPScraper class
+    - [x] 0.4.1.1 Implement CSS selector for MP table (table.cols-7 tr.mp)
+    - [x] 0.4.1.2 Extract MP data: name, county, constituency, party, status
+    - [x] 0.4.1.3 Handle honorifics (HON., DR., ENG., AMB., etc.)
+    - [x] 0.4.1.4 Implement pagination support (35 pages total)
+    - [x] 0.4.1.5 Add parliament term parameter support
+    - [x] 0.4.1.6 Implement duplicate detection by name+constituency
+    - [x] 0.4.1.7 Store MPs in database with proper relationships
+  - [x] 0.4.2 Write MP scraper tests
+    - [x] 0.4.2.1 Test MP data extraction from sample HTML (tests/sample_html.md)
+    - [x] 0.4.2.2 Test honorific parsing (HON., DR., ENG., AMB.)
+    - [x] 0.4.2.3 Test pagination detection (35 pages)
+    - [x] 0.4.2.4 Test empty field handling (missing county/constituency)
+    - [x] 0.4.2.5 Test status field (Elected vs Nominated)
+    - [x] 0.4.2.6 Test duplicate detection
+    - [x] 0.4.2.7 Test database storage
+  - [x] 0.4.3 Create MP scraper fixtures
+    - [x] 0.4.3.1 Create tests/fixtures/sample_mps.html from tests/sample_html.md
+    - [x] 0.4.3.2 Add realistic test data with various honorifics
+    - [x] 0.4.3.3 Add edge cases (missing fields, special characters)
 
-- [ ] 0.5 Historical Data Processing Scripts
-  - [ ] 0.5.1 Create `scripts/download_historical_data.py`
-    - [ ] 0.5.1.1 Implement parliament term iteration (2013-2024)
-    - [ ] 0.5.1.2 Implement date range support
-    - [ ] 0.5.1.3 Add progress tracking with tqdm
-    - [ ] 0.5.1.4 Add resume capability (skip already downloaded)
-    - [ ] 0.5.1.5 Add summary statistics reporting
-    - [ ] 0.5.1.6 Add error logging and recovery
-    - [ ] 0.5.1.7 Support all document types (Hansard, Votes, MPs)
-  - [ ] 0.5.2 Create `scripts/process_historical_data.py`
-    - [ ] 0.5.2.1 Implement batch PDF processing
-    - [ ] 0.5.2.2 Add parallel processing with worker pool
-    - [ ] 0.5.2.3 Add progress tracking
-    - [ ] 0.5.2.4 Add error recovery and retry logic
-    - [ ] 0.5.2.5 Add validation and quality checks
-    - [ ] 0.5.2.6 Generate processing report
-  - [ ] 0.5.3 Create `scripts/validate_historical_data.py`
-    - [ ] 0.5.3.1 Verify all PDFs are readable
-    - [ ] 0.5.3.2 Check database consistency
-    - [ ] 0.5.3.3 Validate vector DB entries
-    - [ ] 0.5.3.4 Generate validation report
-  - [ ] 0.5.4 Write tests for historical data scripts
-    - [ ] 0.5.4.1 Test download script with mock data
-    - [ ] 0.5.4.2 Test process script with sample PDFs
-    - [ ] 0.5.4.3 Test validation script
-    - [ ] 0.5.4.4 Test error recovery
+- [x] 0.5 Historical Data Processing Scripts
+  - [x] 0.5.1 Create `scripts/download_historical_data.py`
+    - [x] 0.5.1.1 Implement parliament term iteration (2013-2024)
+    - [x] 0.5.1.2 Implement date range support
+    - [x] 0.5.1.3 Add progress tracking with tqdm
+    - [x] 0.5.1.4 Add resume capability (skip already downloaded)
+    - [x] 0.5.1.5 Add summary statistics reporting
+    - [x] 0.5.1.6 Add error logging and recovery
+    - [x] 0.5.1.7 Support all document types (Hansard, Votes, MPs)
+  - [x] 0.5.2 Create `scripts/process_historical_data.py`
+    - [x] 0.5.2.1 Implement batch PDF processing
+    - [x] 0.5.2.2 Add parallel processing with worker pool
+    - [x] 0.5.2.3 Add progress tracking
+    - [x] 0.5.2.4 Add error recovery and retry logic
+    - [x] 0.5.2.5 Add validation and quality checks
+    - [x] 0.5.2.6 Generate processing report
+  - [x] 0.5.3 Create `scripts/validate_historical_data.py`
+    - [x] 0.5.3.1 Verify all PDFs are readable
+    - [x] 0.5.3.2 Check database consistency
+    - [x] 0.5.3.3 Validate vector DB entries
+    - [x] 0.5.3.4 Generate validation report
+  - [x] 0.5.4 Write tests for historical data scripts
+    - [x] 0.5.4.1 Test download script with mock data
+    - [x] 0.5.4.2 Test process script with sample PDFs
+    - [x] 0.5.4.3 Test validation script
+    - [x] 0.5.4.4 Test error recovery
+  - [x] 0.5.5 Generate data and populate database locally
 
 ### Week 1-2: Core NLP Components
 
-- [ ] 1. MP Identification System
-  - [ ] 1.1 Implement MPIdentifier class
-    - [ ] 1.1.1 Create MPMatch dataclass
-    - [ ] 1.1.2 Implement regex patterns for name formats
-    - [ ] 1.1.3 Implement spaCy NER integration
-    - [ ] 1.1.4 Implement database caching
-    - [ ] 1.1.5 Implement fuzzy matching with fuzzywuzzy
-    - [ ] 1.1.6 Implement batch identification
-  - [ ] 1.2 Write unit tests
-    - [ ] 1.2.1 Test exact name matching
-    - [ ] 1.2.2 Test fuzzy name matching
-    - [ ] 1.2.3 Test constituency/party boosting
-    - [ ] 1.2.4 Test batch processing
-    - [ ] 1.2.5 Test cache performance
-  - [ ] 1.3 Write property-based tests
-    - [ ] 1.3.1 Property 1.1: MP identification accuracy ≥95%
-    - [ ] 1.3.2 Property 1.2: Name variation handling
+- [-] 1. MP Identification System
+  - [x] 1.1 Implement MPIdentifier class
+    - [x] 1.1.1 Create MPMatch dataclass
+    - [x] 1.1.2 Implement regex patterns for name formats
+    - [x] 1.1.3 Implement spaCy NER integration
+    - [x] 1.1.4 Implement database caching
+    - [x] 1.1.5 Implement fuzzy matching with fuzzywuzzy
+    - [x] 1.1.6 Implement batch identification
+  - [x] 1.2 Write unit tests
+    - [x] 1.2.1 Test exact name matching
+    - [x] 1.2.2 Test fuzzy name matching
+    - [x] 1.2.3 Test constituency/party boosting
+    - [x] 1.2.4 Test batch processing
+    - [x] 1.2.5 Test cache performance
+  - [x] 1.3 Write property-based tests
+    - [x] 1.3.1 Property 1.1: MP identification accuracy ≥95%
+    - [x] 1.3.2 Property 1.2: Name variation handling
 
 - [ ] 2. Statement Segmentation
   - [ ] 2.1 Implement StatementSegmenter class

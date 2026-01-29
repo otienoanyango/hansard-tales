@@ -114,16 +114,18 @@ class TestBaseScraper:
     @patch("requests.Session.get")
     def test_download_document_max_retries_exceeded(self, mock_get, concrete_scraper):
         """Test failure after max retries exceeded."""
+        from tenacity import RetryError
+
         # Setup mock to always fail
         mock_get.side_effect = requests.RequestException("Network error")
 
         # Attempt download
         url = "https://example.com/test.pdf"
-        with pytest.raises(requests.RequestException):
+        with pytest.raises(RetryError):
             concrete_scraper.download_document(url)
 
-        # Verify max retries attempted
-        assert mock_get.call_count == 3
+        # Verify max retries attempted (5 attempts)
+        assert mock_get.call_count == 5
 
     def test_save_document(self, concrete_scraper, tmp_path):
         """Test saving document to disk."""
@@ -309,28 +311,37 @@ class TestBaseScraper:
         assert result.metadata == {"test": "metadata"}
 
     @patch("requests.Session.get")
-    @patch("time.sleep")
-    def test_retry_exponential_backoff(self, mock_sleep, mock_get, concrete_scraper):
+    def test_retry_exponential_backoff(self, mock_get, concrete_scraper):
         """Test exponential backoff delay between retries."""
+        import time
+
         # Setup mock to fail twice then succeed
         mock_response = Mock()
         mock_response.content = b"test content"
         mock_response.raise_for_status = Mock()
 
+        # Set side effect before any calls
         mock_get.side_effect = [
             requests.RequestException("Network error"),
             requests.RequestException("Network error"),
             mock_response,
         ]
 
-        # Download document
+        # Download document and measure time
         url = "https://example.com/test.pdf"
-        concrete_scraper.download_document(url)
+        start_time = time.time()
+        result = concrete_scraper.download_document(url)
+        elapsed_time = time.time() - start_time
 
-        # Verify exponential backoff: 1.0 * 2^0 = 1.0, 1.0 * 2^1 = 2.0
-        assert mock_sleep.call_count == 2
-        mock_sleep.assert_any_call(1.0)  # First retry
-        mock_sleep.assert_any_call(2.0)  # Second retry
+        # Verify retries occurred (3 attempts total)
+        assert mock_get.call_count == 3
+
+        # Verify exponential backoff occurred (should take at least 3 seconds: 1s + 2s)
+        # We use a lower bound to account for execution time
+        assert elapsed_time >= 2.5, f"Expected at least 2.5s delay, got {elapsed_time}s"
+
+        # Verify document was downloaded successfully
+        assert result.content == b"test content"
 
     def test_save_document_creates_directory(self, concrete_scraper, tmp_path):
         """Test that save_document creates output directory if it doesn't exist."""
@@ -419,6 +430,127 @@ class TestBaseScraper:
         mock_get.assert_called_once()
         call_kwargs = mock_get.call_args[1]
         assert call_kwargs["timeout"] == 30
+
+    @patch("requests.Session.get")
+    def test_scrape_continues_on_download_error(self, mock_get, concrete_scraper, capsys):
+        """Test that scrape continues when a document download fails."""
+        # Override get_document_urls to return multiple URLs
+        concrete_scraper.get_document_urls = Mock(
+            return_value=[
+                "https://example.com/doc1.pdf",
+                "https://example.com/doc2.pdf",
+                "https://example.com/doc3.pdf",
+            ]
+        )
+
+        # Setup mock to fail on second document
+        mock_response = Mock()
+        mock_response.content = b"test content"
+        mock_response.raise_for_status = Mock()
+
+        def side_effect(*args, **kwargs):
+            url = args[0]
+            if "doc2" in url:
+                raise requests.RequestException("Network error")
+            return mock_response
+
+        mock_get.side_effect = side_effect
+
+        # Scrape documents
+        from hansard_tales.models.base import Chamber
+
+        documents = concrete_scraper.scrape(Chamber.NATIONAL_ASSEMBLY, skip_existing=False)
+
+        # Should have 2 documents (doc1 and doc3), doc2 failed
+        assert len(documents) == 2
+
+        # Verify error was printed
+        captured = capsys.readouterr()
+        assert "Error downloading" in captured.out
+        assert "doc2.pdf" in captured.out
+
+    @patch("requests.Session.get")
+    @patch("hansard_tales.scrapers.base.BaseScraper._batch_check_urls_in_db")
+    def test_scrape_updates_existing_file_when_missing(
+        self, mock_batch_check, mock_get, concrete_scraper, tmp_path
+    ):
+        """Test that scrape updates database when file exists in DB but not storage."""
+        # Override get_document_urls
+        concrete_scraper.get_document_urls = Mock(
+            return_value=[
+                "https://example.com/doc1.pdf",
+            ]
+        )
+
+        # Mock batch check to return file exists in DB but not in storage
+        mock_batch_check.return_value = {
+            "https://example.com/doc1.pdf": (True, tmp_path / "nonexistent.pdf")
+        }
+
+        # Setup mock response
+        mock_response = Mock()
+        mock_response.content = b"test content"
+        mock_response.raise_for_status = Mock()
+        mock_get.return_value = mock_response
+
+        # Set download dir to temp path
+        concrete_scraper.config.download_dir = tmp_path
+
+        # Scrape documents
+        from hansard_tales.models.base import Chamber
+
+        documents = concrete_scraper.scrape(Chamber.NATIONAL_ASSEMBLY, skip_existing=True)
+
+        # Should have downloaded the document
+        assert len(documents) == 1
+
+    def test_batch_check_urls_handles_database_error(self, concrete_scraper):
+        """Test that batch check handles database errors gracefully."""
+        # The actual implementation catches exceptions and returns empty dict
+        # Let's test the real method by mocking the database connection to fail
+        from unittest.mock import patch
+
+        with patch("sqlalchemy.create_engine") as mock_engine:
+            mock_engine.side_effect = Exception("Database connection failed")
+
+            urls = ["https://example.com/doc1.pdf", "https://example.com/doc2.pdf"]
+            result = concrete_scraper._batch_check_urls_in_db(urls)
+
+            # Should return all URLs as not existing
+            assert result == {
+                "https://example.com/doc1.pdf": (False, None),
+                "https://example.com/doc2.pdf": (False, None),
+            }
+
+    def test_update_download_record_handles_database_error(
+        self, concrete_scraper, capsys, tmp_path
+    ):
+        """Test that update download record handles database errors gracefully."""
+        from unittest.mock import patch
+
+        from hansard_tales.models.base import Chamber
+
+        # Create a scraped document
+        doc = ScrapedDocument(
+            url="https://example.com/test.pdf",
+            filename="test.pdf",
+            content=b"test content",
+            hash="testhash",
+            metadata={"test": "metadata"},
+        )
+
+        # Mock database connection to fail
+        with patch("sqlalchemy.create_engine") as mock_engine:
+            mock_engine.side_effect = Exception("Database connection failed")
+
+            # Should not raise exception
+            concrete_scraper._update_download_record(
+                doc, tmp_path / "test.pdf", Chamber.NATIONAL_ASSEMBLY, 2022
+            )
+
+            # Should print warning
+            captured = capsys.readouterr()
+            assert "Warning: Failed to update download record" in captured.out
 
 
 class TestScrapedDocument:
@@ -1555,6 +1687,186 @@ class TestVotesScraper:
 
         # Verify URL was found
         assert len(urls) == 1
+
+    def test_get_total_pages_with_pagination(self, votes_scraper):
+        """Test extracting total pages from pagination element."""
+        from bs4 import BeautifulSoup
+
+        html_content = """
+        <html>
+            <body>
+                <nav class="pager">
+                    <a href="?page=0">1</a>
+                    <a href="?page=1">2</a>
+                    <a href="?page=2">3</a>
+                    <a href="?page=3">4</a>
+                </nav>
+            </body>
+        </html>
+        """
+
+        soup = BeautifulSoup(html_content, "html.parser")
+        total_pages = votes_scraper._get_total_pages(soup)
+
+        # Should return max page + 1 (0-indexed)
+        assert total_pages == 4
+
+    def test_get_total_pages_no_pagination(self, votes_scraper):
+        """Test extracting total pages when no pagination exists."""
+        from bs4 import BeautifulSoup
+
+        html_content = """
+        <html>
+            <body>
+                <p>No pagination here</p>
+            </body>
+        </html>
+        """
+
+        soup = BeautifulSoup(html_content, "html.parser")
+        total_pages = votes_scraper._get_total_pages(soup)
+
+        # Should return 1 when no pagination
+        assert total_pages == 1
+
+    def test_get_total_pages_empty_pagination(self, votes_scraper):
+        """Test extracting total pages when pagination has no links."""
+        from bs4 import BeautifulSoup
+
+        html_content = """
+        <html>
+            <body>
+                <nav class="pager">
+                    <span>No links</span>
+                </nav>
+            </body>
+        </html>
+        """
+
+        soup = BeautifulSoup(html_content, "html.parser")
+        total_pages = votes_scraper._get_total_pages(soup)
+
+        # Should return 1 when pagination has no links
+        assert total_pages == 1
+
+    def test_get_total_pages_ul_pager(self, votes_scraper):
+        """Test extracting total pages from ul.pager element."""
+        from bs4 import BeautifulSoup
+
+        html_content = """
+        <html>
+            <body>
+                <ul class="pager">
+                    <li><a href="?page=0">1</a></li>
+                    <li><a href="?page=1">2</a></li>
+                </ul>
+            </body>
+        </html>
+        """
+
+        soup = BeautifulSoup(html_content, "html.parser")
+        total_pages = votes_scraper._get_total_pages(soup)
+
+        # Should return max page + 1
+        assert total_pages == 2
+
+    def test_extract_urls_from_page_with_cols2_table(self, votes_scraper):
+        """Test extracting URLs from page with cols-2 table."""
+        from bs4 import BeautifulSoup
+
+        html_content = """
+        <html>
+            <body>
+                <table class="cols-2">
+                    <tr>
+                        <td class="views-field-field-pdf">
+                            <a href="/files/votes-doc1.pdf">Document 1</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="views-field-field-pdf">
+                            <a href="/files/votes-doc2.pdf">Document 2</a>
+                        </td>
+                    </tr>
+                </table>
+            </body>
+        </html>
+        """
+
+        soup = BeautifulSoup(html_content, "html.parser")
+        urls = votes_scraper._extract_urls_from_page(soup)
+
+        # Should extract both URLs
+        assert len(urls) == 2
+        assert any("votes-doc1.pdf" in url for url in urls)
+        assert any("votes-doc2.pdf" in url for url in urls)
+
+    def test_extract_urls_from_page_no_table(self, votes_scraper):
+        """Test extracting URLs when no cols-2 table exists."""
+        from bs4 import BeautifulSoup
+
+        html_content = """
+        <html>
+            <body>
+                <p>No table here</p>
+            </body>
+        </html>
+        """
+
+        soup = BeautifulSoup(html_content, "html.parser")
+        urls = votes_scraper._extract_urls_from_page(soup)
+
+        # Should return empty list
+        assert len(urls) == 0
+
+    def test_extract_urls_from_page_absolute_urls(self, votes_scraper):
+        """Test extracting absolute URLs from page."""
+        from bs4 import BeautifulSoup
+
+        html_content = """
+        <html>
+            <body>
+                <table class="cols-2">
+                    <tr>
+                        <td class="views-field-field-pdf">
+                            <a href="https://parliament.go.ke/files/votes-doc1.pdf">Document 1</a>
+                        </td>
+                    </tr>
+                </table>
+            </body>
+        </html>
+        """
+
+        soup = BeautifulSoup(html_content, "html.parser")
+        urls = votes_scraper._extract_urls_from_page(soup)
+
+        # Should keep absolute URLs as-is
+        assert len(urls) == 1
+        assert urls[0] == "https://parliament.go.ke/files/votes-doc1.pdf"
+
+    def test_extract_urls_from_page_empty_href(self, votes_scraper):
+        """Test extracting URLs when href is empty."""
+        from bs4 import BeautifulSoup
+
+        html_content = """
+        <html>
+            <body>
+                <table class="cols-2">
+                    <tr>
+                        <td class="views-field-field-pdf">
+                            <a href="">Empty href</a>
+                        </td>
+                    </tr>
+                </table>
+            </body>
+        </html>
+        """
+
+        soup = BeautifulSoup(html_content, "html.parser")
+        urls = votes_scraper._extract_urls_from_page(soup)
+
+        # Should skip empty hrefs
+        assert len(urls) == 0
 
 
 class TestScraperFactory:

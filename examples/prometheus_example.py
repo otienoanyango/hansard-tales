@@ -14,6 +14,7 @@ Run this script and then visit http://localhost:9090/metrics to see the metrics.
 import random
 import time
 from pathlib import Path
+from typing import Any
 
 from hansard_tales.monitoring.metrics import (
     error_count,
@@ -26,7 +27,7 @@ from hansard_tales.monitoring.metrics import (
 
 # Example 1: Using the decorator
 @track_processing_time("hansard", "national_assembly")
-def process_hansard_document(pdf_path: Path) -> dict:
+def process_hansard_document(pdf_path: Path) -> dict[str, Any]:
     """
     Example function that processes a Hansard document.
 
@@ -48,7 +49,7 @@ def process_hansard_document(pdf_path: Path) -> dict:
 
 
 # Example 2: Manual metrics updates
-def update_queue_metrics():
+def update_queue_metrics() -> None:
     """Example of manually updating gauge metrics."""
     # Simulate queue depth changes
     for doc_type in ["hansard", "votes", "bills"]:
@@ -57,7 +58,7 @@ def update_queue_metrics():
         print(f"Queue depth for {doc_type}: {depth}")
 
 
-def update_vector_db_metrics():
+def update_vector_db_metrics() -> None:
     """Example of updating vector database size metrics."""
     # Simulate vector DB size
     for collection in ["hansard", "bills", "questions"]:
@@ -67,13 +68,13 @@ def update_vector_db_metrics():
 
 
 # Example 3: Manual error tracking
-def track_custom_error(component: str, error_type: str):
+def track_custom_error(component: str, error_type: str) -> None:
     """Example of manually tracking errors."""
     error_count.labels(component=component, error_type=error_type).inc()
     print(f"Tracked error: {component}/{error_type}")
 
 
-def main():
+def main() -> None:
     """Main example function."""
     print("Starting Prometheus metrics example...")
     print("=" * 60)

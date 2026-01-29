@@ -26,7 +26,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-def example_basic_setup():
+def example_basic_setup() -> None:
     """Example 1: Basic Sentry setup."""
     print("\n=== Example 1: Basic Sentry Setup ===")
 
@@ -40,7 +40,7 @@ def example_basic_setup():
     print(f"Environment: {config.environment}")
 
 
-def example_exception_capture():
+def example_exception_capture() -> None:
     """Example 2: Capturing exceptions."""
     print("\n=== Example 2: Exception Capture ===")
 
@@ -56,7 +56,7 @@ def example_exception_capture():
         print(f"Exception captured: {event_id}")
 
 
-def example_message_capture():
+def example_message_capture() -> None:
     """Example 3: Capturing messages."""
     print("\n=== Example 3: Message Capture ===")
 
@@ -73,7 +73,7 @@ def example_message_capture():
     print(f"Warning message captured: {event_id}")
 
 
-def example_user_context():
+def example_user_context() -> None:
     """Example 4: Setting user context."""
     print("\n=== Example 4: User Context ===")
 
@@ -89,7 +89,7 @@ def example_user_context():
         print(f"Exception with user context captured: {event_id}")
 
 
-def example_tags():
+def example_tags() -> None:
     """Example 5: Using tags for filtering."""
     print("\n=== Example 5: Tags ===")
 
@@ -104,7 +104,7 @@ def example_tags():
     print(f"Message with tags captured: {event_id}")
 
 
-def example_breadcrumbs():
+def example_breadcrumbs() -> None:
     """Example 6: Adding breadcrumbs."""
     print("\n=== Example 6: Breadcrumbs ===")
 
@@ -137,7 +137,7 @@ def example_breadcrumbs():
         print(f"Exception with breadcrumbs captured: {event_id}")
 
 
-def example_processing_workflow():
+def example_processing_workflow() -> None:
     """Example 7: Complete processing workflow with Sentry."""
     print("\n=== Example 7: Complete Workflow ===")
 
@@ -185,7 +185,7 @@ def example_processing_workflow():
         print(f"Unexpected error captured: {event_id}")
 
 
-def example_flush():
+def example_flush() -> None:
     """Example 8: Flushing events before shutdown."""
     print("\n=== Example 8: Flushing Events ===")
 
@@ -197,7 +197,7 @@ def example_flush():
     print(f"Events flushed: {success}")
 
 
-def main():
+def main() -> None:
     """Run all examples."""
     print("=" * 60)
     print("Sentry Integration Examples")

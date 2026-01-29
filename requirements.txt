@@ -25,6 +25,11 @@ requests>=2.32.5
 beautifulsoup4>=4.14.3
 dateparser>=1.2.0
 
+# NLP
+spacy>=3.7.0
+python-Levenshtein>=0.26.1  # For fuzzywuzzy performance
+fuzzywuzzy>=0.18.0
+
 # Logging
 structlog>=25.5.0
 

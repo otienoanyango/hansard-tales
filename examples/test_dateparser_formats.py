@@ -15,12 +15,13 @@ Period Mapping:
 - (E) = Evening Sitting
 """
 
+
 from hansard_tales.config.settings import ScraperConfig
 from hansard_tales.scrapers.hansard import HansardScraper
 from hansard_tales.scrapers.votes import VotesScraper
 
 
-def test_hansard_formats():
+def test_hansard_formats() -> None:
     """Test Hansard scraper with real-world URL formats."""
     print("=" * 80)
     print("HANSARD SCRAPER - Real-World URL Testing")
@@ -32,7 +33,7 @@ def test_hansard_formats():
     scraper = HansardScraper(config)
 
     # These are the actual filenames from the href attribute
-    test_cases = [
+    test_cases: list[str] = [
         "Hansard Report - Thursday, 4th December 2025 (E).pdf",
         "Hansard Report - Thursday, 4th December 2025 (P).pdf",
         "Hansard Report - Wednesday, 3rd December 2025 (A).pdf",
@@ -52,7 +53,7 @@ def test_hansard_formats():
         print(f"  → Standardized: {standardized}\n")
 
 
-def test_votes_formats():
+def test_votes_formats() -> None:
     """Test Votes scraper with real-world formats."""
     print("\n" + "=" * 80)
     print("VOTES SCRAPER - Real-World Format Testing")
@@ -61,7 +62,7 @@ def test_votes_formats():
     config = ScraperConfig()
     scraper = VotesScraper(config)
 
-    test_cases = [
+    test_cases: list[str] = [
         "Tuesday, November 18, 2025 At 2.30pm",
         "Thursday, November 13,2025 At 2.30pm",  # No space after comma
         "Tuesday, 11 November 2025 At 2.30pm",  # Day before month

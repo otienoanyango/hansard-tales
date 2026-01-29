@@ -5,6 +5,7 @@ This module provides a custom exception hierarchy, error context tracking,
 and utilities for consistent error handling across the application.
 """
 
+import logging
 import traceback
 from dataclasses import dataclass
 from typing import Any
@@ -165,7 +166,7 @@ def capture_error_context(
     )
 
 
-def log_error(logger, error_context: ErrorContext) -> None:
+def log_error(logger: logging.Logger, error_context: ErrorContext) -> None:
     """
     Log error with full context.
 

@@ -49,7 +49,7 @@ def get_request_id() -> str:
     return request_id_var.get()
 
 
-def add_request_id(logger, method_name, event_dict):
+def add_request_id(logger: Any, method_name: str, event_dict: dict[str, Any]) -> dict[str, Any]:
     """
     Add request ID to log event.
 

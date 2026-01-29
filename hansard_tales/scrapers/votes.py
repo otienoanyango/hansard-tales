@@ -74,9 +74,8 @@ class VotesScraper(BaseScraper):
         else:
             raise ValueError(f"Unknown chamber: {chamber}")
 
-        # Fetch page HTML
-        response = self.session.get(base_url, timeout=self.config.timeout)
-        response.raise_for_status()
+        # Fetch page HTML (with retry)
+        response = self._fetch_page_with_retry(base_url, timeout=self.config.timeout)
 
         soup = BeautifulSoup(response.content, "html.parser")
 

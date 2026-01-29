@@ -7,16 +7,28 @@ duplicate detection.
 """
 
 import hashlib
-import time
+import logging
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from datetime import UTC, date
 from pathlib import Path
 
 import requests
+from tenacity import (
+    before_sleep_log,
+    retry,
+    retry_if_exception_type,
+    stop_after_attempt,
+    wait_exponential,
+)
 
 from hansard_tales.config.settings import ScraperConfig
 from hansard_tales.models.base import Chamber
+from hansard_tales.utils.logging import get_logger
+
+logger = get_logger(__name__)
+# Create a standard logger for tenacity (it doesn't work with structlog)
+_retry_logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -63,6 +75,39 @@ class BaseScraper(ABC):
         self.config = config
         self.session = requests.Session()
         self.session.headers.update({"User-Agent": config.user_agent})
+        self.logger = get_logger(self.__class__.__name__)
+
+    @retry(
+        stop=stop_after_attempt(5),
+        wait=wait_exponential(multiplier=1, min=1, max=10),
+        retry=retry_if_exception_type((requests.RequestException, ConnectionError)),
+        before_sleep=before_sleep_log(_retry_logger, logging.WARNING),
+    )
+    def _fetch_page_with_retry(self, url: str, timeout: int = 30) -> requests.Response:
+        """
+        Fetch a page with exponential backoff retry logic.
+
+        Uses tenacity to retry up to 5 times with exponential backoff:
+        - Attempt 1: immediate
+        - Attempt 2: wait 1s
+        - Attempt 3: wait 2s
+        - Attempt 4: wait 4s
+        - Attempt 5: wait 8s
+
+        Args:
+            url: URL to fetch
+            timeout: Request timeout in seconds
+
+        Returns:
+            Response object
+
+        Raises:
+            requests.RequestException: If all retries fail
+        """
+        self.logger.debug(f"Fetching: {url}")
+        response = self.session.get(url, timeout=timeout)
+        response.raise_for_status()
+        return response
 
     @abstractmethod
     def get_document_urls(
@@ -105,8 +150,8 @@ class BaseScraper(ABC):
         """
         Download a single document with retry logic.
 
-        This method implements exponential backoff retry logic for
-        handling transient network errors.
+        This method uses tenacity for exponential backoff retry logic
+        to handle transient network errors and slow server responses.
 
         Args:
             url: Document URL to download
@@ -117,27 +162,16 @@ class BaseScraper(ABC):
         Raises:
             requests.RequestException: If download fails after all retries
         """
-        for attempt in range(self.config.max_retries):
-            try:
-                response = self.session.get(url, timeout=self.config.timeout, stream=True)
-                response.raise_for_status()
+        response = self._fetch_page_with_retry(url, timeout=self.config.timeout)
 
-                content = response.content
-                doc_hash = hashlib.sha256(content).hexdigest()
-                filename = self._generate_filename(url)
-                metadata = self.extract_metadata(url, content)
+        content = response.content
+        doc_hash = hashlib.sha256(content).hexdigest()
+        filename = self._generate_filename(url)
+        metadata = self.extract_metadata(url, content)
 
-                return ScrapedDocument(
-                    url=url, filename=filename, content=content, hash=doc_hash, metadata=metadata
-                )
-
-            except requests.RequestException:
-                if attempt == self.config.max_retries - 1:
-                    raise
-                time.sleep(self.config.retry_delay * (2**attempt))
-
-        # This should never be reached, but satisfies type checker
-        raise requests.RequestException("Download failed after all retries")
+        return ScrapedDocument(
+            url=url, filename=filename, content=content, hash=doc_hash, metadata=metadata
+        )
 
     def save_document(self, doc: ScrapedDocument, output_dir: Path) -> Path:
         """
@@ -204,7 +238,7 @@ class BaseScraper(ABC):
         if skip_existing:
             url_status = self._batch_check_urls_in_db(urls)
         else:
-            url_status = {url: (False, None) for url in urls}
+            url_status = dict.fromkeys(urls, (False, None))
 
         for url in urls:
             try:
@@ -291,7 +325,7 @@ class BaseScraper(ABC):
 
         except Exception:
             # If database is unavailable, assume no URLs exist
-            return {url: (False, None) for url in urls}
+            return dict.fromkeys(urls, (False, None))
 
     def _verify_file_exists(self, file_path: Path) -> bool:
         """
