@@ -368,3 +368,268 @@ Sample table HTML:
     </ul>
 </nav>
 ```
+
+## Senators
+Scraping Base URL: https://www.parliament.go.ke/the-senate/senators
+```html
+<table class="cols-6">
+    <thead>
+        <tr>
+            <th id="view-field-senator-table-column" class="views-field views-field-field-senator" scope="col">Senator
+            </th>
+            <th class="views-field views-field-field-image" scope="col"></th>
+            <th id="view-field-county-senator-table-column" class="views-field views-field-field-county-senator"
+                scope="col">County</th>
+            <th id="view-field-party-senator-table-column" class="views-field views-field-field-party-senator"
+                scope="col">Party</th>
+            <th id="view-field-status-senator-table-column" class="views-field views-field-field-status-senator"
+                scope="col">Status</th>
+            <th id="view-view-node-table-column" class="views-field views-field-view-node" scope="col">More Info</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td headers="view-field-senator-table-column" class="views-field views-field-field-senator">Sen. Sifuna
+                Edwin Watenya </td>
+            <td class="views-field views-field-field-image"> <img
+                    src="/sites/default/files/styles/mp_photo/public/2022-09/sifuna.jpg?itok=E3-CyrSP" width="60"
+                    height="60" alt=" Sen. Sifuna Edwine Watenya " typeof="foaf:Image">
+
+
+            </td>
+            <td headers="view-field-county-senator-table-column" class="views-field views-field-field-county-senator">
+                Nairobi </td>
+            <td headers="view-field-party-senator-table-column" class="views-field views-field-field-party-senator">ODM
+            </td>
+            <td headers="view-field-status-senator-table-column" class="views-field views-field-field-status-senator">
+                Elected </td>
+            <td headers="view-view-node-table-column" class="views-field views-field-view-node"><a
+                    href="/the-senate/sen-sifuna-edwin-watenya" hreflang="en">More Info</a> </td>
+        </tr>
+        <tr>
+            <td headers="view-field-senator-table-column" class="views-field views-field-field-senator">Sen. (Dr.)
+                Khalwale Boni </td>
+            <td class="views-field views-field-field-image"> <img
+                    src="/sites/default/files/styles/mp_photo/public/2022-09/khalwale.jpg?itok=x-hmxI2Z" width="60"
+                    height="60" alt="Sen. (Dr.) Khalwale Boni " typeof="foaf:Image">
+
+
+            </td>
+            <td headers="view-field-county-senator-table-column" class="views-field views-field-field-county-senator">
+                Kakamega </td>
+            <td headers="view-field-party-senator-table-column" class="views-field views-field-field-party-senator">UDA
+            </td>
+            <td headers="view-field-status-senator-table-column" class="views-field views-field-field-status-senator">
+                Elected </td>
+            <td headers="view-view-node-table-column" class="views-field views-field-view-node"><a
+                    href="/the-senate/sen-dr-khalwale-boni" hreflang="en">More Info</a> </td>
+        </tr>
+        <tr>
+            <td headers="view-field-senator-table-column" class="views-field views-field-field-senator">Sen. (Rtd)
+                Justice Stewart Madzayo, CBS, MP </td>
+            <td class="views-field views-field-field-image"> <img
+                    src="/sites/default/files/styles/mp_photo/public/2017-10/b9deed2baf78623484fc2170479f5cfb_M.jpg?itok=mByaMMtL"
+                    width="60" height="60" alt="Sen. (Rtd) Justice Stewart Madzayo, CBS, MP" typeof="foaf:Image">
+
+
+            </td>
+            <td headers="view-field-county-senator-table-column" class="views-field views-field-field-county-senator">
+                Kilifi </td>
+            <td headers="view-field-party-senator-table-column" class="views-field views-field-field-party-senator">ODM
+            </td>
+            <td headers="view-field-status-senator-table-column" class="views-field views-field-field-status-senator">
+                Elected </td>
+            <td headers="view-view-node-table-column" class="views-field views-field-view-node"><a
+                    href="/the-senate/sen-rtd-justice-stewart-madzayo-cbs-mp" hreflang="en">More Info</a> </td>
+        </tr>
+        <tr>
+            <td headers="view-field-senator-table-column" class="views-field views-field-field-senator">Sen. Abdalla
+                Shakilla Mohamed </td>
+            <td class="views-field views-field-field-image"> <img
+                    src="/sites/default/files/styles/mp_photo/public/2025-07/shakila%20NEW.jpg?itok=SgE6G-Sf" width="60"
+                    height="60" alt="Sen. Abdalla Shakila Mohamed" typeof="foaf:Image">
+
+
+            </td>
+            <td headers="view-field-county-senator-table-column" class="views-field views-field-field-county-senator">
+                Nominated </td>
+            <td headers="view-field-party-senator-table-column" class="views-field views-field-field-party-senator">WDM
+            </td>
+            <td headers="view-field-status-senator-table-column" class="views-field views-field-field-status-senator">
+                Nominated </td>
+            <td headers="view-view-node-table-column" class="views-field views-field-view-node"><a
+                    href="/the-senate/sen-abdalla-shakila-mohamed" hreflang="en">More Info</a> </td>
+        </tr>
+        <tr>
+            <td headers="view-field-senator-table-column" class="views-field views-field-field-senator">Sen. Beatrice
+                Akinyi Ogolla </td>
+            <td class="views-field views-field-field-image"> <img
+                    src="/sites/default/files/styles/mp_photo/public/2022-09/Beatrice%20oymo.jpg?itok=OqRUT9Gw"
+                    width="60" height="60" alt="Sen. Beatrice Akinyi Ogolla" typeof="foaf:Image">
+
+
+            </td>
+            <td headers="view-field-county-senator-table-column" class="views-field views-field-field-county-senator">
+                Nominated </td>
+            <td headers="view-field-party-senator-table-column" class="views-field views-field-field-party-senator">ODM
+            </td>
+            <td headers="view-field-status-senator-table-column" class="views-field views-field-field-status-senator">
+                Nominated </td>
+            <td headers="view-view-node-table-column" class="views-field views-field-view-node"><a
+                    href="/the-senate/sen-beatrice-akinyi-ogolla" hreflang="en">More Info</a> </td>
+        </tr>
+        <tr>
+            <td headers="view-field-senator-table-column" class="views-field views-field-field-senator">Sen. Beth
+                Kalunda Syengo </td>
+            <td class="views-field views-field-field-image"> <img
+                    src="/sites/default/files/styles/mp_photo/public/2022-09/kalunda.jpg?itok=7j03qLeL" width="60"
+                    height="60" alt="Sen. Beth Kalunda Syengo" typeof="foaf:Image">
+
+
+            </td>
+            <td headers="view-field-county-senator-table-column" class="views-field views-field-field-county-senator">
+                Nominated </td>
+            <td headers="view-field-party-senator-table-column" class="views-field views-field-field-party-senator">ODM
+            </td>
+            <td headers="view-field-status-senator-table-column" class="views-field views-field-field-status-senator">
+                Nominated </td>
+            <td headers="view-view-node-table-column" class="views-field views-field-view-node"><a
+                    href="/the-senate/sen-beth-kalunda-syengo" hreflang="en">More Info</a> </td>
+        </tr>
+        <tr>
+            <td headers="view-field-senator-table-column" class="views-field views-field-field-senator">Sen. Betty
+                Batuli Montet </td>
+            <td class="views-field views-field-field-image"> <img
+                    src="/sites/default/files/styles/mp_photo/public/2025-07/montet%20NEW.jpeg?itok=L7A_38cV" width="60"
+                    height="60" alt="Sen. Betty Batuli Montet" typeof="foaf:Image">
+
+
+            </td>
+            <td headers="view-field-county-senator-table-column" class="views-field views-field-field-county-senator">
+                Nominated </td>
+            <td headers="view-field-party-senator-table-column" class="views-field views-field-field-party-senator">ODM
+            </td>
+            <td headers="view-field-status-senator-table-column" class="views-field views-field-field-status-senator">
+                Nominated </td>
+            <td headers="view-view-node-table-column" class="views-field views-field-view-node"><a
+                    href="/the-senate/sen-betty-batuli-montet" hreflang="en">More Info</a> </td>
+        </tr>
+        <tr>
+            <td headers="view-field-senator-table-column" class="views-field views-field-field-senator">Sen. Boy Issa
+                Juma, CBS </td>
+            <td class="views-field views-field-field-image"> <img
+                    src="/sites/default/files/styles/mp_photo/public/2025-07/ISAABOY%20NOW.png?itok=U20zWBxs" width="60"
+                    height="60" alt="Sen. Boy Issa Juma, CBS" typeof="foaf:Image">
+
+
+            </td>
+            <td headers="view-field-county-senator-table-column" class="views-field views-field-field-county-senator">
+                Kwale </td>
+            <td headers="view-field-party-senator-table-column" class="views-field views-field-field-party-senator">ODM
+            </td>
+            <td headers="view-field-status-senator-table-column" class="views-field views-field-field-status-senator">
+                Elected </td>
+            <td headers="view-view-node-table-column" class="views-field views-field-view-node"><a
+                    href="/the-senate/sen-boy-issa-juma-cbs" hreflang="en">More Info</a> </td>
+        </tr>
+        <tr>
+            <td headers="view-field-senator-table-column" class="views-field views-field-field-senator">Sen. Catherine
+                Muyeka Mumma </td>
+            <td class="views-field views-field-field-image"> <img
+                    src="/sites/default/files/styles/mp_photo/public/2022-09/mumma.jpg?itok=83oZHFls" width="60"
+                    height="60" alt="Sen. Catherine Muyeka Mumma" typeof="foaf:Image">
+
+
+            </td>
+            <td headers="view-field-county-senator-table-column" class="views-field views-field-field-county-senator">
+                Nominated </td>
+            <td headers="view-field-party-senator-table-column" class="views-field views-field-field-party-senator">ODM
+            </td>
+            <td headers="view-field-status-senator-table-column" class="views-field views-field-field-status-senator">
+                Nominated </td>
+            <td headers="view-view-node-table-column" class="views-field views-field-view-node"><a
+                    href="/the-senate/sen-catherine-muyeka-mumma" hreflang="en">More Info</a> </td>
+        </tr>
+        <tr>
+            <td headers="view-field-senator-table-column" class="views-field views-field-field-senator">Sen. Cheburet
+                Kiprono Chemitei </td>
+            <td class="views-field views-field-field-image"> <img
+                    src="/sites/default/files/styles/mp_photo/public/2025-12/Sen.%20Cheburet1.jpg?itok=dJe0uZEn"
+                    width="60" height="60" alt="Sen. Cheburet Kiprono Chemitei" typeof="foaf:Image">
+
+
+            </td>
+            <td headers="view-field-county-senator-table-column" class="views-field views-field-field-county-senator">
+                Baringo </td>
+            <td headers="view-field-party-senator-table-column" class="views-field views-field-field-party-senator">UDA
+            </td>
+            <td headers="view-field-status-senator-table-column" class="views-field views-field-field-status-senator">
+                Elected </td>
+            <td headers="view-view-node-table-column" class="views-field views-field-view-node"><a
+                    href="/the-senate/sen-cheburet-kiprono-chemitei" hreflang="en">More Info</a> </td>
+        </tr>
+    </tbody>
+</table>
+```
+### Pagination
+```html
+<nav class="pager" role="navigation">
+    <h4 id="pagination-heading" class="visually-hidden">Pagination</h4>
+    <ul class="pager__items js-pager__items">
+        <li class="pager__item is-active">
+            <a href="?title=&amp;field_parliament_value=2022&amp;page=0" title="Current page">
+                <span class="visually-hidden">
+                    Current page
+                </span>1</a>
+        </li>
+        <li class="pager__item">
+            <a href="?title=&amp;field_parliament_value=2022&amp;page=1" title="Go to page 2">
+                <span class="visually-hidden">
+                    Page
+                </span>2</a>
+        </li>
+        <li class="pager__item">
+            <a href="?title=&amp;field_parliament_value=2022&amp;page=2" title="Go to page 3">
+                <span class="visually-hidden">
+                    Page
+                </span>3</a>
+        </li>
+        <li class="pager__item">
+            <a href="?title=&amp;field_parliament_value=2022&amp;page=3" title="Go to page 4">
+                <span class="visually-hidden">
+                    Page
+                </span>4</a>
+        </li>
+        <li class="pager__item">
+            <a href="?title=&amp;field_parliament_value=2022&amp;page=4" title="Go to page 5">
+                <span class="visually-hidden">
+                    Page
+                </span>5</a>
+        </li>
+        <li class="pager__item">
+            <a href="?title=&amp;field_parliament_value=2022&amp;page=5" title="Go to page 6">
+                <span class="visually-hidden">
+                    Page
+                </span>6</a>
+        </li>
+        <li class="pager__item">
+            <a href="?title=&amp;field_parliament_value=2022&amp;page=6" title="Go to page 7">
+                <span class="visually-hidden">
+                    Page
+                </span>7</a>
+        </li>
+        <li class="pager__item pager__item--next">
+            <a href="?title=&amp;field_parliament_value=2022&amp;page=1" title="Go to next page" rel="next">
+                <span class="visually-hidden">Next page</span>
+                <span aria-hidden="true">Next ›</span>
+            </a>
+        </li>
+        <li class="pager__item pager__item--last">
+            <a href="?title=&amp;field_parliament_value=2022&amp;page=6" title="Go to last page">
+                <span class="visually-hidden">Last page</span>
+                <span aria-hidden="true">Last »</span>
+            </a>
+        </li>
+    </ul>
+</nav>
+```
