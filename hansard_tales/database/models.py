@@ -26,7 +26,7 @@ from sqlalchemy import (
 from sqlalchemy.dialects.postgresql import UUID as PGUUID
 from sqlalchemy.orm import declarative_base, relationship
 
-Base = declarative_base()  # type: ignore[misc]
+Base = declarative_base()
 
 
 class DocumentTypeEnum(enum.Enum):
@@ -52,7 +52,7 @@ class ChamberEnum(enum.Enum):
     SENATE = "senate"
 
 
-class DocumentORM(Base):  # type: ignore[misc,valid-type]
+class DocumentORM(Base):
     """
     Documents table.
 
@@ -62,8 +62,8 @@ class DocumentORM(Base):  # type: ignore[misc,valid-type]
     __tablename__ = "documents"
 
     id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
-    type = Column(SQLEnum(DocumentTypeEnum), nullable=False)  # type: ignore[var-annotated]
-    chamber = Column(SQLEnum(ChamberEnum), nullable=False)  # type: ignore[var-annotated]
+    type = Column(SQLEnum(DocumentTypeEnum), nullable=False)
+    chamber = Column(SQLEnum(ChamberEnum), nullable=False)
     title = Column(String(500), nullable=False)
     date = Column(Date, nullable=False)
     session_id = Column(String(100))
@@ -92,7 +92,7 @@ class DocumentORM(Base):  # type: ignore[misc,valid-type]
     )
 
 
-class MPORM(Base):  # type: ignore[misc,valid-type]
+class MPORM(Base):
     """
     MPs/Senators table.
 
@@ -103,7 +103,7 @@ class MPORM(Base):  # type: ignore[misc,valid-type]
 
     id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
     name = Column(String(200), nullable=False)
-    chamber = Column(SQLEnum(ChamberEnum), nullable=False)  # type: ignore[var-annotated]
+    chamber = Column(SQLEnum(ChamberEnum), nullable=False)
     party = Column(String(100))
     constituency = Column(String(200))
     parliament_term = Column(Integer, nullable=False)
@@ -119,7 +119,7 @@ class MPORM(Base):  # type: ignore[misc,valid-type]
     )
 
 
-class StatementORM(Base):  # type: ignore[misc,valid-type]
+class StatementORM(Base):
     """
     Statements table.
 
@@ -155,8 +155,8 @@ class StatementORM(Base):  # type: ignore[misc,valid-type]
     created_at = Column(DateTime, nullable=False)
 
     # Relationships
-    document = relationship("DocumentORM", backref="statements")
-    mp = relationship("MPORM", backref="statements")
+    document: "DocumentORM" = relationship("DocumentORM", backref="statements")  # type: ignore[assignment]
+    mp: "MPORM" = relationship("MPORM", backref="statements")  # type: ignore[assignment]
 
     # Indexes
     __table_args__ = (
@@ -166,7 +166,7 @@ class StatementORM(Base):  # type: ignore[misc,valid-type]
     )
 
 
-class BillORM(Base):  # type: ignore[misc,valid-type]
+class BillORM(Base):
     """
     Bills table.
 
@@ -178,7 +178,7 @@ class BillORM(Base):  # type: ignore[misc,valid-type]
     id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
     bill_number = Column(String(50), nullable=False, unique=True)
     title = Column(String(500), nullable=False)
-    chamber = Column(SQLEnum(ChamberEnum), nullable=False)  # type: ignore[var-annotated]
+    chamber = Column(SQLEnum(ChamberEnum), nullable=False)
     status = Column(String(50), nullable=False)
     current_version = Column(Integer, default=1)
 
@@ -200,7 +200,7 @@ class BillORM(Base):  # type: ignore[misc,valid-type]
     updated_at = Column(DateTime, nullable=False)
 
     # Relationships
-    sponsor = relationship("MPORM", backref="sponsored_bills")
+    sponsor: "MPORM" = relationship("MPORM", backref="sponsored_bills")  # type: ignore[assignment]
 
     # Indexes
     __table_args__ = (
@@ -210,7 +210,7 @@ class BillORM(Base):  # type: ignore[misc,valid-type]
     )
 
 
-class BillVersionORM(Base):  # type: ignore[misc,valid-type]
+class BillVersionORM(Base):
     """
     Bill versions table.
 
@@ -237,7 +237,7 @@ class BillVersionORM(Base):  # type: ignore[misc,valid-type]
     created_at = Column(DateTime, nullable=False)
 
     # Relationships
-    bill = relationship("BillORM", backref="versions")
+    bill: "BillORM" = relationship("BillORM", backref="versions")  # type: ignore[assignment]
 
     # Indexes
     __table_args__ = (
@@ -246,7 +246,7 @@ class BillVersionORM(Base):  # type: ignore[misc,valid-type]
     )
 
 
-class VoteORM(Base):  # type: ignore[misc,valid-type]
+class VoteORM(Base):
     """
     Votes table.
 
@@ -258,7 +258,7 @@ class VoteORM(Base):  # type: ignore[misc,valid-type]
     id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
     bill_id = Column(PGUUID(as_uuid=True), ForeignKey("bills.id"), nullable=False)
     vote_date = Column(Date, nullable=False)
-    chamber = Column(SQLEnum(ChamberEnum), nullable=False)  # type: ignore[var-annotated]
+    chamber = Column(SQLEnum(ChamberEnum), nullable=False)
     vote_type = Column(String(50), nullable=False)
 
     # Results
@@ -276,7 +276,7 @@ class VoteORM(Base):  # type: ignore[misc,valid-type]
     created_at = Column(DateTime, nullable=False)
 
     # Relationships
-    bill = relationship("BillORM", backref="votes")
+    bill: "BillORM" = relationship("BillORM", backref="votes")  # type: ignore[assignment]
 
     # Indexes
     __table_args__ = (
@@ -285,7 +285,7 @@ class VoteORM(Base):  # type: ignore[misc,valid-type]
     )
 
 
-class MPVoteORM(Base):  # type: ignore[misc,valid-type]
+class MPVoteORM(Base):
     """
     Individual MP votes table.
 
@@ -300,8 +300,8 @@ class MPVoteORM(Base):  # type: ignore[misc,valid-type]
     direction = Column(String(20), nullable=False)
 
     # Relationships
-    vote = relationship("VoteORM", backref="mp_votes")
-    mp = relationship("MPORM", backref="votes")
+    vote: "VoteORM" = relationship("VoteORM", backref="mp_votes")  # type: ignore[assignment]
+    mp: "MPORM" = relationship("MPORM", backref="votes")  # type: ignore[assignment]
 
     # Indexes
     __table_args__ = (
@@ -310,7 +310,7 @@ class MPVoteORM(Base):  # type: ignore[misc,valid-type]
     )
 
 
-class QuestionORM(Base):  # type: ignore[misc,valid-type]
+class QuestionORM(Base):
     """
     Questions table.
 
@@ -327,7 +327,7 @@ class QuestionORM(Base):  # type: ignore[misc,valid-type]
     answer_text = Column(Text)
     question_date = Column(Date, nullable=False)
     answer_date = Column(Date)
-    chamber = Column(SQLEnum(ChamberEnum), nullable=False)  # type: ignore[var-annotated]
+    chamber = Column(SQLEnum(ChamberEnum), nullable=False)
 
     # Categorization
     question_type = Column(String(20), nullable=False)
@@ -344,8 +344,10 @@ class QuestionORM(Base):  # type: ignore[misc,valid-type]
     created_at = Column(DateTime, nullable=False)
 
     # Relationships
-    asker = relationship("MPORM", foreign_keys=[asker_id], backref="questions_asked")
-    respondent = relationship("MPORM", foreign_keys=[respondent_id], backref="questions_answered")
+    asker: "MPORM" = relationship("MPORM", foreign_keys=[asker_id], backref="questions_asked")  # type: ignore[assignment]
+    respondent: "MPORM" = relationship(
+        "MPORM", foreign_keys=[respondent_id], backref="questions_answered"
+    )  # type: ignore[assignment]
 
     # Indexes
     __table_args__ = (
@@ -354,7 +356,7 @@ class QuestionORM(Base):  # type: ignore[misc,valid-type]
     )
 
 
-class PetitionORM(Base):  # type: ignore[misc,valid-type]
+class PetitionORM(Base):
     """
     Petitions table.
 
@@ -369,7 +371,7 @@ class PetitionORM(Base):  # type: ignore[misc,valid-type]
     petitioner = Column(String(200), nullable=False)
     sponsor_id = Column(PGUUID(as_uuid=True), ForeignKey("mps.id"), nullable=False)
     submission_date = Column(Date, nullable=False)
-    chamber = Column(SQLEnum(ChamberEnum), nullable=False)  # type: ignore[var-annotated]
+    chamber = Column(SQLEnum(ChamberEnum), nullable=False)
 
     # Content
     petition_text = Column(Text, nullable=False)
@@ -393,7 +395,7 @@ class PetitionORM(Base):  # type: ignore[misc,valid-type]
     created_at = Column(DateTime, nullable=False)
 
     # Relationships
-    sponsor = relationship("MPORM", backref="petitions_sponsored")
+    sponsor: "MPORM" = relationship("MPORM", backref="petitions_sponsored")  # type: ignore[assignment]
 
     # Indexes
     __table_args__ = (
@@ -402,7 +404,7 @@ class PetitionORM(Base):  # type: ignore[misc,valid-type]
     )
 
 
-class DownloadedFileORM(Base):  # type: ignore[misc,valid-type]
+class DownloadedFileORM(Base):
     """
     Downloaded files tracking table for duplicate prevention.
 

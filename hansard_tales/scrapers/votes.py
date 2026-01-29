@@ -95,6 +95,10 @@ class VotesScraper(BaseScraper):
                 for link in row.find_all("a", href=True):
                     href = link["href"]
 
+                    # Type narrow: href can be str or list, ensure it's str
+                    if not isinstance(href, str):
+                        continue
+
                     # Validate it's a PDF link
                     if not href.endswith(".pdf"):
                         continue
@@ -159,6 +163,9 @@ class VotesScraper(BaseScraper):
         max_page = 0
         for link in page_links:
             href = link.get("href", "")
+            # Type narrow: ensure href is str
+            if not isinstance(href, str):
+                continue
             match = re.search(r"page=(\d+)", href)
             if match:
                 page_num = int(match.group(1))
@@ -184,13 +191,16 @@ class VotesScraper(BaseScraper):
         for link in pdf_links:
             href = link.get("href", "")
 
-            if href:
-                # Convert relative URLs to absolute
-                if href.startswith("http"):
-                    full_url = href
-                else:
-                    href = href.lstrip("/")
-                    full_url = f"{self.config.base_url}/{href}"
+            # Type narrow: ensure href is str
+            if not isinstance(href, str) or not href:
+                continue
+
+            # Convert relative URLs to absolute
+            if href.startswith("http"):
+                full_url = href
+            else:
+                href = href.lstrip("/")
+                full_url = f"{self.config.base_url}/{href}"
 
                 urls.append(full_url)
 

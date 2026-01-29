@@ -136,6 +136,9 @@ class HansardScraper(BaseScraper):
         max_page = 0
         for link in page_links:
             href = link.get("href", "")
+            # Type narrow: ensure href is str
+            if not isinstance(href, str):
+                continue
             # Look for page parameter in URL
             match = re.search(r"page=(\d+)", href)
             if match:
@@ -163,16 +166,19 @@ class HansardScraper(BaseScraper):
         for link in pdf_links:
             href = link.get("href", "")
 
-            if href:
-                # Convert relative URLs to absolute
-                if href.startswith("http"):
-                    full_url = href
-                else:
-                    # Remove leading slash if present
-                    href = href.lstrip("/")
-                    full_url = f"{self.config.base_url}/{href}"
+            # Type narrow: ensure href is str
+            if not isinstance(href, str) or not href:
+                continue
 
-                urls.append(full_url)
+            # Convert relative URLs to absolute
+            if href.startswith("http"):
+                full_url = href
+            else:
+                # Remove leading slash if present
+                href = href.lstrip("/")
+                full_url = f"{self.config.base_url}/{href}"
+
+            urls.append(full_url)
 
         return urls
 

@@ -25,9 +25,9 @@ class MPData:
     honorifics: list[str]  # Extracted honorifics (HON., DR., etc.)
     county: str | None  # Empty for nominated MPs
     constituency: str | None  # Empty for nominated MPs
-    party: str
-    status: str  # "Elected" or "Nominated"
-    profile_url: str  # Link to MP profile page
+    party: str | None  # Party affiliation
+    status: str | None  # "Elected" or "Nominated"
+    profile_url: str | None  # Link to MP profile page
     parliament_term: int
     photo_url: str | None = None
 
@@ -119,6 +119,9 @@ class MPScraper(BaseScraper):
             return 1
 
         href = last_page_link.get("href", "")
+        # Type narrow: ensure href is str
+        if not isinstance(href, str):
+            return 1
         match = re.search(r"page=(\d+)", href)
         if match:
             return int(match.group(1)) + 1  # Convert 0-indexed to count
@@ -169,6 +172,10 @@ class MPScraper(BaseScraper):
             party = " ".join(party_td.get_text(strip=True).split()) if party_td else None
             status = " ".join(status_td.get_text(strip=True).split()) if status_td else None
             profile_url = profile_link.get("href") if profile_link else None
+
+            # Type narrow: ensure profile_url is str or None
+            if profile_url is not None and not isinstance(profile_url, str):
+                profile_url = None
 
             # Convert relative URLs to absolute
             if profile_url and not profile_url.startswith("http"):
@@ -313,7 +320,7 @@ class MPScraper(BaseScraper):
             List of tuples containing duplicate MP pairs
         """
         duplicates = []
-        seen = {}
+        seen: dict[str, MPData] = {}
 
         for mp in mps:
             # Create key from clean name and constituency
