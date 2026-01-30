@@ -101,38 +101,38 @@ This document breaks down Phase 1 implementation into actionable tasks. Each tas
     - [x] 1.3.1 Property 1.1: MP identification accuracy ≥95%
     - [x] 1.3.2 Property 1.2: Name variation handling
 
-- [ ] 2. Statement Segmentation
-  - [ ] 2.1 Implement StatementSegmenter class
-    - [ ] 2.1.1 Create Statement dataclass
-    - [ ] 2.1.2 Implement boundary detection patterns
-    - [ ] 2.1.3 Implement segmentation algorithm
-    - [ ] 2.1.4 Implement text cleaning
-    - [ ] 2.1.5 Integrate MP identification
-  - [ ] 2.2 Write unit tests
-    - [ ] 2.2.1 Test boundary detection
-    - [ ] 2.2.2 Test segmentation accuracy
-    - [ ] 2.2.3 Test text cleaning
-    - [ ] 2.2.4 Test edge cases (short statements, headers)
-  - [ ] 2.3 Write property-based tests
-    - [ ] 2.3.1 Property 2.1: Segmentation accuracy ≥98%
-    - [ ] 2.3.2 Property 2.2: No statement loss
+- [x] 2. Statement Segmentation
+  - [x] 2.1 Implement StatementSegmenter class
+    - [x] 2.1.1 Create Statement dataclass
+    - [x] 2.1.2 Implement boundary detection patterns
+    - [x] 2.1.3 Implement segmentation algorithm
+    - [x] 2.1.4 Implement text cleaning
+    - [x] 2.1.5 Integrate MP identification
+  - [x] 2.2 Write unit tests
+    - [x] 2.2.1 Test boundary detection
+    - [x] 2.2.2 Test segmentation accuracy
+    - [x] 2.2.3 Test text cleaning
+    - [x] 2.2.4 Test edge cases (short statements, headers)
+  - [x] 2.3 Write property-based tests
+    - [x] 2.3.1 Property 2.1: Segmentation accuracy ≥98%
+    - [x] 2.3.2 Property 2.2: No statement loss
 
-- [ ] 3. Statement Classification (Filler Detection)
-  - [ ] 3.1 Implement FillerDetector class
-    - [ ] 3.1.1 Create StatementType enum
-    - [ ] 3.1.2 Define filler patterns for each type
-    - [ ] 3.1.3 Implement pattern matching
-    - [ ] 3.1.4 Implement length-based classification
-    - [ ] 3.1.5 Implement is_substantive helper
-  - [ ] 3.2 Write unit tests
-    - [ ] 3.2.1 Test procedural detection
-    - [ ] 3.2.2 Test interruption detection
-    - [ ] 3.2.3 Test administrative detection
-    - [ ] 3.2.4 Test short acknowledgment detection
-    - [ ] 3.2.5 Test substantive classification
-  - [ ] 3.3 Write property-based tests
-    - [ ] 3.3.1 Property 3.1: Filler detection precision ≥90%
-    - [ ] 3.3.2 Property 3.2: No false negatives on substantive
+- [x] 3. Statement Classification (Filler Detection)
+  - [x] 3.1 Implement FillerDetector class
+    - [x] 3.1.1 Create StatementType enum
+    - [x] 3.1.2 Define filler patterns for each type
+    - [x] 3.1.3 Implement pattern matching
+    - [x] 3.1.4 Implement length-based classification
+    - [x] 3.1.5 Implement is_substantive helper
+  - [x] 3.2 Write unit tests
+    - [x] 3.2.1 Test procedural detection
+    - [x] 3.2.2 Test interruption detection
+    - [x] 3.2.3 Test administrative detection
+    - [x] 3.2.4 Test short acknowledgment detection
+    - [x] 3.2.5 Test substantive classification
+  - [x] 3.3 Write property-based tests
+    - [x] 3.3.1 Property 3.1: Filler detection precision ≥90%
+    - [x] 3.3.2 Property 3.2: No false negatives on substantive
 
 
 ### Week 3-4: LLM Integration

@@ -155,8 +155,8 @@ class StatementORM(Base):
     created_at = Column(DateTime, nullable=False)
 
     # Relationships
-    document: "DocumentORM" = relationship("DocumentORM", backref="statements")  # type: ignore[assignment]
-    mp: "MPORM" = relationship("MPORM", backref="statements")  # type: ignore[assignment]
+    document = relationship("DocumentORM", backref="statements")  # type: ignore[assignment]
+    mp = relationship("MPORM", backref="statements")  # type: ignore[assignment]
 
     # Indexes
     __table_args__ = (
@@ -200,7 +200,7 @@ class BillORM(Base):
     updated_at = Column(DateTime, nullable=False)
 
     # Relationships
-    sponsor: "MPORM" = relationship("MPORM", backref="sponsored_bills")  # type: ignore[assignment]
+    sponsor = relationship("MPORM", backref="sponsored_bills")  # type: ignore[assignment]
 
     # Indexes
     __table_args__ = (
@@ -237,7 +237,7 @@ class BillVersionORM(Base):
     created_at = Column(DateTime, nullable=False)
 
     # Relationships
-    bill: "BillORM" = relationship("BillORM", backref="versions")  # type: ignore[assignment]
+    bill = relationship("BillORM", backref="versions")  # type: ignore[assignment]
 
     # Indexes
     __table_args__ = (
@@ -276,7 +276,7 @@ class VoteORM(Base):
     created_at = Column(DateTime, nullable=False)
 
     # Relationships
-    bill: "BillORM" = relationship("BillORM", backref="votes")  # type: ignore[assignment]
+    bill = relationship("BillORM", backref="votes")  # type: ignore[assignment]
 
     # Indexes
     __table_args__ = (
@@ -300,8 +300,8 @@ class MPVoteORM(Base):
     direction = Column(String(20), nullable=False)
 
     # Relationships
-    vote: "VoteORM" = relationship("VoteORM", backref="mp_votes")  # type: ignore[assignment]
-    mp: "MPORM" = relationship("MPORM", backref="votes")  # type: ignore[assignment]
+    vote = relationship("VoteORM", backref="mp_votes")  # type: ignore[assignment]
+    mp = relationship("MPORM", backref="votes")  # type: ignore[assignment]
 
     # Indexes
     __table_args__ = (
@@ -344,10 +344,8 @@ class QuestionORM(Base):
     created_at = Column(DateTime, nullable=False)
 
     # Relationships
-    asker: "MPORM" = relationship("MPORM", foreign_keys=[asker_id], backref="questions_asked")  # type: ignore[assignment]
-    respondent: "MPORM" = relationship(
-        "MPORM", foreign_keys=[respondent_id], backref="questions_answered"
-    )  # type: ignore[assignment]
+    asker = relationship("MPORM", foreign_keys=[asker_id], backref="questions_asked")  # type: ignore[assignment]
+    respondent = relationship("MPORM", foreign_keys=[respondent_id], backref="questions_answered")  # type: ignore[assignment]
 
     # Indexes
     __table_args__ = (
@@ -395,7 +393,7 @@ class PetitionORM(Base):
     created_at = Column(DateTime, nullable=False)
 
     # Relationships
-    sponsor: "MPORM" = relationship("MPORM", backref="petitions_sponsored")  # type: ignore[assignment]
+    sponsor = relationship("MPORM", backref="petitions_sponsored")  # type: ignore[assignment]
 
     # Indexes
     __table_args__ = (
