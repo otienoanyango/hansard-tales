@@ -249,74 +249,74 @@ This document breaks down Phase 1 implementation into actionable tasks. Each tas
     - [x] 9.3.1 Property 8.1: Bill mention detection recall ≥90%
     - [x] 9.3.2 Property 8.2: Bill resolution accuracy
 
-- [ ] 10. MP Profile Generation
-  - [ ] 10.1 Implement MPProfileGenerator class
-    - [ ] 10.1.1 Create MPProfile dataclass
-    - [ ] 10.1.2 Implement statistics aggregation
-    - [ ] 10.1.3 Implement topic aggregation
-    - [ ] 10.1.4 Implement bill aggregation
-    - [ ] 10.1.5 Implement LLM summary generation
-    - [ ] 10.1.6 Implement batch profile generation
-  - [ ] 10.2 Write unit tests
-    - [ ] 10.2.1 Test statistics aggregation
-    - [ ] 10.2.2 Test topic aggregation
-    - [ ] 10.2.3 Test summary generation
-    - [ ] 10.2.4 Test batch processing
-    - [ ] 10.2.5 Test edge cases
-  - [ ] 10.3 Write property-based tests
-    - [ ] 10.3.1 Property 9.1: Profile completeness
-    - [ ] 10.3.2 Property 9.2: Statistics accuracy
+- [x] 10. MP Profile Generation
+  - [x] 10.1 Implement MPProfileGenerator class
+    - [x] 10.1.1 Create MPProfile dataclass
+    - [x] 10.1.2 Implement statistics aggregation
+    - [x] 10.1.3 Implement topic aggregation
+    - [x] 10.1.4 Implement bill aggregation
+    - [x] 10.1.5 Implement LLM summary generation
+    - [x] 10.1.6 Implement batch profile generation
+  - [x] 10.2 Write unit tests
+    - [x] 10.2.1 Test statistics aggregation
+    - [x] 10.2.2 Test topic aggregation
+    - [x] 10.2.3 Test summary generation
+    - [x] 10.2.4 Test batch processing
+    - [x] 10.2.5 Test edge cases
+  - [x] 10.3 Write property-based tests
+    - [x] 10.3.1 Property 9.1: Profile completeness
+    - [x] 10.3.2 Property 9.2: Statistics accuracy
 
-- [ ] 11. Session Summary Generation
-  - [ ] 11.1 Implement SessionSummaryGenerator class
-    - [ ] 11.1.1 Create SessionSummary dataclass
-    - [ ] 11.1.2 Implement statement aggregation
-    - [ ] 11.1.3 Implement LLM summary generation
-    - [ ] 11.1.4 Implement structured parsing
-    - [ ] 11.1.5 Implement bill/vote linking
-    - [ ] 11.1.6 Implement batch generation
-  - [ ] 11.2 Write unit tests
-    - [ ] 11.2.1 Test statement aggregation
-    - [ ] 11.2.2 Test summary generation
-    - [ ] 11.2.3 Test structured parsing
-    - [ ] 11.2.4 Test batch processing
-    - [ ] 11.2.5 Test edge cases
-  - [ ] 11.3 Write property-based tests
-    - [ ] 11.3.1 Property 10.1: Summary accuracy
-    - [ ] 11.3.2 Property 10.2: Key event extraction
+- [x] 11. Session Summary Generation
+  - [x] 11.1 Implement SessionSummaryGenerator class
+    - [x] 11.1.1 Create SessionSummary dataclass
+    - [x] 11.1.2 Implement statement aggregation
+    - [x] 11.1.3 Implement LLM summary generation
+    - [x] 11.1.4 Implement structured parsing
+    - [x] 11.1.5 Implement bill/vote linking
+    - [x] 11.1.6 Implement batch generation
+  - [x] 11.2 Write unit tests
+    - [x] 11.2.1 Test statement aggregation
+    - [x] 11.2.2 Test summary generation
+    - [x] 11.2.3 Test structured parsing
+    - [x] 11.2.4 Test batch processing
+    - [x] 11.2.5 Test edge cases
+  - [x] 11.3 Write property-based tests
+    - [x] 11.3.1 Property 10.1: Summary accuracy
+    - [x] 11.3.2 Property 10.2: Key event extraction
 
 
 ### Week 7-8: Site Generation & Polish
 
-- [ ] 12. Static Site Generation
-  - [ ] 12.1 Implement StaticSiteGenerator class
-    - [ ] 12.1.1 Setup Jinja2 environment
-    - [ ] 12.1.2 Implement homepage generation
-    - [ ] 12.1.3 Implement MP pages generation
-    - [ ] 12.1.4 Implement session pages generation
-    - [ ] 12.1.5 Implement bill pages generation
-    - [ ] 12.1.6 Implement party pages generation
-    - [ ] 12.1.7 Implement search page generation
-    - [ ] 12.1.8 Implement static asset copying
-  - [ ] 12.2 Create Jinja2 templates
-    - [ ] 12.2.1 Create base layout template
-    - [ ] 12.2.2 Create homepage template
-    - [ ] 12.2.3 Create MP list template
-    - [ ] 12.2.4 Create MP profile template
-    - [ ] 12.2.5 Create session list template
-    - [ ] 12.2.6 Create session detail template
-    - [ ] 12.2.7 Create bill templates
-    - [ ] 12.2.8 Create party templates
-    - [ ] 12.2.9 Create search template
-  - [ ] 12.3 Write unit tests
-    - [ ] 12.3.1 Test homepage generation
-    - [ ] 12.3.2 Test MP page generation
-    - [ ] 12.3.3 Test session page generation
-    - [ ] 12.3.4 Test template rendering
-    - [ ] 12.3.5 Test link generation
-  - [ ] 12.4 Write property-based tests
-    - [ ] 12.4.1 Property 11.1: Page generation completeness
-    - [ ] 12.4.2 Property 11.2: Link validity
+- [x] 12. Static Site Generation
+  - [x] 12.1 Implement StaticSiteGenerator class
+    - [x] 12.1.1 Setup Jinja2 environment
+    - [x] 12.1.2 Implement homepage generation
+    - [x] 12.1.3 Implement MP pages generation
+    - [x] 12.1.4 Implement session pages generation
+    - [x] 12.1.5 Implement bill pages generation
+    - [x] 12.1.6 Implement party pages generation
+    - [x] 12.1.7 Implement search page generation
+    - [x] 12.1.8 Implement static asset copying
+  - [x] 12.2 Create Jinja2 templates
+    - [x] 12.2.1 Create base layout template
+    - [x] 12.2.2 Create homepage template
+    - [x] 12.2.3 Create MP list template
+    - [x] 12.2.4 Create MP profile template
+    - [x] 12.2.5 Create session list template
+    - [x] 12.2.6 Create session detail template
+    - [x] 12.2.7 Create bill templates
+    - [x] 12.2.8 Create party templates
+    - [x] 12.2.9 Create search template
+  - [x] 12.3 Write unit tests
+    - [x] 12.3.1 Test homepage generation
+    - [x] 12.3.2 Test MP page generation
+    - [x] 12.3.3 Test session page generation
+    - [x] 12.3.4 Test template rendering
+    - [x] 12.3.5 Test link generation
+  - [x] 12.4 Write property-based tests
+    - [x] 12.4.1 Property 11.1: Page generation completeness
+    - [x] 12.4.2 Property 11.2: Link validity
 
 - [ ] 13. Pipeline Orchestration
   - [ ] 13.1 Implement ProcessingPipeline class
