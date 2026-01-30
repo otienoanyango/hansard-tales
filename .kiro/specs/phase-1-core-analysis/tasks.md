@@ -137,60 +137,60 @@ This document breaks down Phase 1 implementation into actionable tasks. Each tas
 
 ### Week 3-4: LLM Integration
 
-- [ ] 4. Context Retrieval (RAG)
-  - [ ] 4.1 Implement ContextRetriever class
-    - [ ] 4.1.1 Create RetrievedContext dataclass
-    - [ ] 4.1.2 Initialize sentence-transformers embedder
-    - [ ] 4.1.3 Implement historical statement retrieval
-    - [ ] 4.1.4 Implement related bills retrieval
-    - [ ] 4.1.5 Implement related votes retrieval
-    - [ ] 4.1.6 Implement session context retrieval
-  - [ ] 4.2 Write unit tests
-    - [ ] 4.2.1 Test embedding generation
-    - [ ] 4.2.2 Test historical retrieval
-    - [ ] 4.2.3 Test bill retrieval
-    - [ ] 4.2.4 Test vote retrieval
-    - [ ] 4.2.5 Test result deduplication
-  - [ ] 4.3 Write property-based tests
-    - [ ] 4.3.1 Property 4.1: Context relevance
-    - [ ] 4.3.2 Property 4.2: Context diversity
+- [x] 4. Context Retrieval (RAG)
+  - [x] 4.1 Implement ContextRetriever class
+    - [x] 4.1.1 Create RetrievedContext dataclass
+    - [x] 4.1.2 Initialize sentence-transformers embedder
+    - [x] 4.1.3 Implement historical statement retrieval
+    - [x] 4.1.4 Implement related bills retrieval
+    - [x] 4.1.5 Implement related votes retrieval
+    - [x] 4.1.6 Implement session context retrieval
+  - [x] 4.2 Write unit tests
+    - [x] 4.2.1 Test embedding generation
+    - [x] 4.2.2 Test historical retrieval
+    - [x] 4.2.3 Test bill retrieval
+    - [x] 4.2.4 Test vote retrieval
+    - [x] 4.2.5 Test result deduplication
+  - [x] 4.3 Write property-based tests
+    - [x] 4.3.1 Property 4.1: Context relevance
+    - [x] 4.3.2 Property 4.2: Context diversity
 
-- [ ] 5. LLM Analysis
-  - [ ] 5.1 Implement LLMAnalyzer class
-    - [ ] 5.1.1 Create StatementAnalysis Pydantic model
-    - [ ] 5.1.2 Initialize Anthropic client
-    - [ ] 5.1.3 Implement system prompt
-    - [ ] 5.1.4 Implement prompt building with context
-    - [ ] 5.1.5 Implement API call with error handling
-    - [ ] 5.1.6 Implement response parsing
-    - [ ] 5.1.7 Implement batch analysis
-  - [ ] 5.2 Write unit tests
-    - [ ] 5.2.1 Test prompt building
-    - [ ] 5.2.2 Test response parsing
-    - [ ] 5.2.3 Test error handling
-    - [ ] 5.2.4 Test batch processing
-    - [ ] 5.2.5 Mock API calls for testing
-  - [ ] 5.3 Write property-based tests
-    - [ ] 5.3.1 Property 5.1: Sentiment accuracy ≥80%
-    - [ ] 5.3.2 Property 5.2: Quality score consistency
+- [x] 5. LLM Analysis
+  - [x] 5.1 Implement LLMAnalyzer class
+    - [x] 5.1.1 Create StatementAnalysis Pydantic model
+    - [x] 5.1.2 Initialize Anthropic client
+    - [x] 5.1.3 Implement system prompt
+    - [x] 5.1.4 Implement prompt building with context
+    - [x] 5.1.5 Implement API call with error handling
+    - [x] 5.1.6 Implement response parsing
+    - [x] 5.1.7 Implement batch analysis
+  - [x] 5.2 Write unit tests
+    - [x] 5.2.1 Test prompt building
+    - [x] 5.2.2 Test response parsing
+    - [x] 5.2.3 Test error handling
+    - [x] 5.2.4 Test batch processing
+    - [x] 5.2.5 Mock API calls for testing
+  - [x] 5.3 Write property-based tests
+    - [x] 5.3.1 Property 5.1: Sentiment accuracy ≥80%
+    - [x] 5.3.2 Property 5.2: Quality score consistency
 
-- [ ] 6. Citation Verification
-  - [ ] 6.1 Implement CitationVerifier class
-    - [ ] 6.1.1 Create Citation dataclass
-    - [ ] 6.1.2 Implement source fetching
-    - [ ] 6.1.3 Implement exact match verification
-    - [ ] 6.1.4 Implement fuzzy match verification
-    - [ ] 6.1.5 Implement best match finding
-    - [ ] 6.1.6 Implement batch verification
-  - [ ] 6.2 Write unit tests
-    - [ ] 6.2.1 Test exact matching
-    - [ ] 6.2.2 Test fuzzy matching
-    - [ ] 6.2.3 Test threshold handling
-    - [ ] 6.2.4 Test batch verification
-    - [ ] 6.2.5 Test error cases
-  - [ ] 6.3 Write property-based tests
-    - [ ] 6.3.1 Property 6.1: Citation verification accuracy
-    - [ ] 6.3.2 Property 6.2: No false verifications
+- [x] 6. Citation Verification
+  - [x] 6.1 Implement CitationVerifier class
+    - [x] 6.1.1 Create Citation dataclass
+    - [x] 6.1.2 Implement source fetching
+    - [x] 6.1.3 Implement exact match verification
+    - [x] 6.1.4 Implement fuzzy match verification
+    - [x] 6.1.5 Implement best match finding
+    - [x] 6.1.6 Implement batch verification
+  - [x] 6.2 Write unit tests
+    - [x] 6.2.1 Test exact matching
+    - [x] 6.2.2 Test fuzzy matching
+    - [x] 6.2.3 Test threshold handling
+    - [x] 6.2.4 Test batch verification
+    - [x] 6.2.5 Test error cases
+  - [x] 6.3 Write property-based tests
+    - [x] 6.3.1 Property 6.1: Citation verification accuracy
+    - [x] 6.3.2 Property 6.2: No false verifications
 
 - [ ] 7. Cost Management
   - [ ] 7.1 Implement CostManager class
@@ -213,41 +213,41 @@ This document breaks down Phase 1 implementation into actionable tasks. Each tas
 
 ### Week 5-6: Document Processing
 
-- [ ] 8. Vote Processing
-  - [ ] 8.1 Implement VoteProcessor class
-    - [ ] 8.1.1 Create VoteRecord and MPVote dataclasses
-    - [ ] 8.1.2 Implement PDF table extraction
-    - [ ] 8.1.3 Implement vote table detection
-    - [ ] 8.1.4 Implement vote parsing
-    - [ ] 8.1.5 Implement MP matching
-    - [ ] 8.1.6 Implement vote totals calculation
-  - [ ] 8.2 Write unit tests
-    - [ ] 8.2.1 Test table detection
-    - [ ] 8.2.2 Test vote parsing
-    - [ ] 8.2.3 Test MP matching
-    - [ ] 8.2.4 Test totals calculation
-    - [ ] 8.2.5 Test edge cases
-  - [ ] 8.3 Write property-based tests
-    - [ ] 8.3.1 Property 7.1: Vote extraction completeness
-    - [ ] 8.3.2 Property 7.2: MP vote accuracy
+- [x] 8. Vote Processing
+  - [x] 8.1 Implement VoteProcessor class
+    - [x] 8.1.1 Create VoteRecord and MPVote dataclasses
+    - [x] 8.1.2 Implement PDF table extraction
+    - [x] 8.1.3 Implement vote table detection
+    - [x] 8.1.4 Implement vote parsing
+    - [x] 8.1.5 Implement MP matching
+    - [x] 8.1.6 Implement vote totals calculation
+  - [x] 8.2 Write unit tests
+    - [x] 8.2.1 Test table detection
+    - [x] 8.2.2 Test vote parsing
+    - [x] 8.2.3 Test MP matching
+    - [x] 8.2.4 Test totals calculation
+    - [x] 8.2.5 Test edge cases
+  - [x] 8.3 Write property-based tests
+    - [x] 8.3.1 Property 7.1: Vote extraction completeness
+    - [x] 8.3.2 Property 7.2: MP vote accuracy
 
-- [ ] 9. Bill-Statement Linking
-  - [ ] 9.1 Implement BillStatementLinker class
-    - [ ] 9.1.1 Create BillMention dataclass
-    - [ ] 9.1.2 Implement bill mention patterns
-    - [ ] 9.1.3 Implement pattern-based extraction
-    - [ ] 9.1.4 Implement bill resolution
-    - [ ] 9.1.5 Implement vector similarity disambiguation
-    - [ ] 9.1.6 Implement context extraction
-  - [ ] 9.2 Write unit tests
-    - [ ] 9.2.1 Test pattern matching
-    - [ ] 9.2.2 Test bill resolution
-    - [ ] 9.2.3 Test disambiguation
-    - [ ] 9.2.4 Test context extraction
-    - [ ] 9.2.5 Test edge cases
-  - [ ] 9.3 Write property-based tests
-    - [ ] 9.3.1 Property 8.1: Bill mention detection recall ≥90%
-    - [ ] 9.3.2 Property 8.2: Bill resolution accuracy
+- [x] 9. Bill-Statement Linking
+  - [x] 9.1 Implement BillStatementLinker class
+    - [x] 9.1.1 Create BillMention dataclass
+    - [x] 9.1.2 Implement bill mention patterns
+    - [x] 9.1.3 Implement pattern-based extraction
+    - [x] 9.1.4 Implement bill resolution
+    - [x] 9.1.5 Implement vector similarity disambiguation
+    - [x] 9.1.6 Implement context extraction
+  - [x] 9.2 Write unit tests
+    - [x] 9.2.1 Test pattern matching
+    - [x] 9.2.2 Test bill resolution
+    - [x] 9.2.3 Test disambiguation
+    - [x] 9.2.4 Test context extraction
+    - [x] 9.2.5 Test edge cases
+  - [x] 9.3 Write property-based tests
+    - [x] 9.3.1 Property 8.1: Bill mention detection recall ≥90%
+    - [x] 9.3.2 Property 8.2: Bill resolution accuracy
 
 - [ ] 10. MP Profile Generation
   - [ ] 10.1 Implement MPProfileGenerator class

@@ -108,6 +108,20 @@ class MonitoringConfig(BaseSettings):
     dsn: str = ""
 
 
+class LLMConfig(BaseSettings):
+    """LLM configuration for analysis."""
+
+    model_config = SettingsConfigDict(env_prefix="LLM_")
+
+    provider: Literal["anthropic"] = "anthropic"
+    model: str = "claude-3-5-haiku-20241022"
+    api_key: str = ""
+    max_tokens: int = 1024
+    temperature: float = 0.0
+    timeout: int = 60
+    max_retries: int = 3
+
+
 class Config(BaseSettings):
     """Main application configuration."""
 
@@ -120,6 +134,7 @@ class Config(BaseSettings):
     scraper: ScraperConfig = Field(default_factory=ScraperConfig)
     logging: LoggingConfig = Field(default_factory=LoggingConfig)
     monitoring: MonitoringConfig = Field(default_factory=MonitoringConfig)
+    llm: LLMConfig = Field(default_factory=LLMConfig)
 
 
 # Global configuration instance
