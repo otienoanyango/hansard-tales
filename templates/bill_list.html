@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Bills - Hansard Tales{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+    <div class="container">
+        <a href="/">Home</a> / <span>Bills</span>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="bill-list-page">
+    <h1>Bills</h1>
+    <p class="lead">Browse all {{ bills|length }} bills</p>
+
+    <!-- Bill List -->
+    <div class="bill-list">
+        {% for bill in bills %}
+        <div class="bill-card">
+            <div class="bill-header">
+                <h3>
+                    <a href="/bills/{{ bill.title|slugify }}.html">
+                        {{ bill.title }}
+                    </a>
+                </h3>
+            </div>
+            <div class="bill-body">
+                {% if bill.date %}
+                <p class="bill-date">Date: {{ bill.date|format_date }}</p>
+                {% endif %}
+                {% if bill.pdf_url %}
+                <p class="bill-source">
+                    <a href="{{ bill.pdf_url }}" target="_blank">View PDF</a>
+                </p>
+                {% endif %}
+            </div>
+            <div class="bill-footer">
+                <a href="/bills/{{ bill.title|slugify }}.html" class="btn btn-link">
+                    View Details →
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

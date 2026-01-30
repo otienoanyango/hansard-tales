@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block title %}Hansard Tales - Kenyan Parliamentary Data{% endblock %}
+
+{% block description %}Explore Kenyan parliamentary proceedings, MP profiles, bills, and voting records with AI-powered
+analysis.{% endblock %}
+
+{% block content %}
+<div class="homepage">
+    <!-- Hero Section -->
+    <section class="hero">
+        <h1>Hansard Tales</h1>
+        <p class="lead">Transparent access to Kenyan parliamentary proceedings</p>
+        <div class="hero-actions">
+            <a href="/mps/" class="btn btn-primary">Browse MPs</a>
+            <a href="/sessions/" class="btn btn-secondary">View Sessions</a>
+        </div>
+    </section>
+
+    <!-- Statistics -->
+    <section class="stats">
+        <h2>By the Numbers</h2>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">{{ stats.total_mps|format_number }}</div>
+                <div class="stat-label">Members of Parliament</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ stats.total_sessions|format_number }}</div>
+                <div class="stat-label">Parliamentary Sessions</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ stats.total_statements|format_number }}</div>
+                <div class="stat-label">Statements Analyzed</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ stats.total_bills|format_number }}</div>
+                <div class="stat-label">Bills Tracked</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Recent Sessions -->
+    <section class="recent-sessions">
+        <h2>Recent Parliamentary Sessions</h2>
+        {% if recent_sessions %}
+        <div class="session-list">
+            {% for session in recent_sessions %}
+            <div class="session-card">
+                <div class="session-date">{{ session.date|format_date }}</div>
+                <div class="session-type">{{ session.session_type|title }} Session</div>
+                <a href="/sessions/{{ session.date }}-{{ session.session_type }}.html" class="btn btn-link">
+                    View Details →
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="view-all">
+            <a href="/sessions/" class="btn btn-secondary">View All Sessions</a>
+        </div>
+        {% else %}
+        <p>No sessions available yet.</p>
+        {% endif %}
+    </section>
+
+    <!-- Features -->
+    <section class="features">
+        <h2>What You Can Do</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <h3>Track MPs</h3>
+                <p>View detailed profiles of all Members of Parliament, including their statements, voting records, and
+                    key focus areas.</p>
+                <a href="/mps/" class="btn btn-link">Browse MPs →</a>
+            </div>
+            <div class="feature-card">
+                <h3>Follow Bills</h3>
+                <p>Track legislation through parliament, see who's discussing what, and understand the debate around key
+                    bills.</p>
+                <a href="/bills/" class="btn btn-link">View Bills →</a>
+            </div>
+            <div class="feature-card">
+                <h3>Analyze Debates</h3>
+                <p>Read AI-powered summaries of parliamentary sessions, with sentiment analysis and topic
+                    classification.</p>
+                <a href="/sessions/" class="btn btn-link">View Sessions →</a>
+            </div>
+            <div class="feature-card">
+                <h3>Search Everything</h3>
+                <p>Powerful search across all parliamentary data - find MPs, bills, sessions, and specific statements.
+                </p>
+                <a href="/search/" class="btn btn-link">Search Now →</a>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}

@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block title %}{{ session.date|format_date }} Session - Hansard Tales{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+    <div class="container">
+        <a href="/">Home</a> / <a href="/sessions/">Sessions</a> /
+        <span>{{ session.date|format_date }}</span>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="session-detail-page">
+    <!-- Session Header -->
+    <div class="session-header">
+        <h1>{{ session.date|format_date }} - {{ session.session_type|title }} Session</h1>
+        {% if session.pdf_url %}
+        <p class="session-source">
+            <a href="{{ session.pdf_url }}" target="_blank" class="btn btn-secondary">
+                View Original PDF
+            </a>
+        </p>
+        {% endif %}
+    </div>
+
+    <!-- Session Statistics -->
+    <section class="session-stats">
+        <h2>Session Overview</h2>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">{{ data.total_statements|format_number }}</div>
+                <div class="stat-label">Total Statements</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ data.substantive_statements|format_number }}</div>
+                <div class="stat-label">Substantive Statements</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ data.mps_present|format_number }}</div>
+                <div class="stat-label">MPs Present</div>
+            </div>
+            {% if data.votes %}
+            <div class="stat-card">
+                <div class="stat-number">{{ data.votes|length }}</div>
+                <div class="stat-label">Votes Held</div>
+            </div>
+            {% endif %}
+        </div>
+    </section>
+
+    <!-- Main Topics -->
+    {% if data.main_topics %}
+    <section class="session-topics">
+        <h2>Main Topics Discussed</h2>
+        <div class="topics-list">
+            {% for topic, count in data.main_topics %}
+            <div class="topic-item">
+                <span class="topic-name">{{ topic }}</span>
+                <span class="topic-count">{{ count }} statements</span>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Votes -->
+    {% if data.votes %}
+    <section class="session-votes">
+        <h2>Votes Held</h2>
+        <div class="votes-list">
+            {% for vote in data.votes %}
+            <div class="vote-card">
+                <h3>{{ vote.motion_text|truncate_words(20) }}</h3>
+                <div class="vote-results">
+                    <span class="vote-ayes">Ayes: {{ vote.ayes }}</span>
+                    <span class="vote-noes">Noes: {{ vote.noes }}</span>
+                    <span class="vote-result {{ vote.result }}">{{ vote.result|title }}</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Statements -->
+    {% if data.statements %}
+    <section class="session-statements">
+        <h2>Statements</h2>
+        <div class="statements-list">
+            {% for statement in data.statements[:50] %}
+            <div class="statement-card">
+                <div class="statement-meta">
+                    {% if statement.mp %}
+                    <span class="statement-mp">
+                        <a href="/mps/{{ statement.mp.name|slugify }}.html">
+                            {{ statement.mp.name }}
+                        </a>
+                    </span>
+                    {% endif %}
+                    {% if statement.primary_topic %}
+                    <span class="statement-topic">{{ statement.primary_topic }}</span>
+                    {% endif %}
+                    {% if statement.quality_score %}
+                    <span class="statement-quality">Quality: {{ statement.quality_score }}/100</span>
+                    {% endif %}
+                </div>
+                <div class="statement-text">
+                    {{ statement.text|truncate_words(100) }}
+                </div>
+            </div>
+            {% endfor %}
+            {% if data.statements|length > 50 %}
+            <p class="statement-note">Showing first 50 of {{ data.statements|length }} statements</p>
+            {% endif %}
+        </div>
+    </section>
+    {% endif %}
+</div>
+{% endblock %}

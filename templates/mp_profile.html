@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block title %}{{ mp.name }} - MP Profile - Hansard Tales{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+    <div class="container">
+        <a href="/">Home</a> / <a href="/mps/">MPs</a> / <span>{{ mp.name }}</span>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="mp-profile-page">
+    <!-- MP Header -->
+    <div class="mp-header">
+        <h1>{{ mp.name }}</h1>
+        <div class="mp-meta">
+            {% if mp.constituency %}
+            <span class="mp-constituency">{{ mp.constituency }}</span>
+            {% endif %}
+            {% if mp.county %}
+            <span class="mp-county">{{ mp.county }}</span>
+            {% endif %}
+            {% if mp.party %}
+            <span class="mp-party">
+                <a href="/parties/{{ mp.party|slugify }}.html">{{ mp.party }}</a>
+            </span>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Statistics -->
+    <section class="mp-stats">
+        <h2>Activity Overview</h2>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">{{ profile.total_statements|format_number }}</div>
+                <div class="stat-label">Total Statements</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ profile.substantive_statements|format_number }}</div>
+                <div class="stat-label">Substantive Statements</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ profile.avg_quality_score|round(1) }}</div>
+                <div class="stat-label">Avg Quality Score</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Top Topics -->
+    {% if profile.top_topics %}
+    <section class="mp-topics">
+        <h2>Top Discussion Topics</h2>
+        <div class="topics-list">
+            {% for topic, count in profile.top_topics %}
+            <div class="topic-item">
+                <span class="topic-name">{{ topic }}</span>
+                <span class="topic-count">{{ count }} statements</span>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Recent Statements -->
+    {% if profile.recent_statements %}
+    <section class="mp-statements">
+        <h2>Recent Statements</h2>
+        <div class="statements-list">
+            {% for statement in profile.recent_statements %}
+            <div class="statement-card">
+                <div class="statement-meta">
+                    <span class="statement-date">{{ statement.created_at|format_date }}</span>
+                    {% if statement.primary_topic %}
+                    <span class="statement-topic">{{ statement.primary_topic }}</span>
+                    {% endif %}
+                    {% if statement.quality_score %}
+                    <span class="statement-quality">Quality: {{ statement.quality_score }}/100</span>
+                    {% endif %}
+                </div>
+                <div class="statement-text">
+                    {{ statement.text|truncate_words(100) }}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Contact Information -->
+    {% if mp.email or mp.phone %}
+    <section class="mp-contact">
+        <h2>Contact Information</h2>
+        <div class="contact-info">
+            {% if mp.email %}
+            <p><strong>Email:</strong> <a href="mailto:{{ mp.email }}">{{ mp.email }}</a></p>
+            {% endif %}
+            {% if mp.phone %}
+            <p><strong>Phone:</strong> {{ mp.phone }}</p>
+            {% endif %}
+        </div>
+    </section>
+    {% endif %}
+</div>
+{% endblock %}

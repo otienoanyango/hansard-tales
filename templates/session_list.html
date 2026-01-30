@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Parliamentary Sessions - Hansard Tales{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+    <div class="container">
+        <a href="/">Home</a> / <span>Sessions</span>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="session-list-page">
+    <h1>Parliamentary Sessions</h1>
+    <p class="lead">Browse all {{ sessions|length }} parliamentary sessions</p>
+
+    <!-- Session List -->
+    <div class="session-list">
+        {% for session in sessions %}
+        <div class="session-card">
+            <div class="session-header">
+                <h3>
+                    <a href="/sessions/{{ session.date }}-{{ session.session_type }}.html">
+                        {{ session.date|format_date }} - {{ session.session_type|title }} Session
+                    </a>
+                </h3>
+            </div>
+            <div class="session-body">
+                {% if session.pdf_url %}
+                <p class="session-source">
+                    <a href="{{ session.pdf_url }}" target="_blank">View Original PDF</a>
+                </p>
+                {% endif %}
+            </div>
+            <div class="session-footer">
+                <a href="/sessions/{{ session.date }}-{{ session.session_type }}.html" class="btn btn-link">
+                    View Details →
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

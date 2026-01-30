@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}{{ bill.title }} - Hansard Tales{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+    <div class="container">
+        <a href="/">Home</a> / <a href="/bills/">Bills</a> /
+        <span>{{ bill.title|truncate_words(10) }}</span>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="bill-detail-page">
+    <!-- Bill Header -->
+    <div class="bill-header">
+        <h1>{{ bill.title }}</h1>
+        {% if bill.date %}
+        <p class="bill-date">{{ bill.date|format_date }}</p>
+        {% endif %}
+        {% if bill.pdf_url %}
+        <p class="bill-source">
+            <a href="{{ bill.pdf_url }}" target="_blank" class="btn btn-secondary">
+                View Original PDF
+            </a>
+        </p>
+        {% endif %}
+    </div>
+
+    <!-- Bill Statistics -->
+    <section class="bill-stats">
+        <h2>Overview</h2>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">{{ data.discussion_count|format_number }}</div>
+                <div class="stat-label">Times Discussed</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ data.related_statements|length|format_number }}</div>
+                <div class="stat-label">Related Statements</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ data.related_votes|length|format_number }}</div>
+                <div class="stat-label">Votes Held</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Related Votes -->
+    {% if data.related_votes %}
+    <section class="bill-votes">
+        <h2>Voting Record</h2>
+        <div class="votes-list">
+            {% for vote in data.related_votes %}
+            <div class="vote-card">
+                <div class="vote-date">{{ vote.date|format_date }}</div>
+                <div class="vote-results">
+                    <span class="vote-ayes">Ayes: {{ vote.ayes }}</span>
+                    <span class="vote-noes">Noes: {{ vote.noes }}</span>
+                    <span class="vote-result {{ vote.result }}">{{ vote.result|title }}</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Related Statements -->
+    {% if data.related_statements %}
+    <section class="bill-statements">
+        <h2>Parliamentary Discussion</h2>
+        <div class="statements-list">
+            {% for statement in data.related_statements[:20] %}
+            <div class="statement-card">
+                <div class="statement-meta">
+                    {% if statement.mp %}
+                    <span class="statement-mp">
+                        <a href="/mps/{{ statement.mp.name|slugify }}.html">
+                            {{ statement.mp.name }}
+                        </a>
+                    </span>
+                    {% endif %}
+                    <span class="statement-date">{{ statement.created_at|format_date }}</span>
+                </div>
+                <div class="statement-text">
+                    {{ statement.text|truncate_words(100) }}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+</div>
+{% endblock %}

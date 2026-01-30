@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block title %}Members of Parliament - Hansard Tales{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+    <div class="container">
+        <a href="/">Home</a> / <span>MPs</span>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="mp-list-page">
+    <h1>Members of Parliament</h1>
+    <p class="lead">Browse all {{ mps|length }} Members of the National Assembly</p>
+
+    <!-- Filter/Search -->
+    <div class="filters">
+        <input type="text" id="mp-search" placeholder="Search by name, constituency, or party..." class="search-input">
+        <select id="party-filter" class="filter-select">
+            <option value="">All Parties</option>
+            {% for mp in mps %}
+            {% if mp.party %}
+            <option value="{{ mp.party }}">{{ mp.party }}</option>
+            {% endif %}
+            {% endfor %}
+        </select>
+    </div>
+
+    <!-- MP Grid -->
+    <div class="mp-grid">
+        {% for mp in mps %}
+        <div class="mp-card" data-party="{{ mp.party or '' }}">
+            <div class="mp-card-header">
+                <h3>
+                    <a href="/mps/{{ mp.name|slugify }}.html">{{ mp.name }}</a>
+                </h3>
+            </div>
+            <div class="mp-card-body">
+                {% if mp.constituency %}
+                <p class="mp-constituency">
+                    <strong>Constituency:</strong> {{ mp.constituency }}
+                </p>
+                {% endif %}
+                {% if mp.county %}
+                <p class="mp-county">
+                    <strong>County:</strong> {{ mp.county }}
+                </p>
+                {% endif %}
+                {% if mp.party %}
+                <p class="mp-party">
+                    <strong>Party:</strong> {{ mp.party }}
+                </p>
+                {% endif %}
+                <p class="mp-status">
+                    <strong>Status:</strong> {{ mp.status or 'Elected' }}
+                </p>
+            </div>
+            <div class="mp-card-footer">
+                <a href="/mps/{{ mp.name|slugify }}.html" class="btn btn-link">
+                    View Profile →
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Simple client-side filtering
+    document.getElementById('mp-search').addEventListener('input', filterMPs);
+    document.getElementById('party-filter').addEventListener('change', filterMPs);
+
+    function filterMPs() {
+        const searchTerm = document.getElementById('mp-search').value.toLowerCase();
+        const partyFilter = document.getElementById('party-filter').value;
+        const cards = document.querySelectorAll('.mp-card');
+
+        cards.forEach(card => {
+            const text = card.textContent.toLowerCase();
+            const party = card.dataset.party;
+
+            const matchesSearch = text.includes(searchTerm);
+            const matchesParty = !partyFilter || party === partyFilter;
+
+            card.style.display = (matchesSearch && matchesParty) ? 'block' : 'none';
+        });
+    }
+</script>
+{% endblock %}

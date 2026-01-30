@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}Political Parties - Hansard Tales{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+    <div class="container">
+        <a href="/">Home</a> / <span>Parties</span>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="party-list-page">
+    <h1>Political Parties</h1>
+    <p class="lead">Browse all {{ parties|length }} political parties represented in parliament</p>
+
+    <!-- Party List -->
+    <div class="party-list">
+        {% for party in parties %}
+        <div class="party-card">
+            <div class="party-header">
+                <h3>
+                    <a href="/parties/{{ party|slugify }}.html">
+                        {{ party }}
+                    </a>
+                </h3>
+            </div>
+            <div class="party-footer">
+                <a href="/parties/{{ party|slugify }}.html" class="btn btn-link">
+                    View Details →
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

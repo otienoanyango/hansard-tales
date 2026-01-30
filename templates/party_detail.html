@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}{{ party }} - Hansard Tales{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+    <div class="container">
+        <a href="/">Home</a> / <a href="/parties/">Parties</a> /
+        <span>{{ party }}</span>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="party-detail-page">
+    <!-- Party Header -->
+    <div class="party-header">
+        <h1>{{ party }}</h1>
+    </div>
+
+    <!-- Party Statistics -->
+    <section class="party-stats">
+        <h2>Overview</h2>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">{{ data.total_mps|format_number }}</div>
+                <div class="stat-label">Members of Parliament</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ data.total_statements|format_number }}</div>
+                <div class="stat-label">Total Statements</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Top Topics -->
+    {% if data.top_topics %}
+    <section class="party-topics">
+        <h2>Top Discussion Topics</h2>
+        <div class="topics-list">
+            {% for topic, count in data.top_topics %}
+            <div class="topic-item">
+                <span class="topic-name">{{ topic }}</span>
+                <span class="topic-count">{{ count }} statements</span>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Party Members -->
+    {% if data.mps %}
+    <section class="party-members">
+        <h2>Members of Parliament</h2>
+        <div class="mp-grid">
+            {% for mp in data.mps %}
+            <div class="mp-card">
+                <h3>
+                    <a href="/mps/{{ mp.name|slugify }}.html">{{ mp.name }}</a>
+                </h3>
+                {% if mp.constituency %}
+                <p class="mp-constituency">{{ mp.constituency }}</p>
+                {% endif %}
+                <a href="/mps/{{ mp.name|slugify }}.html" class="btn btn-link">
+                    View Profile →
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+</div>
+{% endblock %}

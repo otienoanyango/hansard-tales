@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+
+{% block title %}Search - Hansard Tales{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+    <div class="container">
+        <a href="/">Home</a> / <span>Search</span>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="search-page">
+    <h1>Search</h1>
+    <p class="lead">Search across MPs, sessions, and bills</p>
+
+    <!-- Search Form -->
+    <div class="search-form">
+        <input type="text" id="search-input" placeholder="Search for MPs, sessions, bills..." class="search-input"
+            autofocus>
+        <div class="search-filters">
+            <label>
+                <input type="checkbox" id="filter-mps" checked> MPs
+            </label>
+            <label>
+                <input type="checkbox" id="filter-sessions" checked> Sessions
+            </label>
+            <label>
+                <input type="checkbox" id="filter-bills" checked> Bills
+            </label>
+        </div>
+    </div>
+
+    <!-- Search Results -->
+    <div id="search-results" class="search-results">
+        <p class="search-hint">Start typing to search...</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Load search index
+    let searchIndex = null;
+
+    fetch('/search/data.json')
+        .then(response => response.json())
+        .then(data => {
+            searchIndex = data;
+        })
+        .catch(error => {
+            console.error('Error loading search index:', error);
+        });
+
+    // Search functionality
+    const searchInput = document.getElementById('search-input');
+    const resultsContainer = document.getElementById('search-results');
+    const filterMPs = document.getElementById('filter-mps');
+    const filterSessions = document.getElementById('filter-sessions');
+    const filterBills = document.getElementById('filter-bills');
+
+    searchInput.addEventListener('input', performSearch);
+    filterMPs.addEventListener('change', performSearch);
+    filterSessions.addEventListener('change', performSearch);
+    filterBills.addEventListener('change', performSearch);
+
+    function performSearch() {
+        if (!searchIndex) {
+            resultsContainer.innerHTML = '<p class="search-hint">Loading search index...</p>';
+            return;
+        }
+
+        const query = searchInput.value.toLowerCase().trim();
+
+        if (query.length < 2) {
+            resultsContainer.innerHTML = '<p class="search-hint">Start typing to search...</p>';
+            return;
+        }
+
+        const results = [];
+
+        // Search MPs
+        if (filterMPs.checked) {
+            searchIndex.mps.forEach(mp => {
+                const searchText = `${mp.name} ${mp.constituency || ''} ${mp.party || ''}`.toLowerCase();
+                if (searchText.includes(query)) {
+                    results.push({
+                        type: 'MP',
+                        title: mp.name,
+                        subtitle: `${mp.constituency || 'Nominated'} - ${mp.party || 'Independent'}`,
+                        url: mp.url
+                    });
+                }
+            });
+        }
+
+        // Search Sessions
+        if (filterSessions.checked) {
+            searchIndex.sessions.forEach(session => {
+                const searchText = `${session.date} ${session.session_type}`.toLowerCase();
+                if (searchText.includes(query)) {
+                    results.push({
+                        type: 'Session',
+                        title: `${session.date} - ${session.session_type}`,
+                        subtitle: 'Parliamentary Session',
+                        url: session.url
+                    });
+                }
+            });
+        }
+
+        // Search Bills
+        if (filterBills.checked) {
+            searchIndex.bills.forEach(bill => {
+                const searchText = bill.title.toLowerCase();
+                if (searchText.includes(query)) {
+                    results.push({
+                        type: 'Bill',
+                        title: bill.title,
+                        subtitle: bill.date || 'No date',
+                        url: bill.url
+                    });
+                }
+            });
+        }
+
+        // Display results
+        if (results.length === 0) {
+            resultsContainer.innerHTML = '<p class="search-hint">No results found</p>';
+            return;
+        }
+
+        const html = results.map(result => `
+        <div class="search-result">
+            <span class="result-type">${result.type}</span>
+            <h3><a href="${result.url}">${result.title}</a></h3>
+            <p class="result-subtitle">${result.subtitle}</p>
+        </div>
+    `).join('');
+
+        resultsContainer.innerHTML = html;
+    }
+</script>
+{% endblock %}
