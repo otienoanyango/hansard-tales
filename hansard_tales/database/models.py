@@ -441,3 +441,41 @@ class DownloadedFileORM(Base):
         Index("idx_downloaded_files_type", "document_type"),
         Index("idx_downloaded_files_date", "download_date"),
     )
+
+
+class APIUsageORM(Base):
+    """
+    API usage tracking table for cost management.
+
+    This table tracks API calls (LLM, embeddings, etc.) to monitor
+    and enforce budget constraints.
+    """
+
+    __tablename__ = "api_usage"
+
+    id = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid4)
+
+    # Date and model tracking
+    date = Column(Date, nullable=False)
+    model = Column(String(100), nullable=False)
+
+    # Token counts
+    input_tokens = Column(Integer, nullable=False, default=0)
+    output_tokens = Column(Integer, nullable=False, default=0)
+
+    # Cost tracking
+    cost_usd = Column(Float, nullable=False, default=0.0)
+
+    # Request count
+    requests = Column(Integer, nullable=False, default=1)
+
+    # Timestamps
+    created_at = Column(DateTime, nullable=False)
+    updated_at = Column(DateTime, nullable=False)
+
+    # Indexes
+    __table_args__ = (
+        Index("idx_api_usage_date", "date"),
+        Index("idx_api_usage_model", "model"),
+        Index("idx_api_usage_date_model", "date", "model"),
+    )

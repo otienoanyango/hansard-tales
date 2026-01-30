@@ -20,11 +20,11 @@ This document breaks down Phase 1 implementation into actionable tasks. Each tas
     - [x] 0.1.2 Increase Votes scraper coverage from 76.85% to ≥85%
     - [x] 0.1.3 Increase Base scraper coverage from 79.25% to ≥85%
     - [x] 0.1.4 Add tests for uncovered error handling paths
-  - [-] 0.2 Type Annotations
+  - [x] 0.2 Type Annotations
     - [x] 0.2.1 Add type annotations to example scripts
     - [x] 0.2.2 Add type annotations to utility functions
     - [x] 0.2.3 Fix Alembic migration type issues
-    - [-] 0.2.4 Enable mypy in pre-commit hooks
+    - [x] 0.2.4 Enable mypy in pre-commit hooks
   - [ ] 0.3 Scraper Enhancements
     - [ ] 0.3.1 Implement date range filtering (start_date, end_date parameters)
     - [ ] 0.3.2 Add support for multiple parliament terms
@@ -193,19 +193,19 @@ This document breaks down Phase 1 implementation into actionable tasks. Each tas
     - [x] 6.3.2 Property 6.2: No false verifications
 
 - [ ] 7. Cost Management
-  - [ ] 7.1 Implement CostManager class
-    - [ ] 7.1.1 Create APIUsage dataclass
-    - [ ] 7.1.2 Implement usage tracking
-    - [ ] 7.1.3 Implement cost calculation
-    - [ ] 7.1.4 Implement budget checking
-    - [ ] 7.1.5 Implement caching
-    - [ ] 7.1.6 Implement monthly usage reports
-  - [ ] 7.2 Write unit tests
-    - [ ] 7.2.1 Test usage tracking
-    - [ ] 7.2.2 Test cost calculation
-    - [ ] 7.2.3 Test budget enforcement
-    - [ ] 7.2.4 Test caching
-    - [ ] 7.2.5 Test usage reports
+  - [x] 7.1 Implement CostManager class
+    - [x] 7.1.1 Create APIUsage dataclass
+    - [x] 7.1.2 Implement usage tracking
+    - [x] 7.1.3 Implement cost calculation
+    - [x] 7.1.4 Implement budget checking
+    - [x] 7.1.5 Implement Prometheus metrics emission
+    - [x] 7.1.6 Implement monthly usage reports
+  - [x] 7.2 Write unit tests
+    - [x] 7.2.1 Test usage tracking
+    - [x] 7.2.2 Test cost calculation
+    - [x] 7.2.3 Test budget enforcement
+    - [x] 7.2.4 Test daily/monthly aggregation
+    - [x] 7.2.5 Test usage reports
   - [ ] 7.3 Write property-based tests
     - [ ] 7.3.1 Property 13.1: Cost tracking accuracy
     - [ ] 7.3.2 Property 13.2: Budget enforcement
