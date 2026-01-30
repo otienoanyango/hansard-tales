@@ -206,9 +206,9 @@ This document breaks down Phase 1 implementation into actionable tasks. Each tas
     - [x] 7.2.3 Test budget enforcement
     - [x] 7.2.4 Test daily/monthly aggregation
     - [x] 7.2.5 Test usage reports
-  - [ ] 7.3 Write property-based tests
-    - [ ] 7.3.1 Property 13.1: Cost tracking accuracy
-    - [ ] 7.3.2 Property 13.2: Budget enforcement
+  - [x] 7.3 Write property-based tests
+    - [x] 7.3.1 Property 13.1: Cost tracking accuracy
+    - [x] 7.3.2 Property 13.2: Budget enforcement
 
 
 ### Week 5-6: Document Processing

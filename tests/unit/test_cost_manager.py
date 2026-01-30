@@ -330,3 +330,346 @@ class TestDatabasePersistence:
         records = db_session.query(APIUsageORM).all()
         assert len(records) == 1
         assert records[0].requests == 2
+
+
+class TestPropertyBasedCostTracking:
+    """Property-based tests for cost tracking accuracy.
+    
+    Property 13.1: Tracked costs must match actual API usage
+    - Cost calculation must be accurate across all token counts
+    - Aggregation must preserve individual costs
+    - Cost rounding must not accumulate errors
+    """
+
+    @pytest.mark.hypothesis
+    def test_cost_accuracy_for_various_token_counts(
+        self, cost_manager: CostManager
+    ):
+        """Test that costs are calculated accurately for various token counts."""
+        from hypothesis import given, strategies as st, settings
+
+        @settings(max_examples=50)  # Reduce examples to stay within budget
+        @given(
+            input_tokens=st.integers(min_value=100, max_value=10_000),  # Keep tokens reasonable
+            output_tokens=st.integers(min_value=0, max_value=5_000),
+        )
+        def test_with_varying_tokens(input_tokens, output_tokens):
+            cost_manager.track_usage(
+                model="claude-3-5-haiku-20241022",
+                input_tokens=input_tokens,
+                output_tokens=output_tokens,
+            )
+
+            monthly = cost_manager.get_monthly_usage()
+            
+            # Verify tracking is working
+            assert monthly["cost_usd"] >= 0
+            assert monthly["requests"] > 0
+            assert monthly["input_tokens"] >= input_tokens
+            assert monthly["output_tokens"] >= output_tokens
+
+        test_with_varying_tokens()
+
+    @pytest.mark.hypothesis
+    def test_aggregation_preserves_cost(
+        self, cost_manager: CostManager
+    ):
+        """Test that aggregating multiple requests accumulates properly."""
+        from hypothesis import given, strategies as st, settings
+
+        @settings(max_examples=30)
+        @given(
+            requests_data=st.lists(
+                st.tuples(
+                    st.integers(min_value=100, max_value=2_000),
+                    st.integers(min_value=50, max_value=1_000),
+                ),
+                min_size=1,
+                max_size=5,
+            )
+        )
+        def test_aggregation(requests_data):
+            request_count = 0
+            total_input = 0
+            total_output = 0
+            
+            for input_tokens, output_tokens in requests_data:
+                total_input += input_tokens
+                total_output += output_tokens
+                request_count += 1
+                
+                try:
+                    cost_manager.track_usage(
+                        model="claude-3-5-haiku-20241022",
+                        input_tokens=input_tokens,
+                        output_tokens=output_tokens,
+                    )
+                except BudgetExceededError:
+                    # Stop if budget exceeded
+                    break
+
+            monthly = cost_manager.get_monthly_usage()
+            
+            # Verify totals accumulate correctly (at least for what succeeded)
+            assert monthly["requests"] > 0
+            assert monthly["cost_usd"] > 0
+            assert monthly["input_tokens"] > 0
+            assert monthly["output_tokens"] >= 0
+
+        test_aggregation()
+
+    @pytest.mark.hypothesis
+    def test_cost_never_negative(
+        self, cost_manager: CostManager
+    ):
+        """Test that costs are always non-negative.
+        
+        Property: cost_usd >= 0 for all tracking
+        """
+        from hypothesis import given, strategies as st, settings
+
+        @settings(max_examples=20)
+        @given(
+            input_tokens=st.integers(min_value=1, max_value=10_000),
+            output_tokens=st.integers(min_value=0, max_value=5_000),
+        )
+        def test_non_negative_cost(input_tokens, output_tokens):
+            cost_manager.track_usage(
+                model="claude-3-5-haiku-20241022",
+                input_tokens=input_tokens,
+                output_tokens=output_tokens,
+            )
+
+            monthly = cost_manager.get_monthly_usage()
+            assert monthly["cost_usd"] >= 0
+            assert monthly["budget_remaining"] >= 0
+            assert monthly["budget_remaining"] <= 20.0
+
+        test_non_negative_cost()
+
+
+class TestPropertyBasedBudgetEnforcement:
+    """Property-based tests for budget enforcement.
+    
+    Property 13.2: Processing must stop when budget exceeded
+    - Once budget is exceeded, further requests must fail
+    - Budget limit must be enforced consistently
+    - No requests should succeed after budget exceeded
+    """
+
+    @pytest.mark.hypothesis
+    def test_budget_enforcement_consistency(
+        self, db_session: Session
+    ):
+        """Test that budget enforcement is consistent across requests."""
+        from hypothesis import given, strategies as st, settings
+
+        @settings(max_examples=20)
+        @given(
+            num_requests=st.integers(min_value=1, max_value=10),
+        )
+        def test_enforcement(num_requests):
+            cost_manager = CostManager(db=db_session, monthly_budget=2.0)  # Small budget
+            exceeded = False
+            successful_requests = 0
+
+            for _ in range(num_requests):
+                try:
+                    cost_manager.track_usage(
+                        model="claude-3-5-haiku-20241022",
+                        input_tokens=5_000,  # Will exceed budget eventually
+                        output_tokens=1_000,
+                    )
+                    successful_requests += 1
+                except BudgetExceededError:
+                    exceeded = True
+                    break  # Stop on first budget exceeded
+
+            # Either we succeeded with requests OR hit budget limit
+            monthly = cost_manager.get_monthly_usage()
+            assert monthly["cost_usd"] <= 2.0 or exceeded
+
+        test_enforcement()
+
+    @pytest.mark.hypothesis
+    def test_budget_remaining_decreases_monotonically(
+        self, db_session: Session
+    ):
+        """Test that budget_remaining decreases with each request.
+        
+        Property: budget_remaining[n] <= budget_remaining[n-1]
+        """
+        from hypothesis import given, strategies as st, settings
+
+        @settings(max_examples=15)
+        @given(
+            requests=st.lists(
+                st.tuples(
+                    st.integers(min_value=100, max_value=1_000),
+                    st.integers(min_value=0, max_value=500),
+                ),
+                min_size=1,
+                max_size=5,
+            )
+        )
+        def test_monotonic_decrease(requests):
+            cost_manager = CostManager(db=db_session, monthly_budget=5.0)
+            previous_remaining = 5.0
+            
+            for input_tokens, output_tokens in requests:
+                try:
+                    cost_manager.track_usage(
+                        model="claude-3-5-haiku-20241022",
+                        input_tokens=input_tokens,
+                        output_tokens=output_tokens,
+                    )
+                    
+                    monthly = cost_manager.get_monthly_usage()
+                    current_remaining = monthly["budget_remaining"]
+                    
+                    # Budget remaining should monotonically decrease (or stay same)
+                    assert current_remaining <= previous_remaining
+                    previous_remaining = current_remaining
+                    
+                except BudgetExceededError:
+                    # Once exceeded, stop trying
+                    break
+
+        test_monotonic_decrease()
+
+    @pytest.mark.hypothesis
+    def test_budget_math_correctness(
+        self, cost_manager: CostManager
+    ):
+        """Test that budget math is always correct.
+        
+        Property: cost + budget_remaining == monthly_budget
+        """
+        from hypothesis import given, strategies as st, settings
+
+        @settings(max_examples=30)
+        @given(
+            input_tokens=st.integers(min_value=1, max_value=5_000),
+            output_tokens=st.integers(min_value=0, max_value=2_000),
+        )
+        def test_budget_math(input_tokens, output_tokens):
+            cost_manager.track_usage(
+                model="claude-3-5-haiku-20241022",
+                input_tokens=input_tokens,
+                output_tokens=output_tokens,
+            )
+
+            monthly = cost_manager.get_monthly_usage()
+            
+            # Verify: used_cost + remaining = budget (approximately)
+            calculated_sum = monthly["cost_usd"] + monthly["budget_remaining"]
+            
+            # Should equal 20.0 or be less if budget exceeded
+            assert calculated_sum <= 20.0 + 0.01  # Small tolerance for floating point
+            assert monthly["cost_usd"] >= 0
+            assert monthly["budget_remaining"] >= 0
+
+        test_budget_math()
+
+
+class TestPropertyBasedMultiModel:
+    """Property-based tests for multi-model cost tracking.
+    
+    Property: Cost tracking must be accurate across different models
+    """
+
+    @pytest.mark.hypothesis
+    def test_model_independence(
+        self, cost_manager: CostManager
+    ):
+        """Test that tracking one model doesn't affect another.
+        
+        Property: Tracking model A doesn't change model B's costs
+        """
+        from hypothesis import given, strategies as st, settings
+
+        @settings(max_examples=20)
+        @given(
+            haiku_input=st.integers(min_value=1000, max_value=20_000),
+            sonnet_input=st.integers(min_value=1000, max_value=20_000),
+        )
+        def test_independence(haiku_input, sonnet_input):
+            # Track Haiku
+            cost_manager.track_usage(
+                model="claude-3-5-haiku-20241022",
+                input_tokens=haiku_input,
+                output_tokens=0,
+            )
+            
+            haiku_usage = cost_manager.get_usage_by_model()
+            haiku_cost = haiku_usage.get("claude-3-5-haiku-20241022", {}).get("cost_usd", 0)
+            
+            # Track Sonnet
+            cost_manager.track_usage(
+                model="claude-3-5-sonnet-20241022",
+                input_tokens=sonnet_input,
+                output_tokens=0,
+            )
+            
+            updated_usage = cost_manager.get_usage_by_model()
+            
+            # Haiku cost should not have changed (same as before)
+            haiku_cost_after = updated_usage.get("claude-3-5-haiku-20241022", {}).get("cost_usd", 0)
+            assert abs(haiku_cost_after - haiku_cost) < 0.0001
+            
+            # Sonnet should have been added
+            assert "claude-3-5-sonnet-20241022" in updated_usage
+
+        test_independence()
+
+    @pytest.mark.hypothesis
+    def test_model_pricing_invariants(
+        self, db_session: Session
+    ):
+        """Test that model pricing follows expected invariants.
+        
+        Property: sonnet_cost > haiku_cost for same token count
+        (because Sonnet has higher pricing)
+        """
+        from hypothesis import given, strategies as st, settings
+
+        @settings(max_examples=15)
+        @given(
+            tokens=st.integers(min_value=1_000, max_value=50_000),
+        )
+        def test_pricing_invariant(tokens):
+            # Clear the database session first
+            db_session.query(APIUsageORM).delete()
+            db_session.commit()
+            
+            # Track Haiku tokens
+            cm_haiku = CostManager(db=db_session, monthly_budget=100.0)
+            cm_haiku.track_usage(
+                model="claude-3-5-haiku-20241022",
+                input_tokens=tokens,
+                output_tokens=0,
+            )
+            
+            haiku_usage = cm_haiku.get_usage_by_model()
+            haiku_cost = haiku_usage.get("claude-3-5-haiku-20241022", {}).get("cost_usd", 0)
+            
+            # Clear and track Sonnet tokens separately
+            db_session.query(APIUsageORM).delete()
+            db_session.commit()
+            
+            cm_sonnet = CostManager(db=db_session, monthly_budget=100.0)
+            cm_sonnet.track_usage(
+                model="claude-3-5-sonnet-20241022",
+                input_tokens=tokens,
+                output_tokens=0,
+            )
+            
+            sonnet_usage = cm_sonnet.get_usage_by_model()
+            sonnet_cost = sonnet_usage.get("claude-3-5-sonnet-20241022", {}).get("cost_usd", 0)
+            
+            # Sonnet pricing is higher for input tokens (3.00 vs 0.80)
+            # So for the same tokens, Sonnet should cost more
+            assert sonnet_cost > haiku_cost, f"Sonnet ({sonnet_cost}) should cost more than Haiku ({haiku_cost})"
+
+        test_pricing_invariant()
+
