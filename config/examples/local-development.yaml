@@ -1,0 +1,84 @@
+# Local Development Configuration Example
+# Optimized for local development with detailed logging
+
+environment: development
+
+# Database
+database:
+  engine: sqlite
+  database: data/hansard_dev.db
+
+# Vector DB
+vector_db:
+  engine: chromadb
+  persist_directory: data/vector_db_dev
+
+# Embedding
+embedding:
+  model_name: sentence-transformers/all-MiniLM-L6-v2
+  dimension: 384
+  device: cpu
+  batch_size: 16  # Small batch for low memory usage
+
+# Scraper
+scraper:
+  base_url: https://parliament.go.ke
+  download_dir: data/pdfs
+  max_retries: 2
+  retry_delay: 1.0
+  timeout: 30
+
+# LLM
+llm:
+  provider: anthropic
+  model: claude-3-5-haiku-20241022
+  api_key: ${ANTHROPIC_API_KEY}
+  max_tokens: 1024
+  temperature: 0.0
+  monthly_budget_usd: 10.0  # Low budget for testing
+  cache_enabled: true
+
+# NLP
+nlp:
+  mp_identification:
+    fuzzy_threshold: 85
+    cache_enabled: true
+  context_retrieval:
+    top_k_historical: 3  # Fewer results for faster testing
+    top_k_bills: 2
+    top_k_votes: 2
+
+# Processing
+processing:
+  pdf_processing:
+    max_workers: 2  # Low for single machine
+    timeout_seconds: 300
+  batch_processing:
+    batch_size: 5
+    max_workers: 2
+
+# Site Generation
+site_generation:
+  output_dir: site_output
+  base_url: http://localhost:8000
+  items_per_page: 10
+
+# Logging (verbose for debugging)
+logging:
+  level: DEBUG
+  format: text  # Human-readable
+  output: stdout  # Console only
+  log_dir: logs
+
+# Monitoring (disabled for local dev)
+monitoring:
+  prometheus_enabled: false
+  sentry_enabled: false
+
+# Performance
+performance:
+  caching:
+    enabled: true
+    ttl_hours: 1  # Short TTL for testing
+  rate_limiting:
+    enabled: false  # No limits for local testing

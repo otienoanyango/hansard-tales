@@ -1,0 +1,20 @@
+# Minimal Configuration Example
+# This is the absolute minimum configuration needed to run Hansard Tales
+
+environment: development
+
+# Database (SQLite - no server required)
+database:
+  engine: sqlite
+  database: data/hansard.db
+
+# Vector DB (ChromaDB - embedded)
+vector_db:
+  engine: chromadb
+  persist_directory: data/vector_db
+
+# LLM (required for Phase 1 analysis)
+llm:
+  api_key: ${ANTHROPIC_API_KEY}  # Set this environment variable
+
+# All other settings will use defaults

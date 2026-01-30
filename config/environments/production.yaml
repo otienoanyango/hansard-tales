@@ -15,13 +15,80 @@ vector_db:
   persist_directory: /data/vector_db
 
 embedding:
+  model_name: sentence-transformers/all-MiniLM-L6-v2
+  dimension: 384
   device: cpu
   batch_size: 64
 
 scraper:
+  base_url: https://parliament.go.ke
   download_dir: /data/pdfs
   max_retries: 5
+  retry_delay: 2.0
   timeout: 60
+  user_agent: HansardTales/1.0
+
+# LLM Configuration (Phase 1)
+llm:
+  provider: anthropic
+  model: claude-3-5-haiku-20241022
+  api_key: ${ANTHROPIC_API_KEY}
+  max_tokens: 1024
+  temperature: 0.0
+  timeout: 60
+  max_retries: 3
+  monthly_budget_usd: 100.0
+  cache_enabled: true
+  cache_ttl_hours: 24
+
+# NLP Configuration (Phase 1)
+nlp:
+  mp_identification:
+    fuzzy_threshold: 85
+    cache_enabled: true
+    spacy_model: en_core_web_sm
+  statement_segmentation:
+    min_statement_length: 20
+  filler_detection:
+    short_acknowledgment_threshold: 10
+  context_retrieval:
+    top_k_historical: 5
+    top_k_bills: 3
+    top_k_votes: 3
+    top_k_session: 5
+    max_context_tokens: 200000
+  citation_verification:
+    fuzzy_threshold: 85
+    exact_match_required: false
+
+# Analysis Configuration (Phase 1)
+analysis:
+  quality_scoring:
+    min_score: 0
+    max_score: 100
+  topic_classification:
+    confidence_threshold: 0.7
+    max_topics_per_statement: 5
+  sentiment_analysis:
+    confidence_threshold: 0.7
+
+# Processing Configuration
+processing:
+  pdf_processing:
+    max_workers: 8
+    timeout_seconds: 600
+  batch_processing:
+    batch_size: 20
+    max_workers: 8
+  vote_processing:
+    table_detection_threshold: 0.8
+
+# Static Site Generation
+site_generation:
+  output_dir: /var/www/hansard-tales
+  template_dir: templates
+  base_url: https://hansard-tales.pages.dev
+  items_per_page: 50
 
 logging:
   level: INFO
@@ -35,3 +102,24 @@ monitoring:
   prometheus_enabled: true
   prometheus_port: 9090
   sentry_enabled: true
+
+# Pipeline Configuration
+pipeline:
+  error_handling:
+    max_retries: 3
+    retry_delay: 10.0
+    continue_on_error: true
+
+# Performance Configuration
+performance:
+  caching:
+    enabled: true
+    ttl_hours: 24
+    max_cache_size_mb: 5000
+  connection_pooling:
+    pool_size: 20
+    max_overflow: 40
+  rate_limiting:
+    enabled: true
+    requests_per_minute: 120
+    llm_calls_per_minute: 60

@@ -1,0 +1,95 @@
+# Docker Compose Configuration Example
+# For running with Docker services (PostgreSQL, Qdrant, Prometheus, Grafana)
+
+environment: development
+
+# Database (PostgreSQL in Docker)
+database:
+  engine: postgresql
+  host: localhost  # or 'postgres' if running in Docker network
+  port: 5432
+  database: hansard_tales
+  user: hansard
+  password: ${DB_PASSWORD}
+
+# Vector DB (Qdrant in Docker)
+vector_db:
+  engine: qdrant
+  host: localhost  # or 'qdrant' if running in Docker network
+  port: 6333
+  collection_prefix: hansard_tales
+
+# Embedding
+embedding:
+  model_name: sentence-transformers/all-MiniLM-L6-v2
+  dimension: 384
+  device: cpu
+  batch_size: 32
+
+# Scraper
+scraper:
+  base_url: https://parliament.go.ke
+  download_dir: data/pdfs
+  max_retries: 3
+  retry_delay: 1.0
+  timeout: 30
+
+# LLM
+llm:
+  provider: anthropic
+  model: claude-3-5-haiku-20241022
+  api_key: ${ANTHROPIC_API_KEY}
+  max_tokens: 1024
+  temperature: 0.0
+  monthly_budget_usd: 20.0
+  cache_enabled: true
+
+# NLP
+nlp:
+  mp_identification:
+    fuzzy_threshold: 85
+    cache_enabled: true
+  context_retrieval:
+    top_k_historical: 5
+    top_k_bills: 3
+    top_k_votes: 3
+
+# Processing
+processing:
+  pdf_processing:
+    max_workers: 4
+    timeout_seconds: 300
+  batch_processing:
+    batch_size: 10
+    max_workers: 4
+
+# Site Generation
+site_generation:
+  output_dir: site_output
+  base_url: http://localhost:8000
+  items_per_page: 20
+
+# Logging
+logging:
+  level: INFO
+  format: json
+  output: both
+  log_dir: logs
+
+# Monitoring (enabled with Docker services)
+monitoring:
+  prometheus_enabled: true
+  prometheus_port: 9090
+  sentry_enabled: false
+
+# Performance
+performance:
+  caching:
+    enabled: true
+    ttl_hours: 24
+  connection_pooling:
+    pool_size: 10
+    max_overflow: 20
+  rate_limiting:
+    enabled: true
+    requests_per_minute: 60

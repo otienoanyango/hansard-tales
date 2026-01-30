@@ -1,25 +1,32 @@
-# Staging environment configuration
-environment: staging
+# Production Configuration Example (Cloudflare Pages)
+# Optimized for production deployment on Cloudflare Pages
 
+environment: production
+
+# Database (Managed PostgreSQL)
 database:
   engine: postgresql
   host: ${DB_HOST}
   port: 5432
-  database: hansard_tales_staging
+  database: hansard_tales
   user: hansard
+  password: ${DB_PASSWORD}
 
+# Vector DB (Managed Qdrant)
 vector_db:
   engine: qdrant
   host: ${QDRANT_HOST}
   port: 6333
-  persist_directory: /data/vector_db
+  collection_prefix: hansard_tales
 
+# Embedding
 embedding:
   model_name: sentence-transformers/all-MiniLM-L6-v2
   dimension: 384
   device: cpu
-  batch_size: 64
+  batch_size: 64  # Large batch for efficiency
 
+# Scraper
 scraper:
   base_url: https://parliament.go.ke
   download_dir: /data/pdfs
@@ -28,7 +35,7 @@ scraper:
   timeout: 60
   user_agent: HansardTales/1.0
 
-# LLM Configuration (Phase 1)
+# LLM
 llm:
   provider: anthropic
   model: claude-3-5-haiku-20241022
@@ -37,31 +44,26 @@ llm:
   temperature: 0.0
   timeout: 60
   max_retries: 3
-  monthly_budget_usd: 50.0
+  monthly_budget_usd: 100.0
   cache_enabled: true
   cache_ttl_hours: 24
 
-# NLP Configuration (Phase 1)
+# NLP
 nlp:
   mp_identification:
     fuzzy_threshold: 85
     cache_enabled: true
-    spacy_model: en_core_web_sm
   statement_segmentation:
     min_statement_length: 20
-  filler_detection:
-    short_acknowledgment_threshold: 10
   context_retrieval:
     top_k_historical: 5
     top_k_bills: 3
     top_k_votes: 3
-    top_k_session: 5
     max_context_tokens: 200000
   citation_verification:
     fuzzy_threshold: 85
-    exact_match_required: false
 
-# Analysis Configuration (Phase 1)
+# Analysis
 analysis:
   quality_scoring:
     min_score: 0
@@ -72,52 +74,58 @@ analysis:
   sentiment_analysis:
     confidence_threshold: 0.7
 
-# Processing Configuration
+# Processing
 processing:
   pdf_processing:
-    max_workers: 4
+    max_workers: 8
     timeout_seconds: 600
   batch_processing:
-    batch_size: 10
-    max_workers: 4
+    batch_size: 20
+    max_workers: 8
   vote_processing:
     table_detection_threshold: 0.8
 
-# Static Site Generation
+# Site Generation
 site_generation:
-  output_dir: /var/www/hansard-tales-staging
+  output_dir: /var/www/hansard-tales
   template_dir: templates
-  base_url: https://staging.hansard-tales.pages.dev
-  items_per_page: 20
+  base_url: https://hansard-tales.pages.dev
+  items_per_page: 50
 
+# Logging
 logging:
   level: INFO
   format: json
   output: both
   log_dir: /var/log/hansard_tales
+  rotation: 1 day
+  retention: 90 days
 
+# Monitoring
 monitoring:
   prometheus_enabled: true
   prometheus_port: 9090
   sentry_enabled: true
+  sentry_dsn: ${SENTRY_DSN}
 
-# Pipeline Configuration
+# Pipeline
 pipeline:
   error_handling:
     max_retries: 3
-    retry_delay: 5.0
+    retry_delay: 10.0
     continue_on_error: true
 
-# Performance Configuration
+# Performance
 performance:
   caching:
     enabled: true
     ttl_hours: 24
-    max_cache_size_mb: 2000
+    max_cache_size_mb: 5000
   connection_pooling:
-    pool_size: 10
-    max_overflow: 20
+    pool_size: 20
+    max_overflow: 40
+    pool_timeout: 30
   rate_limiting:
     enabled: true
-    requests_per_minute: 60
-    llm_calls_per_minute: 30
+    requests_per_minute: 120
+    llm_calls_per_minute: 60

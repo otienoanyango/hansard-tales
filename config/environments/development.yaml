@@ -10,13 +10,80 @@ vector_db:
   persist_directory: data/vector_db_dev
 
 embedding:
+  model_name: sentence-transformers/all-MiniLM-L6-v2
+  dimension: 384
   device: cpu
   batch_size: 32
 
 scraper:
+  base_url: https://parliament.go.ke
   download_dir: data/pdfs
   max_retries: 3
+  retry_delay: 1.0
   timeout: 30
+  user_agent: HansardTales/1.0
+
+# LLM Configuration (Phase 1)
+llm:
+  provider: anthropic
+  model: claude-3-5-haiku-20241022
+  api_key: ${ANTHROPIC_API_KEY}
+  max_tokens: 1024
+  temperature: 0.0
+  timeout: 60
+  max_retries: 3
+  monthly_budget_usd: 20.0
+  cache_enabled: true
+  cache_ttl_hours: 24
+
+# NLP Configuration (Phase 1)
+nlp:
+  mp_identification:
+    fuzzy_threshold: 85
+    cache_enabled: true
+    spacy_model: en_core_web_sm
+  statement_segmentation:
+    min_statement_length: 20
+  filler_detection:
+    short_acknowledgment_threshold: 10
+  context_retrieval:
+    top_k_historical: 5
+    top_k_bills: 3
+    top_k_votes: 3
+    top_k_session: 5
+    max_context_tokens: 200000
+  citation_verification:
+    fuzzy_threshold: 85
+    exact_match_required: false
+
+# Analysis Configuration (Phase 1)
+analysis:
+  quality_scoring:
+    min_score: 0
+    max_score: 100
+  topic_classification:
+    confidence_threshold: 0.7
+    max_topics_per_statement: 5
+  sentiment_analysis:
+    confidence_threshold: 0.7
+
+# Processing Configuration
+processing:
+  pdf_processing:
+    max_workers: 2
+    timeout_seconds: 300
+  batch_processing:
+    batch_size: 5
+    max_workers: 2
+  vote_processing:
+    table_detection_threshold: 0.8
+
+# Static Site Generation
+site_generation:
+  output_dir: site_output
+  template_dir: templates
+  base_url: http://localhost:8000
+  items_per_page: 20
 
 logging:
   level: DEBUG
@@ -27,3 +94,18 @@ logging:
 monitoring:
   prometheus_enabled: false
   sentry_enabled: false
+
+# Pipeline Configuration
+pipeline:
+  error_handling:
+    max_retries: 3
+    retry_delay: 5.0
+    continue_on_error: true
+
+# Performance Configuration
+performance:
+  caching:
+    enabled: true
+    ttl_hours: 24
+  rate_limiting:
+    enabled: false

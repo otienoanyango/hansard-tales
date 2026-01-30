@@ -1,0 +1,92 @@
+# Testing Configuration Example
+# Optimized for running tests with minimal external dependencies
+
+environment: testing
+
+# Database (in-memory SQLite)
+database:
+  engine: sqlite
+  database: :memory:  # In-memory database for tests
+
+# Vector DB (temporary ChromaDB)
+vector_db:
+  engine: chromadb
+  persist_directory: /tmp/test_vector_db
+
+# Embedding (small model for speed)
+embedding:
+  model_name: sentence-transformers/all-MiniLM-L6-v2
+  dimension: 384
+  device: cpu
+  batch_size: 8  # Small batch for tests
+
+# Scraper (with mocking)
+scraper:
+  base_url: https://parliament.go.ke
+  download_dir: /tmp/test_pdfs
+  max_retries: 1  # Fast fail for tests
+  retry_delay: 0.1
+  timeout: 5
+
+# LLM (mocked in tests)
+llm:
+  provider: anthropic
+  model: claude-3-5-haiku-20241022
+  api_key: test-key  # Mocked in tests
+  max_tokens: 512
+  temperature: 0.0
+  timeout: 5
+  max_retries: 1
+  monthly_budget_usd: 1.0
+  cache_enabled: false  # Disable caching for tests
+
+# NLP (minimal settings)
+nlp:
+  mp_identification:
+    fuzzy_threshold: 85
+    cache_enabled: false
+  context_retrieval:
+    top_k_historical: 2
+    top_k_bills: 1
+    top_k_votes: 1
+
+# Processing (single-threaded for determinism)
+processing:
+  pdf_processing:
+    max_workers: 1
+    timeout_seconds: 30
+  batch_processing:
+    batch_size: 2
+    max_workers: 1
+
+# Site Generation
+site_generation:
+  output_dir: /tmp/test_site
+  base_url: http://localhost:8000
+  items_per_page: 5
+
+# Logging (minimal)
+logging:
+  level: WARNING  # Reduce noise in tests
+  format: text
+  output: stdout
+  log_dir: /tmp/test_logs
+
+# Monitoring (disabled)
+monitoring:
+  prometheus_enabled: false
+  sentry_enabled: false
+
+# Pipeline
+pipeline:
+  error_handling:
+    max_retries: 1
+    retry_delay: 0.1
+    continue_on_error: false  # Fail fast in tests
+
+# Performance (disabled for determinism)
+performance:
+  caching:
+    enabled: false
+  rate_limiting:
+    enabled: false

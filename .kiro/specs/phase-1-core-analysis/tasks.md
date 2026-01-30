@@ -24,7 +24,7 @@ This document breaks down Phase 1 implementation into actionable tasks. Each tas
     - [x] 0.2.1 Add type annotations to example scripts
     - [x] 0.2.2 Add type annotations to utility functions
     - [x] 0.2.3 Fix Alembic migration type issues
-    - [ ] 0.2.4 Enable mypy in pre-commit hooks
+    - [-] 0.2.4 Enable mypy in pre-commit hooks
   - [ ] 0.3 Scraper Enhancements
     - [ ] 0.3.1 Implement date range filtering (start_date, end_date parameters)
     - [ ] 0.3.2 Add support for multiple parliament terms
@@ -318,87 +318,87 @@ This document breaks down Phase 1 implementation into actionable tasks. Each tas
     - [x] 12.4.1 Property 11.1: Page generation completeness
     - [x] 12.4.2 Property 11.2: Link validity
 
-- [ ] 13. Pipeline Orchestration
-  - [ ] 13.1 Implement ProcessingPipeline class
-    - [ ] 13.1.1 Create PipelineStage enum
-    - [ ] 13.1.2 Create PipelineResult dataclass
-    - [ ] 13.1.3 Initialize all components
-    - [ ] 13.1.4 Implement Hansard processing pipeline
-    - [ ] 13.1.5 Implement Votes processing pipeline
-    - [ ] 13.1.6 Implement stage execution with timing
-    - [ ] 13.1.7 Implement error handling
-    - [ ] 13.1.8 Implement result storage
-  - [ ] 13.2 Write unit tests
-    - [ ] 13.2.1 Test stage execution
-    - [ ] 13.2.2 Test error handling
-    - [ ] 13.2.3 Test result storage
-    - [ ] 13.2.4 Test pipeline completion
-    - [ ] 13.2.5 Test parallel processing
-  - [ ] 13.3 Write property-based tests
-    - [ ] 13.3.1 Property 12.1: Pipeline completeness
-    - [ ] 13.3.2 Property 12.2: Error recovery
+- [x] 13. Pipeline Orchestration
+  - [x] 13.1 Implement ProcessingPipeline class
+    - [x] 13.1.1 Create PipelineStage enum
+    - [x] 13.1.2 Create PipelineResult dataclass
+    - [x] 13.1.3 Initialize all components
+    - [x] 13.1.4 Implement Hansard processing pipeline
+    - [x] 13.1.5 Implement Votes processing pipeline
+    - [x] 13.1.6 Implement stage execution with timing
+    - [x] 13.1.7 Implement error handling
+    - [x] 13.1.8 Implement result storage
+  - [x] 13.2 Write unit tests
+    - [x] 13.2.1 Test stage execution
+    - [x] 13.2.2 Test error handling
+    - [x] 13.2.3 Test result storage
+    - [x] 13.2.4 Test pipeline completion
+    - [x] 13.2.5 Test parallel processing
+  - [x] 13.3 Write property-based tests
+    - [x] 13.3.1 Property 12.1: Pipeline completeness
+    - [x] 13.3.2 Property 12.2: Error recovery
 
-- [ ] 14. Monitoring and Observability
-  - [ ] 14.1 Implement MonitoringService class
-    - [ ] 14.1.1 Define Prometheus metrics
-    - [ ] 14.1.2 Configure structlog
-    - [ ] 14.1.3 Implement statement tracking
-    - [ ] 14.1.4 Implement stage duration tracking
-    - [ ] 14.1.5 Implement LLM call tracking
-    - [ ] 14.1.6 Implement error tracking
-    - [ ] 14.1.7 Implement metrics endpoint
-  - [ ] 14.2 Write unit tests
-    - [ ] 14.2.1 Test metric recording
-    - [ ] 14.2.2 Test log formatting
-    - [ ] 14.2.3 Test error logging
-    - [ ] 14.2.4 Test metrics endpoint
-  - [ ] 14.3 Write property-based tests
-    - [ ] 14.3.1 Property 14.1: Metrics accuracy
-    - [ ] 14.3.2 Property 14.2: Error logging completeness
+- [x] 14. Monitoring and Observability
+  - [x] 14.1 Implement MonitoringService class
+    - [x] 14.1.1 Define Prometheus metrics
+    - [x] 14.1.2 Configure structlog
+    - [x] 14.1.3 Implement statement tracking
+    - [x] 14.1.4 Implement stage duration tracking
+    - [x] 14.1.5 Implement LLM call tracking
+    - [x] 14.1.6 Implement error tracking
+    - [x] 14.1.7 Implement metrics endpoint
+  - [x] 14.2 Write unit tests
+    - [x] 14.2.1 Test metric recording
+    - [x] 14.2.2 Test log formatting
+    - [x] 14.2.3 Test error logging
+    - [x] 14.2.4 Test metrics endpoint
+  - [x] 14.3 Write property-based tests
+    - [x] 14.3.1 Property 14.1: Metrics accuracy
+    - [x] 14.3.2 Property 14.2: Error logging completeness
 
-- [ ] 15. Integration and End-to-End Testing
-  - [ ] 15.1 Integration tests
-    - [ ] 15.1.1 Test MP identification → Segmentation
-    - [ ] 15.1.2 Test Segmentation → Classification
-    - [ ] 15.1.3 Test Classification → Context Retrieval
-    - [ ] 15.1.4 Test Context Retrieval → LLM Analysis
-    - [ ] 15.1.5 Test LLM Analysis → Citation Verification
-    - [ ] 15.1.6 Test Vote Processing → Database Storage
-    - [ ] 15.1.7 Test Bill Linking → Profile Generation
-    - [ ] 15.1.8 Test Profile Generation → Site Generation
-  - [ ] 15.2 End-to-end tests
-    - [ ] 15.2.1 Process complete Hansard PDF
-    - [ ] 15.2.2 Process complete Votes PDF
-    - [ ] 15.2.3 Generate MP profiles
-    - [ ] 15.2.4 Generate session summaries
-    - [ ] 15.2.5 Generate static site
-    - [ ] 15.2.6 Verify site content
-    - [ ] 15.2.7 Measure performance
-    - [ ] 15.2.8 Verify cost tracking
-  - [ ] 15.3 Performance testing
-    - [ ] 15.3.1 Benchmark Hansard processing time
-    - [ ] 15.3.2 Benchmark LLM API calls
-    - [ ] 15.3.3 Benchmark vector DB queries
-    - [ ] 15.3.4 Benchmark site generation
-    - [ ] 15.3.5 Optimize bottlenecks
+- [x] 15. Integration and End-to-End Testing
+  - [x] 15.1 Integration tests
+    - [x] 15.1.1 Test MP identification → Segmentation
+    - [x] 15.1.2 Test Segmentation → Classification
+    - [x] 15.1.3 Test Classification → Context Retrieval
+    - [x] 15.1.4 Test Context Retrieval → LLM Analysis
+    - [x] 15.1.5 Test LLM Analysis → Citation Verification
+    - [x] 15.1.6 Test Vote Processing → Database Storage
+    - [x] 15.1.7 Test Bill Linking → Profile Generation
+    - [x] 15.1.8 Test Profile Generation → Site Generation
+  - [x] 15.2 End-to-end tests
+    - [x] 15.2.1 Process complete Hansard PDF
+    - [x] 15.2.2 Process complete Votes PDF
+    - [x] 15.2.3 Generate MP profiles
+    - [x] 15.2.4 Generate session summaries
+    - [x] 15.2.5 Generate static site
+    - [x] 15.2.6 Verify site content
+    - [x] 15.2.7 Measure performance
+    - [x] 15.2.8 Verify cost tracking
+  - [x] 15.3 Performance testing
+    - [x] 15.3.1 Benchmark Hansard processing time
+    - [x] 15.3.2 Benchmark LLM API calls
+    - [x] 15.3.3 Benchmark vector DB queries
+    - [x] 15.3.4 Benchmark site generation
+    - [x] 15.3.5 Optimize bottlenecks
 
 - [ ] 16. Configuration and Documentation
-  - [ ] 16.1 Configuration
-    - [ ] 16.1.1 Create phase1.yaml config file
-    - [ ] 16.1.2 Document all configuration options
-    - [ ] 16.1.3 Create example configurations
-    - [ ] 16.1.4 Add configuration validation
-  - [ ] 16.2 Documentation
-    - [ ] 16.2.1 Write setup instructions
-    - [ ] 16.2.2 Write usage guide
-    - [ ] 16.2.3 Document API endpoints
-    - [ ] 16.2.4 Create example scripts
-    - [ ] 16.2.5 Document troubleshooting
-  - [ ] 16.3 Code documentation
-    - [ ] 16.3.1 Add docstrings to all classes
-    - [ ] 16.3.2 Add docstrings to all functions
-    - [ ] 16.3.3 Generate API documentation
-    - [ ] 16.3.4 Add inline comments for complex logic
+  - [x] 16.1 Configuration
+    - [x] 16.1.1 Create phase1.yaml config file
+    - [x] 16.1.2 Document all configuration options
+    - [x] 16.1.3 Create example configurations
+    - [x] 16.1.4 Add configuration validation
+  - [x] 16.2 Documentation
+    - [x] 16.2.1 Write setup instructions
+    - [x] 16.2.2 Write usage guide
+    - [x] 16.2.3 Document API endpoints
+    - [x] 16.2.4 Create example scripts
+    - [x] 16.2.5 Document troubleshooting
+  - [x] 16.3 Code documentation
+    - [x] 16.3.1 Add docstrings to all classes
+    - [x] 16.3.2 Add docstrings to all functions
+    - [x] 16.3.3 Generate API documentation
+    - [x] 16.3.4 Add inline comments for complex logic
 
 ---
 

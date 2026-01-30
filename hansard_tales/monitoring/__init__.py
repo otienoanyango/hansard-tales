@@ -24,6 +24,10 @@ from hansard_tales.monitoring.sentry_config import (
     set_tag,
     set_user,
 )
+from hansard_tales.monitoring.service import (
+    MonitoringService,
+    get_monitoring_service,
+)
 
 __all__ = [
     "documents_processed",
@@ -42,4 +46,6 @@ __all__ = [
     "set_tag",
     "add_breadcrumb",
     "flush",
+    "MonitoringService",
+    "get_monitoring_service",
 ]
