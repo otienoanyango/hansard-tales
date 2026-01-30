@@ -238,7 +238,7 @@ class BillStatementLinker:
 
         except Exception as e:
             logger.error(f"Error during disambiguation: {e}")
-            return bills[0]  # Fallback to first match
+            return None  # Return None on error instead of fallback
 
     def _cosine_similarity(self, vec1: Any, vec2: Any) -> float:
         """
@@ -253,9 +253,19 @@ class BillStatementLinker:
         """
         import numpy as np
 
+        # Handle empty vectors
+        if len(vec1) == 0 or len(vec2) == 0:
+            return 0.0
+
         # Normalize vectors
-        vec1_norm = vec1 / np.linalg.norm(vec1)
-        vec2_norm = vec2 / np.linalg.norm(vec2)
+        norm1 = np.linalg.norm(vec1)
+        norm2 = np.linalg.norm(vec2)
+        
+        if norm1 == 0 or norm2 == 0:
+            return 0.0
+
+        vec1_norm = vec1 / norm1
+        vec2_norm = vec2 / norm2
 
         # Calculate dot product
         similarity = np.dot(vec1_norm, vec2_norm)

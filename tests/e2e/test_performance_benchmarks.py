@@ -24,7 +24,7 @@ from hansard_tales.analysis.filler_detector import FillerDetector
 from hansard_tales.analysis.llm_analyzer import LLMAnalyzer
 from hansard_tales.analysis.mp_identifier import MPIdentifier
 from hansard_tales.analysis.statement_segmenter import Statement, StatementSegmenter
-from hansard_tales.database.models import MPORM, Base, SessionORM, StatementORM
+from hansard_tales.database.models import MPORM, Base, StatementORM
 from hansard_tales.models import Chamber
 from hansard_tales.site.generator import StaticSiteGenerator
 from hansard_tales.vector_db import ChromaDBAdapter

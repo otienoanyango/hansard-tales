@@ -36,9 +36,8 @@ from hansard_tales.database.models import (
     MPORM,
     Base,
     BillORM,
-    SessionORM,
     StatementORM,
-    VoteRecordORM,
+    VoteORM,
 )
 from hansard_tales.models import Chamber
 from hansard_tales.processors.vote_processor import VoteProcessor

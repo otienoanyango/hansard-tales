@@ -54,22 +54,18 @@ def temp_db():
     # Add sample MPs
     mp1 = MPORM(
         name="Hon. John Doe",
-        clean_name="John Doe",
         constituency="Nairobi West",
         party="UDA",
         chamber=Chamber.NATIONAL_ASSEMBLY.value,
-        status="Elected",
         parliament_term=13,
         created_at=datetime.now(UTC),
         updated_at=datetime.now(UTC),
     )
     mp2 = MPORM(
         name="Hon. Jane Smith",
-        clean_name="Jane Smith",
         constituency="Kisumu Central",
         party="ODM",
         chamber=Chamber.NATIONAL_ASSEMBLY.value,
-        status="Elected",
         parliament_term=13,
         created_at=datetime.now(UTC),
         updated_at=datetime.now(UTC),

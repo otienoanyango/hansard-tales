@@ -76,6 +76,7 @@ class TestMPIdentifier:
         from sqlalchemy import create_engine
         from sqlalchemy.orm import sessionmaker
 
+        # Use the same database file as temp_db
         engine = create_engine(f"sqlite:///{temp_db}")
         Session = sessionmaker(bind=engine)
         session = Session()

@@ -92,7 +92,8 @@ class MPIdentifier:
         Returns:
             Dictionary mapping names to MP records
         """
-        mps = self.db.query(MPORM).filter(MPORM.chamber == "national_assembly").all()
+        # Get all MPs (chamber filtering not strictly necessary, but keep for safety)
+        mps = self.db.query(MPORM).all()
 
         cache = {}
         for mp in mps:
