@@ -13,65 +13,65 @@ Phase 2 extends Hansard Tales to process Bills, Questions, and Petitions. This b
 
 ### Week 1: Bill Processing Infrastructure
 
-- [ ] 1. Database Schema for Bills, Questions, Petitions
-  - [ ] 1.1 Create migration script
-    - [ ] 1.1.1 Add bills table
-    - [ ] 1.1.2 Add bill_versions table
-    - [ ] 1.1.3 Add questions table
-    - [ ] 1.1.4 Add petitions table
-    - [ ] 1.1.5 Add indexes for performance
-    - [ ] 1.1.6 Add foreign key constraints
-  - [ ] 1.2 Write migration tests
-    - [ ] 1.2.1 Test schema creation
-    - [ ] 1.2.2 Test foreign key constraints
-    - [ ] 1.2.3 Test rollback functionality
+- [x] 1. Database Schema for Bills, Questions, Petitions
+  - [x] 1.1 Create migration script
+    - [x] 1.1.1 Add bills table
+    - [x] 1.1.2 Add bill_versions table
+    - [x] 1.1.3 Add questions table
+    - [x] 1.1.4 Add petitions table
+    - [x] 1.1.5 Add indexes for performance
+    - [x] 1.1.6 Add foreign key constraints
+  - [x] 1.2 Write migration tests
+    - [x] 1.2.1 Test schema creation
+    - [x] 1.2.2 Test foreign key constraints
+    - [x] 1.2.3 Test rollback functionality
 
-- [ ] 2. Bill Scraper and Downloader
-  - [ ] 2.1 Implement BillScraper class
-    - [ ] 2.1.1 Create BillMetadata dataclass
-    - [ ] 2.1.2 Implement discover_bills method
-    - [ ] 2.1.3 Implement version detection
-    - [ ] 2.1.4 Implement download_bill method
-    - [ ] 2.1.5 Implement duplicate prevention
-  - [ ] 2.2 Write unit tests
-    - [ ] 2.2.1 Test bill discovery
-    - [ ] 2.2.2 Test metadata extraction
-    - [ ] 2.2.3 Test version detection
-    - [ ] 2.2.4 Test download functionality
-  - [ ] 2.3 Write property-based tests
-    - [ ] 2.3.1 Property 2.1: All bills discovered
-    - [ ] 2.3.2 Property 2.2: No duplicate downloads
+- [x] 2. Bill Scraper and Downloader
+  - [x] 2.1 Implement BillScraper class
+    - [x] 2.1.1 Create BillMetadata dataclass
+    - [x] 2.1.2 Implement discover_bills method
+    - [x] 2.1.3 Implement version detection
+    - [x] 2.1.4 Implement download_bill method
+    - [x] 2.1.5 Implement duplicate prevention
+  - [x] 2.2 Write unit tests
+    - [x] 2.2.1 Test bill discovery
+    - [x] 2.2.2 Test metadata extraction
+    - [x] 2.2.3 Test version detection
+    - [x] 2.2.4 Test download functionality
+  - [x] 2.3 Write property-based tests
+    - [x] 2.3.1 Property 2.1: All bills discovered
+    - [x] 2.3.2 Property 2.2: No duplicate downloads
 
-- [ ] 3. Bill Text Extraction and Structure Parsing
-  - [ ] 3.1 Implement BillTextExtractor class
-    - [ ] 3.1.1 Create BillSection and BillStructure dataclasses
-    - [ ] 3.1.2 Implement text extraction
-    - [ ] 3.1.3 Implement metadata extraction
-    - [ ] 3.1.4 Implement structure parsing
-    - [ ] 3.1.5 Implement explanatory memo extraction
-    - [ ] 3.1.6 Implement schedule parsing
-  - [ ] 3.2 Write unit tests
-    - [ ] 3.2.1 Test text extraction
-    - [ ] 3.2.2 Test metadata extraction
-    - [ ] 3.2.3 Test structure parsing
-    - [ ] 3.2.4 Test edge cases
-  - [ ] 3.3 Write property-based tests
-    - [ ] 3.3.1 Property 3.1: Text extraction accuracy ≥95%
-    - [ ] 3.3.2 Property 3.2: Structure preservation
+- [x] 3. Bill Text Extraction and Structure Parsing
+  - [x] 3.1 Implement BillTextExtractor class
+    - [x] 3.1.1 Create BillSection and BillStructure dataclasses
+    - [x] 3.1.2 Implement text extraction
+    - [x] 3.1.3 Implement metadata extraction
+    - [x] 3.1.4 Implement structure parsing
+    - [x] 3.1.5 Implement explanatory memo extraction
+    - [x] 3.1.6 Implement schedule parsing
+  - [x] 3.2 Write unit tests
+    - [x] 3.2.1 Test text extraction
+    - [x] 3.2.2 Test metadata extraction
+    - [x] 3.2.3 Test structure parsing
+    - [x] 3.2.4 Test edge cases
+  - [x] 3.3 Write property-based tests
+    - [x] 3.3.1 Property 3.1: Text extraction accuracy ≥95%
+    - [x] 3.3.2 Property 3.2: Structure preservation
 
-- [ ] 4. Bill Version Tracking
-  - [ ] 4.1 Implement BillVersionTracker class
-    - [ ] 4.1.1 Create BillChange dataclass
-    - [ ] 4.1.2 Implement add_version method
-    - [ ] 4.1.3 Implement generate_diff method
-    - [ ] 4.1.4 Implement section identification
-    - [ ] 4.1.5 Implement changes summarization
-  - [ ] 4.2 Write unit tests
-    - [ ] 4.2.1 Test version addition
-    - [ ] 4.2.2 Test diff generation
-    - [ ] 4.2.3 Test changes summarization
-  - [ ] 4.3 Write property-based tests
-    - [ ] 4.3.1 Property 4.1: Version tracking completeness
+- [x] 4. Bill Version Tracking
+  - [x] 4.1 Implement BillVersionTracker class
+    - [x] 4.1.1 Create BillChange dataclass
+    - [x] 4.1.2 Implement add_version method
+    - [x] 4.1.3 Implement generate_diff method
+    - [x] 4.1.4 Implement section identification
+    - [x] 4.1.5 Implement changes summarization
+  - [x] 4.2 Write unit tests
+    - [x] 4.2.1 Test version addition
+    - [x] 4.2.2 Test diff generation
+    - [x] 4.2.3 Test changes summarization
+  - [x] 4.3 Write property-based tests
+    - [x] 4.3.1 Property 4.1: Version tracking completeness
 
 
 ### Week 2: Bill Analysis and Question Processing
@@ -352,4 +352,3 @@ Phase 2 extends Hansard Tales to process Bills, Questions, and Petitions. This b
 - Tasks 10-15 must complete before Task 16
 - Tasks 16-18 depend on all previous tasks
 - Tasks 19-20 are final integration and documentation
-
